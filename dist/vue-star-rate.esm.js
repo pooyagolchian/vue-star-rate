@@ -1,4 +1,4 @@
-import 'vue-awesome/icons/star';
+import 'vue-awesome/icons';
 import Icon from 'vue-awesome/components/Icon';
 
 //
@@ -10,21 +10,33 @@ var script = {
       default: 3,
       required: false
     },
-    maxStars: {
+    maxIcon: {
       type: Number,
       default: 5
     },
-    starHeight: {
+    iconHeight: {
       type: Number,
-      default: 35
+      default: 25
     },
-    starWidth: {
+    iconWidth: {
       type: Number,
-      default: 35
+      default: 25
     },
     hasCounter: {
       type: Boolean,
       default: true
+    },
+    iconColor: {
+      type: String,
+      default: "#f3d23e"
+    },
+    iconColorHover: {
+      type: String,
+      default: "#f3d23e"
+    },
+    iconShape: {
+      type: String,
+      default: "star"
     }
   },
   components: {
@@ -39,14 +51,21 @@ var script = {
 
   computed: {
     counter() {
-      return `${this.stars} of ${this.maxStars}`;
+      return `${this.stars} of ${this.maxIcon}`;
+    },
+
+    styleObject() {
+      return {
+        "--icon-color": this.iconColor,
+        "--icon-color-hover": this.iconColorHover
+      };
     }
 
   },
   methods: {
-    rate(star) {
-      if (Number(star) && star <= this.maxStars && star >= 0) {
-        this.stars = this.stars === star ? star - 1 : star;
+    rate(icon) {
+      if (Number(icon) && icon <= this.maxIcon && icon >= 0) {
+        this.stars = this.stars === icon ? icon - 1 : icon;
       }
     }
 
@@ -196,28 +215,30 @@ var __vue_render__ = function () {
     staticClass: "vue-star-rate"
   }, [_c('ul', {
     staticClass: "list"
-  }, _vm._l(_vm.maxStars, function (star, index) {
+  }, _vm._l(_vm.maxIcon, function (icon, index) {
     return _c('li', {
       key: index,
       staticClass: "star",
       class: {
-        active: star <= _vm.stars
+        active: icon <= _vm.stars
       },
+      style: _vm.styleObject,
       on: {
         "click": function ($event) {
-          return _vm.rate(star);
+          return _vm.rate(icon);
         }
       }
     }, [_c('v-icon', {
       style: {
-        height: _vm.starHeight + "px",
-        width: _vm.starWidth + "px"
+        height: _vm.iconHeight + "px",
+        width: _vm.iconWidth + "px",
+        padding: "0px 2px"
       },
       attrs: {
-        "name": star <= _vm.stars ? 'star' : 'star'
+        "name": icon <= _vm.stars ? _vm.iconShape : _vm.iconShape
       }
     })], 1);
-  }), 0), _vm._v(" "), _vm.hasCounter ? _c('span', [_vm._v(_vm._s(_vm.stars) + " of " + _vm._s(_vm.maxStars))]) : _vm._e()]);
+  }), 0), _vm._v(" "), _vm.hasCounter ? _c('span', [_vm._v(_vm._s(_vm.stars) + " of " + _vm._s(_vm.maxIcon))]) : _vm._e()]);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -225,8 +246,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-981752d6_0", {
-    source: ".vue-star-rate[data-v-981752d6]{font-size:14px;color:#a7a8a8}.list[data-v-981752d6]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-981752d6]{color:#f3d23e}.star[data-v-981752d6]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-981752d6]:not(.active){color:inherit}.active[data-v-981752d6]{color:#f3d23e}",
+  inject("data-v-435ddc14_0", {
+    source: ".vue-star-rate[data-v-435ddc14]{font-size:14px;color:#a7a8a8}.list[data-v-435ddc14]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-435ddc14]{color:var(--icon-color)}.star[data-v-435ddc14]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-435ddc14]:not(.active){color:inherit}.active[data-v-435ddc14]{color:var(--icon-color-hover)}",
     map: undefined,
     media: undefined
   });
@@ -234,7 +255,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-981752d6";
+const __vue_scope_id__ = "data-v-435ddc14";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
