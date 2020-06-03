@@ -41,10 +41,4 @@ After import and registering component in your Vue.js application:
 | iconColorHover |         Color of hover icon         |  String | #f3d23e |
 | iconShape      | Shape of icon like star, heart, etc |  String | star    |
 
-### Change log
-
-1. Customize icon with font awesome
-2. Color and hover color
-3. Icons Shape
-
 [1]: https://www.npmjs.com/package/vue-awesome

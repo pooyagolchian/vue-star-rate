@@ -1,11 +1,13 @@
 {
   "name": "vue-js-star-rating",
-  "version": "1.0.8",
-  "description": "",
+  "version": "1.0.9",
+  "description": "Vue fontawesome icons rating",
+  "author": "Pooya Golchian(pooya.golchian@gmail.com)",
   "main": "dist/vue-star-rate.ssr.js",
   "browser": "dist/vue-star-rate.esm.js",
   "module": "dist/vue-star-rate.esm.js",
   "unpkg": "dist/vue-star-rate.min.js",
+  "pub": "sh ./publish.sh",
   "files": [
     "dist/*",
     "src/**/*.vue"
@@ -43,6 +45,10 @@
   "engines": {
     "node": ">=10"
   },
+  "bugs": {
+    "url": "https://github.com/pooyagolchian/vue-star-rate/issues"
+  },
+  "homepage": "https://github.com/pooyagolchian/vue-star-rate#readme",
   "keywords": [
     "vuejs-rate",
     "vue-fontawesome-icon-rate",
@@ -51,6 +57,9 @@
     "vue-icon-rating",
     "vue-rate",
     "fontawesome-icons-rate",
-    "fontawesome-icons-rating"
-  ]
+    "fontawesome-icons-rating",
+    "svg-rating-icons"
+  ],
+  "license": "ISC",
+  "repository": "pooyagolchian/vue-star-rate"
 }
