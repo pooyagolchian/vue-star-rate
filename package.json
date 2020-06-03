@@ -1,6 +1,6 @@
 {
-  "name": "vue-star-rate",
-  "version": "1.0.0",
+  "name": "vue-js-star-rating",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/vue-star-rate.ssr.js",
   "browser": "dist/vue-star-rate.esm.js",

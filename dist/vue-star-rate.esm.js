@@ -7,6 +7,7 @@ var script = {
   props: {
     grade: {
       type: Number,
+      default: 3,
       required: false
     },
     maxStars: {
@@ -224,8 +225,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-524b375f_0", {
-    source: ".vue-star-rate[data-v-524b375f]{font-size:14px;color:#a7a8a8}.list[data-v-524b375f]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-524b375f]{color:#f3d23e}.star[data-v-524b375f]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-524b375f]:not(.active){color:inherit}.active[data-v-524b375f]{color:#f3d23e}",
+  inject("data-v-981752d6_0", {
+    source: ".vue-star-rate[data-v-981752d6]{font-size:14px;color:#a7a8a8}.list[data-v-981752d6]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-981752d6]{color:#f3d23e}.star[data-v-981752d6]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-981752d6]:not(.active){color:inherit}.active[data-v-981752d6]{color:#f3d23e}",
     map: undefined,
     media: undefined
   });
@@ -233,7 +234,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-524b375f";
+const __vue_scope_id__ = "data-v-981752d6";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;

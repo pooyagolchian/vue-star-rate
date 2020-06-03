@@ -26,6 +26,7 @@ export default {
   props: {
     grade: {
       type: Number,
+      default: 3,
       required: false,
     },
     maxStars: {
