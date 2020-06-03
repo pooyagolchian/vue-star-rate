@@ -13,7 +13,7 @@ It's easy to use Vue.js component for star rating!
 
 ### Code sample
 
-After import and register component in your Vue.js application:
+After import and registering component in your Vue.js application:
 
 ```
 <vue-star-rate
