@@ -1,6 +1,6 @@
 {
   "name": "vue-js-star-rating",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "dist/vue-star-rate.ssr.js",
   "browser": "dist/vue-star-rate.esm.js",
@@ -42,5 +42,15 @@
   },
   "engines": {
     "node": ">=10"
-  }
+  },
+  "keywords": [
+    "vuejs-rate",
+    "vue-fontawesome-icon-rate",
+    "vue-fontawesome-icon-rating",
+    "vue-star-rating",
+    "vue-icon-rating",
+    "vue-rate",
+    "fontawesome-icons-rate",
+    "fontawesome-icons-rating"
+  ]
 }
