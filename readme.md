@@ -4,7 +4,7 @@ It's easy to use Vue.js component for star rating!
 
 1. This package is fully customized (Shape, Color, Rate, ...)
 2. I'm Using [Vue font awesome][1]
-3. You can change your rating shapw with free and open source font awesome project
+3. You can change your rating shape with free and open source font awesome project
 
 ### Install package
 
