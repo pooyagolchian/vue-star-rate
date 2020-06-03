@@ -1,6 +1,6 @@
 ### Vue.js fontawesome icon rate component
 
-It's easy to used Vue.js component for star rating!
+It's easy to use Vue.js component for star rating!
 
 1. This package is fully customized (Shape, Color, Rate, ...)
 2. I'm Using [Vue font awesome][1]
@@ -13,7 +13,7 @@ It's easy to used Vue.js component for star rating!
 
 ### Code sample
 
-After import and registered component in your Vue.js application:
+After import and register component in your Vue.js application:
 
 ```
 <vue-star-rate
