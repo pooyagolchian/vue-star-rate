@@ -22,6 +22,7 @@
 import "vue-awesome/icons/star";
 import Icon from "vue-awesome/components/Icon";
 export default {
+  name: "VueStarRate",
   props: {
     grade: {
       type: Number,
@@ -45,7 +46,6 @@ export default {
     },
   },
   components: { "v-icon": Icon },
-  name: "VueStarRate",
   data() {
     return {
       stars: this.grade || 0,

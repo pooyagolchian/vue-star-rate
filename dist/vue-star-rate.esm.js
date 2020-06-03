@@ -3,6 +3,7 @@ import Icon from 'vue-awesome/components/Icon';
 
 //
 var script = {
+  name: "VueStarRate",
   props: {
     grade: {
       type: Number,
@@ -12,6 +13,14 @@ var script = {
       type: Number,
       default: 5
     },
+    starHeight: {
+      type: Number,
+      default: 35
+    },
+    starWidth: {
+      type: Number,
+      default: 35
+    },
     hasCounter: {
       type: Boolean,
       default: true
@@ -20,7 +29,6 @@ var script = {
   components: {
     "v-icon": Icon
   },
-  name: "VueStarRate",
 
   data() {
     return {
@@ -184,7 +192,7 @@ var __vue_render__ = function () {
   var _c = _vm._self._c || _h;
 
   return _c('div', {
-    staticClass: "rating"
+    staticClass: "vue-star-rate"
   }, [_c('ul', {
     staticClass: "list"
   }, _vm._l(_vm.maxStars, function (star, index) {
@@ -200,6 +208,10 @@ var __vue_render__ = function () {
         }
       }
     }, [_c('v-icon', {
+      style: {
+        height: _vm.starHeight + "px",
+        width: _vm.starWidth + "px"
+      },
       attrs: {
         "name": star <= _vm.stars ? 'star' : 'star'
       }
@@ -212,8 +224,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-889f3d16_0", {
-    source: ".rating[data-v-889f3d16]{font-size:14px;color:#a7a8a8}.list[data-v-889f3d16]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-889f3d16]{color:#f3d23e}.star[data-v-889f3d16]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-889f3d16]:not(.active){color:inherit}.active[data-v-889f3d16]{color:#f3d23e}",
+  inject("data-v-524b375f_0", {
+    source: ".vue-star-rate[data-v-524b375f]{font-size:14px;color:#a7a8a8}.list[data-v-524b375f]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-524b375f]{color:#f3d23e}.star[data-v-524b375f]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-524b375f]:not(.active){color:inherit}.active[data-v-524b375f]{color:#f3d23e}",
     map: undefined,
     media: undefined
   });
@@ -221,7 +233,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-889f3d16";
+const __vue_scope_id__ = "data-v-524b375f";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
