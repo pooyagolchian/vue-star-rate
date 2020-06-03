@@ -2,24 +2,29 @@
   <div class="vue-star-rate">
     <ul class="list">
       <li
-        v-for="(star, index) in maxStars"
-        :class="{ active: star <= stars }"
-        class="star"
+        v-for="(icon, index) in maxIcon"
+        :class="{ active: icon <= stars }"
         :key="index"
-        @click="rate(star)"
+        :style="styleObject"
+        class="star"
+        @click="rate(icon)"
       >
         <v-icon
-          :style="{ height: `${starHeight}px`, width: `${starWidth}px` }"
-          :name="star <= stars ? 'star' : 'star'"
+          :style="{
+            height: `${iconHeight}px`,
+            width: `${iconWidth}px`,
+            padding: `0px 2px`,
+          }"
+          :name="icon <= stars ? iconShape : iconShape"
         />
       </li>
     </ul>
-    <span v-if="hasCounter">{{ stars }} of {{ maxStars }}</span>
+    <span v-if="hasCounter">{{ stars }} of {{ maxIcon }}</span>
   </div>
 </template>
 
 <script>
-import "vue-awesome/icons/star";
+import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon";
 export default {
   name: "VueStarRate",
@@ -29,21 +34,33 @@ export default {
       default: 3,
       required: false,
     },
-    maxStars: {
+    maxIcon: {
       type: Number,
       default: 5,
     },
-    starHeight: {
+    iconHeight: {
       type: Number,
-      default: 35,
+      default: 25,
     },
-    starWidth: {
+    iconWidth: {
       type: Number,
-      default: 35,
+      default: 25,
     },
     hasCounter: {
       type: Boolean,
       default: true,
+    },
+    iconColor: {
+      type: String,
+      default: "#f3d23e",
+    },
+    iconColorHover: {
+      type: String,
+      default: "#f3d23e",
+    },
+    iconShape: {
+      type: String,
+      default: "star",
     },
   },
   components: { "v-icon": Icon },
@@ -54,13 +71,19 @@ export default {
   },
   computed: {
     counter() {
-      return `${this.stars} of ${this.maxStars}`;
+      return `${this.stars} of ${this.maxIcon}`;
+    },
+    styleObject() {
+      return {
+        "--icon-color": this.iconColor,
+        "--icon-color-hover": this.iconColorHover,
+      };
     },
   },
   methods: {
-    rate(star) {
-      if (Number(star) && star <= this.maxStars && star >= 0) {
-        this.stars = this.stars === star ? star - 1 : star;
+    rate(icon) {
+      if (Number(icon) && icon <= this.maxIcon && icon >= 0) {
+        this.stars = this.stars === icon ? icon - 1 : icon;
       }
     },
   },
@@ -77,7 +100,7 @@ export default {
   list-style-type: none;
 }
 .list:hover .star {
-  color: #f3d23e;
+  color: var(--icon-color);
 }
 .star {
   display: inline-block;
@@ -87,6 +110,6 @@ export default {
   color: inherit;
 }
 .active {
-  color: #f3d23e;
+  color: var(--icon-color-hover);
 }
 </style>
