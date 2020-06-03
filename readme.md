@@ -4,13 +4,16 @@ It's easy to used Vue.js component for star rating!
 
 1. This package is fully customized (Shape, Color, Rate, ...)
 2. I'm Using [Vue font awesome][1]
+3. You can change your rating shapw with free and open source font awesome project
 
 ### Install package
 
-`npm i vue-js-star-rating --save`
-`yarn add vue-js-star-rating --save`
+1. Install with npm `npm i vue-js-star-rating --save`
+2. Install with yarn `yarn add vue-js-star-rating --save`
 
 ### Code sample
+
+After import and registered component in your Vue.js application:
 
 ```
 <vue-star-rate
