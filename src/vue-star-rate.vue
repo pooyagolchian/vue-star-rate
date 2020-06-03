@@ -29,7 +29,7 @@ import Icon from "vue-awesome/components/Icon";
 export default {
   name: "VueStarRate",
   props: {
-    grade: {
+    rateRange: {
       type: Number,
       default: 3,
       required: false,
@@ -66,7 +66,7 @@ export default {
   components: { "v-icon": Icon },
   data() {
     return {
-      stars: this.grade || 0,
+      stars: this.rateRange || 0,
     };
   },
   computed: {

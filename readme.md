@@ -1,4 +1,4 @@
-### Vue.js star rate component
+### Vue.js fontawesome icon rate component
 
 It's easy to used Vue.js component for star rating!
 
@@ -17,10 +17,10 @@ After import and registered component in your Vue.js application:
 
 ```
 <vue-star-rate
-:grad="3"
-:maxStars="5"
-:starHeight="25"
-:starWidth="25"
+:rateRange="3"
+:maxIcon="5"
+:iconHeight="25"
+:iconWidth="25"
 :hasCounter="false"
 :iconColor="red"
 :iconColorHover="blue"
@@ -32,8 +32,8 @@ After import and registered component in your Vue.js application:
 
 | Attribute      |             Description             |    Type | Default |
 | -------------- | :---------------------------------: | ------: | ------- |
-| grade          |        Number of active star        |  Number | 3       |
-| macIcon        |           Number of stars           |  Number | 5       |
+| rateRange      |        Number of active icon        |  Number | 3       |
+| maxIcon        |           Number of icons           |  Number | 5       |
 | iconHeight     |             Icon height             |  Number | 45      |
 | iconWidth      |             Icon width              |  Number | 45      |
 | hasCounter     |         Counter like 3 of 5         | Booleab | true    |
