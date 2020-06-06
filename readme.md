@@ -15,17 +15,29 @@ It's easy to use Vue.js component for star rating!
 
 After import and registering component in your Vue.js application:
 
-```
-<vue-star-rate
-:rateRange="3"
-:maxIcon="5"
-:iconHeight="25"
-:iconWidth="25"
-:hasCounter="false"
-:iconColor="red"
-:iconColorHover="blue"
-:iconShape= "heart"
-></vue-star-rate>
+```javascript
+<template>
+  <div>
+    <vue-star-rate
+      :rateRange="3"
+      :maxIcon="5"
+      :iconHeight="22"
+      :iconWidth="22"
+      :hasCounter="true"
+      iconColor="#FFFF99"
+      iconColorHover="#FFFF99"
+      iconShape="star"
+    ></vue-star-rate>
+  </div>
+</template>
+
+<script>
+import vueStarRate from "vue-js-star-rating";
+export default {
+  components: { vueStarRate }
+};
+</script>
+
 ```
 
 ## Documents
