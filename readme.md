@@ -2,9 +2,9 @@
 
 It's easy to use Vue.js component for star rating!
 
-1. This package is fully customized (Shape, Color, Rate, ...)
-2. I'm Using [Vue font awesome][1]
-3. You can change your rating shape with free and open source font awesome project
+1. This package is fully customized (Shape, Color, Rate, ...).
+2. I used [Vue font awesome][1].
+3. You can change your rating shape with free and open source font awesome project.
 
 ### Install package
 
@@ -52,6 +52,7 @@ export default {
 | iconColor      |            Color of icon            |  String | #f3d23e |
 | iconColorHover |         Color of hover icon         |  String | #f3d23e |
 | iconShape      | Shape of icon like star, heart, etc |  String | star    |
+| ratingSet      |      Event after click on icon      |   Event | null    |
 
 [1]: https://www.npmjs.com/package/vue-awesome
 
