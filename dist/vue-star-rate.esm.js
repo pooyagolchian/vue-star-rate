@@ -66,6 +66,7 @@ var script = {
     rate(icon) {
       if (Number(icon) && icon <= this.maxIcon && icon >= 0) {
         this.stars = this.stars === icon ? icon - 1 : icon;
+        this.$emit('ratingSet', this.stars);
       }
     }
 
@@ -246,8 +247,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-c52c1240_0", {
-    source: ".vue-star-rate[data-v-c52c1240]{font-size:14px;color:#a7a8a8}.list[data-v-c52c1240]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-c52c1240]{color:var(--icon-color)}.star[data-v-c52c1240]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-c52c1240]:not(.active){color:inherit}.active[data-v-c52c1240]{color:var(--icon-color-hover)}",
+  inject("data-v-0dc02aaa_0", {
+    source: ".vue-star-rate[data-v-0dc02aaa]{font-size:14px;color:#a7a8a8}.list[data-v-0dc02aaa]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-0dc02aaa]{color:var(--icon-color)}.star[data-v-0dc02aaa]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-0dc02aaa]:not(.active){color:inherit}.active[data-v-0dc02aaa]{color:var(--icon-color-hover)}",
     map: undefined,
     media: undefined
   });
@@ -255,7 +256,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-c52c1240";
+const __vue_scope_id__ = "data-v-0dc02aaa";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -285,4 +286,4 @@ __vue_component__.install = install; // Export component by default
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';
 // export const RollupDemoDirective = component;
 
-export default __vue_component__;
+export { __vue_component__ as default };

@@ -1,4 +1,4 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:true});function _interopDefault(e){return(e&&(typeof e==='object')&&'default'in e)?e['default']:e}require('vue-awesome/icons');var Icon=_interopDefault(require('vue-awesome/components/Icon'));//
+'use strict';Object.defineProperty(exports,'__esModule',{value:true});require('vue-awesome/icons');var Icon=require('vue-awesome/components/Icon');function _interopDefaultLegacy(e){return e&&typeof e==='object'&&'default'in e?e:{'default':e}}var Icon__default=/*#__PURE__*/_interopDefaultLegacy(Icon);//
 var script = {
   name: "VueStarRate",
   props: {
@@ -37,7 +37,7 @@ var script = {
     }
   },
   components: {
-    "v-icon": Icon
+    "v-icon": Icon__default["default"]
   },
   data: function data() {
     return {
@@ -59,6 +59,7 @@ var script = {
     rate: function rate(icon) {
       if (Number(icon) && icon <= this.maxIcon && icon >= 0) {
         this.stars = this.stars === icon ? icon - 1 : icon;
+        this.$emit('ratingSet', this.stars);
       }
     }
   }
@@ -152,7 +153,7 @@ var script = {
     return (id, style) => addStyle(id, style, context);
 }
 function addStyle(id, css, context) {
-    const group =  css.media || 'default' ;
+    const group = css.media || 'default' ;
     const style = context._styles[group] || (context._styles[group] = { ids: [], css: '' });
     if (!style.ids.includes(id)) {
         style.media = css.media;
@@ -188,10 +189,10 @@ var __vue_render__ = function __vue_render__() {
 
   return _c('div', {
     staticClass: "vue-star-rate"
-  }, [_vm._ssrNode("<ul class=\"list\" data-v-c52c1240>", "</ul>", _vm._l(_vm.maxIcon, function (icon, index) {
+  }, [_vm._ssrNode("<ul class=\"list\" data-v-0dc02aaa>", "</ul>", _vm._l(_vm.maxIcon, function (icon, index) {
     return _vm._ssrNode("<li" + _vm._ssrClass("star", {
       active: icon <= _vm.stars
-    }) + _vm._ssrStyle(null, _vm.styleObject, null) + " data-v-c52c1240>", "</li>", [_c('v-icon', {
+    }) + _vm._ssrStyle(null, _vm.styleObject, null) + " data-v-0dc02aaa>", "</li>", [_c('v-icon', {
       style: {
         height: _vm.iconHeight + "px",
         width: _vm.iconWidth + "px",
@@ -201,7 +202,7 @@ var __vue_render__ = function __vue_render__() {
         "name": icon <= _vm.stars ? _vm.iconShape : _vm.iconShape
       }
     })], 1);
-  }), 0), _vm._ssrNode(" " + (_vm.hasCounter ? "<span data-v-c52c1240>" + _vm._ssrEscape(_vm._s(_vm.stars) + " of " + _vm._s(_vm.maxIcon)) + "</span>" : "<!---->"))], 2);
+  }), 0), _vm._ssrNode(" " + (_vm.hasCounter ? "<span data-v-0dc02aaa>" + _vm._ssrEscape(_vm._s(_vm.stars) + " of " + _vm._s(_vm.maxIcon)) + "</span>" : "<!---->"))], 2);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -209,8 +210,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-c52c1240_0", {
-    source: ".vue-star-rate[data-v-c52c1240]{font-size:14px;color:#a7a8a8}.list[data-v-c52c1240]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-c52c1240]{color:var(--icon-color)}.star[data-v-c52c1240]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-c52c1240]:not(.active){color:inherit}.active[data-v-c52c1240]{color:var(--icon-color-hover)}",
+  inject("data-v-0dc02aaa_0", {
+    source: ".vue-star-rate[data-v-0dc02aaa]{font-size:14px;color:#a7a8a8}.list[data-v-0dc02aaa]{margin:0 0 5px 0;padding:0;list-style-type:none}.list:hover .star[data-v-0dc02aaa]{color:var(--icon-color)}.star[data-v-0dc02aaa]{display:inline-block;cursor:pointer}.star:hover~.star[data-v-0dc02aaa]:not(.active){color:inherit}.active[data-v-0dc02aaa]{color:var(--icon-color-hover)}",
     map: undefined,
     media: undefined
   });
@@ -218,10 +219,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-c52c1240";
+var __vue_scope_id__ = "data-v-0dc02aaa";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-c52c1240";
+var __vue_module_identifier__ = "data-v-0dc02aaa";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
@@ -265,4 +266,4 @@ var plugin = {
 __vue_component__.install = install; // Export component by default
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';
 // export const RollupDemoDirective = component;
-exports.default=__vue_component__;
+exports["default"]=__vue_component__;
