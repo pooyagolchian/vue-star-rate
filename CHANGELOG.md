@@ -1,3 +1,8 @@
+1.1.2
+- Add event
+- Update readme
+- Merge event PR
+
 1.1.1
 
 - Update readme
