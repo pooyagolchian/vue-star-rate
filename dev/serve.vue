@@ -6,12 +6,17 @@ export default Vue.extend({
   name: 'ServeDev',
   components: {
     VueStarRate
+  },
+  methods: {
+    rated(rating) {
+      console.log("You rated: " + rating)
+    }
   }
 });
 </script>
 
 <template>
   <div id="app">
-    <vue-star-rate />
+    <vue-star-rate v-on:ratingSet="rated" />
   </div>
 </template>

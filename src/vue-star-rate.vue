@@ -84,6 +84,7 @@ export default {
     rate(icon) {
       if (Number(icon) && icon <= this.maxIcon && icon >= 0) {
         this.stars = this.stars === icon ? icon - 1 : icon;
+        this.$emit('ratingSet', this.stars);
       }
     },
   },

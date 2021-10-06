@@ -54,3 +54,29 @@ export default {
 | iconShape      | Shape of icon like star, heart, etc |  String | star    |
 
 [1]: https://www.npmjs.com/package/vue-awesome
+
+### Events
+
+When a star is clicked, an event is emited called `ratingSet`. You can listen for
+this event to get the value of the rating.
+
+```javascript
+<template>
+  <div>
+    <vue-star-rate v-on:ratingSet="myRatingMethod"></vue-star-rate>
+  </div>
+</template>
+
+<script>
+import vueStarRate from "vue-js-star-rating";
+export default {
+  components: { vueStarRate },
+  methods: {
+    myRatingMethod(rating) {
+      console.log("The selected rating is " + rating);
+    }
+  }
+};
+</script>
+
+```
