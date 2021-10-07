@@ -5,6 +5,8 @@ It's easy to use Vue.js component for star rating!
 1. This package is fully customized (Shape, Color, Rate, ...).
 2. I used [Vue font awesome][1].
 3. You can change your rating shape with free and open source font awesome project.
+---
+![vue-js-star-rating](vue-js-star-rating.gif)
 
 ### Install package
 
@@ -15,7 +17,7 @@ It's easy to use Vue.js component for star rating!
 
 After import and registering component in your Vue.js application:
 
-```javascript
+```vue
 <template>
   <div>
     <vue-star-rate
@@ -48,7 +50,7 @@ export default {
 | maxIcon        |           Number of icons           |  Number | 5       |
 | iconHeight     |             Icon height             |  Number | 45      |
 | iconWidth      |             Icon width              |  Number | 45      |
-| hasCounter     |         Counter like 3 of 5         | Booleab | true    |
+| hasCounter     |         Counter like 3 of 5         | Boolean | true    |
 | iconColor      |            Color of icon            |  String | #f3d23e |
 | iconColorHover |         Color of hover icon         |  String | #f3d23e |
 | iconShape      | Shape of icon like star, heart, etc |  String | star    |
@@ -58,10 +60,10 @@ export default {
 
 ### Events
 
-When a star is clicked, an event is emited called `ratingSet`. You can listen for
+When a star is clicked, an event is emitted called `ratingSet`. You can listen for
 this event to get the value of the rating.
 
-```javascript
+```vue
 <template>
   <div>
     <vue-star-rate v-on:ratingSet="myRatingMethod"></vue-star-rate>
