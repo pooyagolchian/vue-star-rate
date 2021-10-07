@@ -1,3 +1,9 @@
+1.1.5
+- Update readme
+- Add Github action CI
+- Add gif
+
+
 1.1.2
 - Add event
 - Update readme
