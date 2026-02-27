@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="https://pooyagolchian.github.io/vue-star-rate/favicon.svg" width="80" alt="Vue Star Rate">
-</p>
-
-<h1 align="center">Vue Star Rate</h1>
+<h1 align="center">⭐ Vue Star Rate</h1>
 
 <p align="center">
   <strong>A highly customizable, accessible star rating component for Vue</strong>
