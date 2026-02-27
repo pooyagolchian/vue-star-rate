@@ -59,7 +59,7 @@
     "@vue/test-utils": "^2.4.3",
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
-    "happy-dom": "^12.10.3",
+    "happy-dom": "^20.0.2",
     "lucide-vue-next": "^0.303.0",
     "typescript": "~5.3.3",
     "vite": "^5.0.10",
