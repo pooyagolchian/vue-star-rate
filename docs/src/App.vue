@@ -256,7 +256,7 @@ const scrollToSection = (href: string) => {
         <nav class="fixed top-0 left-0 right-0 z-50 border-b border-noir-900/50 bg-black/80 backdrop-blur-lg">
             <div class="mx-auto flex h-14 md:h-16 max-w-6xl items-center justify-between px-4 md:px-6">
                 <div class="flex items-center gap-2 md:gap-3">
-                    <Star class="h-5 w-5 md:h-6 md:w-6 text-white" :fill="'currentColor'" />
+                    <span class="text-xl md:text-2xl">⭐</span>
                     <span class="text-base md:text-lg font-semibold tracking-tight">Vue Star Rate</span>
                 </div>
                 
@@ -699,7 +699,7 @@ const scrollToSection = (href: string) => {
             <div class="mx-auto max-w-6xl">
                 <div class="flex flex-col items-center gap-6 md:flex-row md:justify-between">
                     <div class="flex items-center gap-2 md:gap-3">
-                        <Star class="h-4 w-4 md:h-5 md:w-5 text-white" :fill="'currentColor'" />
+                        <span class="text-lg md:text-xl">⭐</span>
                         <span class="text-sm md:text-base font-medium">Vue Star Rate</span>
                     </div>
 
@@ -711,10 +711,6 @@ const scrollToSection = (href: string) => {
                         <a href="https://www.npmjs.com/package/vue-js-star-rating" target="_blank"
                             class="transition-colors hover:text-white">
                             npm
-                        </a>
-                        <a href="/llms.txt" target="_blank"
-                            class="transition-colors hover:text-white">
-                            llms.txt
                         </a>
                         <a href="https://pooya.blog" target="_blank" class="transition-colors hover:text-white">
                             Author

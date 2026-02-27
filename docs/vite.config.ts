@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       'vue-js-star-rating': path.resolve(__dirname, '../src'),
+      'vue-star-rate': path.resolve(__dirname, '../src'),
     },
   },
   build: {
