@@ -31,18 +31,18 @@
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 🎯 **Half-star ratings** | Support for precise 0.5 increment ratings |
-| 📐 **Size presets** | Built-in `xs`, `sm`, `md`, `lg`, `xl` sizes |
-| 🎨 **Custom colors** | Fully customizable empty/filled/hover colors |
-| ⌨️ **Keyboard navigation** | Full accessibility with arrow keys |
-| 🔒 **Read-only mode** | Display-only ratings for reviews |
-| 📱 **Responsive** | Mobile-first, works on all screen sizes |
-| 🔷 **TypeScript** | Full type definitions included |
-| ⚡ **Lightweight** | Zero dependencies, tiny bundle |
-| 🌐 **RTL Support** | Right-to-left layout compatibility |
-| ♿ **Accessible** | WCAG 2.1 compliant |
+| Feature                    | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| 🎯 **Half-star ratings**   | Support for precise 0.5 increment ratings    |
+| 📐 **Size presets**        | Built-in `xs`, `sm`, `md`, `lg`, `xl` sizes  |
+| 🎨 **Custom colors**       | Fully customizable empty/filled/hover colors |
+| ⌨️ **Keyboard navigation** | Full accessibility with arrow keys           |
+| 🔒 **Read-only mode**      | Display-only ratings for reviews             |
+| 📱 **Responsive**          | Mobile-first, works on all screen sizes      |
+| 🔷 **TypeScript**          | Full type definitions included               |
+| ⚡ **Lightweight**         | Zero dependencies, tiny bundle               |
+| 🌐 **RTL Support**         | Right-to-left layout compatibility           |
+| ♿ **Accessible**          | WCAG 2.1 compliant                           |
 
 ---
 
@@ -93,11 +93,7 @@ const rating = ref(0);
 
 ```vue
 <template>
-  <star-rate
-    :value="rating"
-    @input="rating = $event"
-    :star-count="5"
-  />
+  <star-rate :value="rating" @input="rating = $event" :star-count="5" />
 </template>
 
 <script>
@@ -107,7 +103,7 @@ export default {
   components: { StarRate },
   data() {
     return { rating: 0 };
-  }
+  },
 };
 </script>
 ```
@@ -119,11 +115,7 @@ export default {
 ### Half-Star Ratings
 
 ```vue
-<VueStarRate 
-  v-model="rating" 
-  :allow-half="true" 
-  :show-counter="true" 
-/>
+<VueStarRate v-model="rating" :allow-half="true" :show-counter="true" />
 ```
 
 ### Size Presets
@@ -149,7 +141,7 @@ export default {
     empty: '#e5e7eb',
     filled: '#fbbf24',
     hover: '#fcd34d',
-    half: '#fbbf24'
+    half: '#fbbf24',
   }"
 />
 ```
@@ -157,11 +149,7 @@ export default {
 ### Read-only Display
 
 ```vue
-<VueStarRate 
-  v-model="rating" 
-  :readonly="true" 
-  :show-counter="true"
-/>
+<VueStarRate v-model="rating" :readonly="true" :show-counter="true" />
 ```
 
 ### Custom Star Count
@@ -174,16 +162,10 @@ export default {
 
 ```vue
 <!-- Show counter -->
-<VueStarRate 
-  v-model="rating" 
-  :show-counter="true" 
-/>
+<VueStarRate v-model="rating" :show-counter="true" />
 
 <!-- Show tooltips on hover -->
-<VueStarRate 
-  v-model="rating" 
-  :show-tooltip="true"
-/>
+<VueStarRate v-model="rating" :show-tooltip="true" />
 ```
 
 ### Full Configuration
@@ -201,12 +183,12 @@ export default {
     empty: '#27272a',
     filled: '#fbbf24',
     hover: '#fcd34d',
-    half: '#fbbf24'
+    half: '#fbbf24',
   }"
   :animation="{
     enabled: true,
     duration: 200,
-    scale: 1.15
+    scale: 1.15,
   }"
   @change="(val, old) => console.log(val, old)"
   @hover="(val) => console.log('hover:', val)"
@@ -217,18 +199,18 @@ export default {
 
 ## 📋 Vue 3 Props API
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `modelValue` | `number` | `0` | Rating value (v-model) |
-| `maxStars` | `number` | `5` | Maximum number of stars |
-| `allowHalf` | `boolean` | `false` | Enable half-star ratings |
-| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Size preset |
-| `iconSize` | `number \| { width, height }` | `auto` | Custom pixel size |
-| `colors` | `object` | `{...}` | Color configuration |
-| `readonly` | `boolean` | `false` | Disable user interaction |
-| `showCounter` | `boolean` | `false` | Show rating number |
-| `showTooltip` | `boolean` | `false` | Show hover tooltips |
-| `animation` | `object` | `{...}` | Animation configuration |
+| Prop          | Type                                   | Default | Description              |
+| ------------- | -------------------------------------- | ------- | ------------------------ |
+| `modelValue`  | `number`                               | `0`     | Rating value (v-model)   |
+| `maxStars`    | `number`                               | `5`     | Maximum number of stars  |
+| `allowHalf`   | `boolean`                              | `false` | Enable half-star ratings |
+| `size`        | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'`  | Size preset              |
+| `iconSize`    | `number \| { width, height }`          | `auto`  | Custom pixel size        |
+| `colors`      | `object`                               | `{...}` | Color configuration      |
+| `readonly`    | `boolean`                              | `false` | Disable user interaction |
+| `showCounter` | `boolean`                              | `false` | Show rating number       |
+| `showTooltip` | `boolean`                              | `false` | Show hover tooltips      |
+| `animation`   | `object`                               | `{...}` | Animation configuration  |
 
 ### Colors Object
 
@@ -255,24 +237,24 @@ export default {
 
 ## 📡 Events
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `update:modelValue` | `number` | Emitted when rating changes |
-| `change` | `(value, oldValue)` | Emitted with previous value |
-| `hover` | `number \| null` | Emitted on star hover/leave |
+| Event               | Payload             | Description                 |
+| ------------------- | ------------------- | --------------------------- |
+| `update:modelValue` | `number`            | Emitted when rating changes |
+| `change`            | `(value, oldValue)` | Emitted with previous value |
+| `hover`             | `number \| null`    | Emitted on star hover/leave |
 
 ---
 
 ## ⌨️ Keyboard Navigation
 
-| Key | Action |
-|-----|--------|
-| `→` `↑` | Increase rating |
-| `←` `↓` | Decrease rating |
-| `Home` | Set to minimum (0) |
-| `End` | Set to maximum |
-| `1-9` | Jump to specific value |
-| `0` | Reset to zero |
+| Key     | Action                 |
+| ------- | ---------------------- |
+| `→` `↑` | Increase rating        |
+| `←` `↓` | Decrease rating        |
+| `Home`  | Set to minimum (0)     |
+| `End`   | Set to maximum         |
+| `1-9`   | Jump to specific value |
+| `0`     | Reset to zero          |
 
 ---
 
@@ -280,13 +262,13 @@ export default {
 
 ### Breaking Changes
 
-| Vue 2 (v1.x) | Vue 3 (v2.x) |
-|--------------|--------------|
-| `:value` + `@input` | `v-model` |
-| `:star-count` | `:max-stars` |
-| `:half-star` | `:allow-half` |
-| `activeColor` / `inactiveColor` | `:colors` object |
-| Component: `star-rate` | Component: `VueStarRate` |
+| Vue 2 (v1.x)                    | Vue 3 (v2.x)             |
+| ------------------------------- | ------------------------ |
+| `:value` + `@input`             | `v-model`                |
+| `:star-count`                   | `:max-stars`             |
+| `:half-star`                    | `:allow-half`            |
+| `activeColor` / `inactiveColor` | `:colors` object         |
+| Component: `star-rate`          | Component: `VueStarRate` |
 
 ### Migration Example
 
@@ -308,7 +290,7 @@ export default {
   :allow-half="true"
   :colors="{
     filled: '#fbbf24',
-    empty: '#d1d5db'
+    empty: '#d1d5db',
   }"
 />
 ```
