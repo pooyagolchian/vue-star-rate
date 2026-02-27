@@ -33,7 +33,10 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx --fix",
     "typecheck": "vue-tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs:dev": "cd docs && npx vite",
+    "docs:build": "cd docs && npx vite build",
+    "docs:preview": "cd docs && npx vite preview"
   },
   "dependencies": {},
   "peerDependencies": {

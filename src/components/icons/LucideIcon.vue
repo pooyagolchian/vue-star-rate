@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Star } from 'lucide-vue-next';
 /**
  * Lucide Icon Provider Component
  * Renders star icons using Lucide Vue icons
  */
 import { computed } from 'vue';
+import { Star } from 'lucide-vue-next';
 import type { IconSize } from '../../types';
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
     color?: string;
     emptyColor?: string;
     strokeWidth?: number;
+    index?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
     color: '#fbbf24',
     emptyColor: '#d1d5db',
     strokeWidth: 2,
+    index: 0,
 });
 
 const iconSize = computed(() => {
@@ -38,16 +40,19 @@ const currentColor = computed(() => {
 
 const fillColor = computed(() => {
     if (props.filled) return props.color;
-    if (props.half) return `url(#half-gradient-${props.color.replace('#', '')})`;
+    if (props.half) return `url(#half-gradient-lucide-${props.index})`;
     return 'none';
 });
+
+// Stable gradient ID based on index
+const gradientId = computed(() => `half-gradient-lucide-${props.index}`);
 </script>
 
 <template>
     <span class="lucide-icon-wrapper">
         <svg v-if="half" :width="0" :height="0" style="position: absolute; visibility: hidden;">
             <defs>
-                <linearGradient :id="`half-gradient-${color.replace('#', '')}`">
+                <linearGradient :id="gradientId">
                     <stop offset="50%" :stop-color="color" />
                     <stop offset="50%" stop-color="transparent" />
                 </linearGradient>

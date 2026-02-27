@@ -12,6 +12,7 @@ interface Props {
     size?: number | IconSize;
     color?: string;
     emptyColor?: string;
+    index?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
     size: 24,
     color: '#fbbf24',
     emptyColor: '#d1d5db',
+    index: 0,
 });
 
 const iconSize = computed(() => {
@@ -34,13 +36,12 @@ const strokeColor = computed(() => {
 });
 
 const fillColor = computed(() => {
-    if (props.half) return `url(#half-gradient)`;
+    if (props.half) return `url(#half-gradient-${props.index})`;
     return props.filled ? props.color : 'none';
 });
 
-const uniqueId = computed(() => {
-    return `star-${Math.random().toString(36).substr(2, 9)}`;
-});
+// Stable gradient ID based on index
+const gradientId = computed(() => `half-gradient-${props.index}`);
 </script>
 
 <template>
@@ -48,14 +49,14 @@ const uniqueId = computed(() => {
         <svg :width="iconSize.width" :height="iconSize.height" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <defs v-if="half">
-                <linearGradient :id="`half-gradient-${uniqueId}`">
+                <linearGradient :id="gradientId">
                     <stop offset="50%" :stop-color="color" />
                     <stop offset="50%" stop-color="transparent" />
                 </linearGradient>
             </defs>
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
                 :stroke="strokeColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                :fill="half ? `url(#half-gradient-${uniqueId})` : fillColor" />
+                :fill="fillColor" />
         </svg>
     </span>
 </template>

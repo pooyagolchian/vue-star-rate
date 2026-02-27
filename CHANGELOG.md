@@ -1,15 +1,16 @@
 1.1.5
+
 - Update readme
 - Add Github action CI
 - Add gif
 
+  1.1.2
 
-1.1.2
 - Add event
 - Update readme
 - Merge event PR
 
-1.1.1
+  1.1.1
 
 - Update readme
 - Test package with vue-cli2,3

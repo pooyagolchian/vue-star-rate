@@ -148,11 +148,18 @@ export function useStarRating(
 		emit("hover", null);
 	};
 
+	// Calculate the step increment based on allowHalf and step prop
+	const getStepIncrement = (): number => {
+		if (allowHalf) return 0.5;
+		return step;
+	};
+
 	// Handle keyboard navigation
 	const handleKeyDown = (event: KeyboardEvent): void => {
 		if (readonly || disabled) return;
 
 		const { key } = event;
+		const stepIncrement = getStepIncrement();
 		let newValue = internalRating.value;
 
 		switch (key) {
@@ -161,7 +168,7 @@ export function useStarRating(
 				event.preventDefault();
 				newValue = Math.min(
 					maxStars,
-					internalRating.value + (allowHalf ? 0.5 : 1),
+					internalRating.value + stepIncrement,
 				);
 				break;
 			case "ArrowLeft":
@@ -169,7 +176,7 @@ export function useStarRating(
 				event.preventDefault();
 				newValue = Math.max(
 					minRating,
-					internalRating.value - (allowHalf ? 0.5 : 1),
+					internalRating.value - stepIncrement,
 				);
 				break;
 			case "Home":
@@ -201,13 +208,16 @@ export function useStarRating(
 				break;
 		}
 
-		if (newValue !== internalRating.value) {
+		// Validate the new value before applying
+		const validatedValue = validateRating(newValue);
+		if (validatedValue !== internalRating.value) {
 			const previousValue = internalRating.value;
-			internalRating.value = newValue;
-			emit("update:modelValue", newValue);
-			emit("change", newValue, previousValue);
+			internalRating.value = validatedValue;
+			emit("update:modelValue", validatedValue);
+			emit("change", validatedValue, previousValue);
 		}
 	};
+
 
 	// Reset to initial value
 	const reset = (): void => {

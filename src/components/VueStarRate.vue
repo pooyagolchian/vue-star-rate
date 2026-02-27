@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<StarRateProps>(), {
     showCounter: false,
     counterTemplate: '{value} / {max}',
     iconProvider: 'custom',
-    iconSize: 24,
+    iconSize: undefined,
     gap: 4,
     showTooltip: false,
     allowReset: true,
@@ -207,9 +207,11 @@ const onStarMouseMove = (starValue: number, event: MouseEvent): void => {
     handleMouseEnter(value);
 };
 
-// Clear rating
+// Clear rating - respects allowReset prop
 const clearRating = (): void => {
-    setRating(props.minRating);
+    if (props.allowReset || props.clearable) {
+        setRating(props.minRating);
+    }
 };
 
 // Focus management
@@ -274,7 +276,7 @@ const cssVars = computed(() => ({
                 <LucideIcon v-if="iconProvider === 'lucide'"
                     :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
                     :size="computedIconSize" :color="getIconColor(star.filled, star.half)"
-                    :empty-color="mergedColors.empty" />
+                    :empty-color="mergedColors.empty" :index="star.index" />
 
                 <!-- FontAwesome Icons -->
                 <FontAwesomeIcon v-else-if="iconProvider === 'fontawesome'"
@@ -291,7 +293,8 @@ const cssVars = computed(() => ({
                 <!-- Default SVG Icon -->
                 <SvgIcon v-else :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
                     :size="computedIconSize" :color="getIconColor(star.filled, star.half)"
-                    :empty-color="mergedColors.empty" />
+                    :empty-color="mergedColors.empty" :index="star.index" />
+
             </button>
         </div>
 
