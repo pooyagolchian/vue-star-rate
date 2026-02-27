@@ -3,21 +3,30 @@ import {
     Accessibility,
     ArrowRight,
     Check,
+    ChevronDown,
+    Clipboard,
+    Code2,
     ExternalLink,
     Github,
     Globe,
     Keyboard,
+    Menu,
     Package,
     Palette,
+    Smartphone,
     Star,
+    X,
     Zap
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import Badge from '@/components/ui/Badge.vue';
 import Button from '@/components/ui/Button.vue';
 import Card from '@/components/ui/Card.vue';
 import CodeBlock from '@/components/ui/CodeBlock.vue';
+
+// Mobile menu state
+const mobileMenuOpen = ref(false);
 
 // Demo states
 const basicRating = ref(3);
@@ -30,13 +39,35 @@ const sizeRatings = ref({
     xl: 4,
 });
 const colorRating = ref(4);
-const animationRating = ref(3);
+const customIconRating = ref(3);
+const tooltipRating = ref(2);
 const readonlyRating = ref(4);
+const animationRating = ref(3);
+const maxStarsRating = ref(7);
+const counterRating = ref(3.5);
+
+// Active version tab
+const activeVersionTab = ref<'vue3' | 'vue2'>('vue3');
+
+// Copy state
+const copiedCode = ref<string | null>(null);
+
+const copyToClipboard = async (code: string, id: string) => {
+    try {
+        await navigator.clipboard.writeText(code);
+        copiedCode.value = id;
+        setTimeout(() => {
+            copiedCode.value = null;
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+};
 
 // Code examples
 const installCode = `pnpm add vue-js-star-rating`;
 
-const basicUsage = `<script setup lang="ts">
+const vue3BasicUsage = `<script setup lang="ts">
 import { ref } from 'vue';
 import { VueStarRate } from 'vue-js-star-rating';
 import 'vue-js-star-rating/dist/style.css';
@@ -47,6 +78,28 @@ const rating = ref(0);
 <template>
   <VueStarRate v-model="rating" />
 </template>`;
+
+const vue2BasicUsage = `<template>
+  <star-rate
+    :value="rating"
+    @input="rating = $event"
+    :star-count="5"
+    :half-star="false"
+  />
+</template>
+
+<script>
+import StarRate from 'vue-star-rate';
+
+export default {
+  components: { StarRate },
+  data() {
+    return {
+      rating: 0
+    };
+  }
+};
+<\/script>`;
 
 const halfStarCode = `<VueStarRate 
   v-model="rating" 
@@ -59,7 +112,10 @@ const sizePresetsCode = `<!-- Size Presets: xs(16px), sm(20px), md(24px), lg(32p
 <VueStarRate v-model="rating" size="sm" />
 <VueStarRate v-model="rating" size="md" />
 <VueStarRate v-model="rating" size="lg" />
-<VueStarRate v-model="rating" size="xl" />`;
+<VueStarRate v-model="rating" size="xl" />
+
+<!-- Custom pixel size -->
+<VueStarRate v-model="rating" :icon-size="28" />`;
 
 const customColorsCode = `<VueStarRate
   v-model="rating"
@@ -67,32 +123,124 @@ const customColorsCode = `<VueStarRate
     empty: '#3f3f46',
     filled: '#ffffff',
     hover: '#a1a1aa',
+    half: '#71717a'
   }"
 />`;
 
+const readonlyCode = `<VueStarRate 
+  v-model="rating" 
+  :readonly="true" 
+  :show-counter="true"
+/>`;
+
+const maxStarsCode = `<VueStarRate 
+  v-model="rating" 
+  :max-stars="10" 
+/>`;
+
+const counterTooltipCode = `<!-- Show counter -->
+<VueStarRate 
+  v-model="rating" 
+  :show-counter="true" 
+  :allow-half="true"
+/>
+
+<!-- Show tooltips on hover -->
+<VueStarRate 
+  v-model="rating" 
+  :show-tooltip="true"
+/>`;
+
+const animationCode = `<VueStarRate
+  v-model="rating"
+  :animation="{
+    enabled: true,
+    duration: 200,
+    scale: 1.2
+  }"
+/>`;
+
+const fullExampleCode = `<script setup lang="ts">
+import { ref } from 'vue';
+import { VueStarRate } from 'vue-js-star-rating';
+import 'vue-js-star-rating/dist/style.css';
+
+const rating = ref(3.5);
+<\/script>
+
+<template>
+  <VueStarRate
+    v-model="rating"
+    :max-stars="5"
+    :allow-half="true"
+    :readonly="false"
+    :show-counter="true"
+    :show-tooltip="true"
+    size="lg"
+    :colors="{
+      empty: '#27272a',
+      filled: '#fbbf24',
+      hover: '#fcd34d',
+      half: '#fbbf24'
+    }"
+    :animation="{
+      enabled: true,
+      duration: 200,
+      scale: 1.15
+    }"
+    @change="(val, old) => console.log(val, old)"
+    @hover="(val) => console.log('hover:', val)"
+  />
+</template>`;
+
 // Features list
 const features = [
-    { icon: Star, title: 'Half-Star Support', desc: 'Precise ratings with half values' },
+    { icon: Star, title: 'Half-Star Support', desc: 'Precise ratings with 0.5 increments' },
     { icon: Palette, title: 'Customizable', desc: 'Colors, sizes, and animations' },
     { icon: Keyboard, title: 'Keyboard Navigation', desc: 'Full a11y keyboard support' },
     { icon: Zap, title: 'TypeScript', desc: 'Complete type definitions' },
     { icon: Globe, title: 'RTL Support', desc: 'Right-to-left layouts' },
     { icon: Accessibility, title: 'Accessible', desc: 'WCAG 2.1 compliant' },
+    { icon: Smartphone, title: 'Responsive', desc: 'Mobile-first design' },
+    { icon: Code2, title: 'Lightweight', desc: 'Zero dependencies' },
 ];
 
 // Props table
 const propsData = [
     { name: 'modelValue', type: 'number', default: '0', desc: 'Rating value (v-model)' },
-    { name: 'maxStars', type: 'number', default: '5', desc: 'Maximum stars' },
-    { name: 'allowHalf', type: 'boolean', default: 'false', desc: 'Enable half ratings' },
-    { name: 'size', type: 'string', default: "'md'", desc: 'xs | sm | md | lg | xl' },
-    { name: 'iconSize', type: 'number | object', default: 'auto', desc: 'Override size' },
-    { name: 'colors', type: 'object', default: '...', desc: 'Color configuration' },
-    { name: 'readonly', type: 'boolean', default: 'false', desc: 'Disable interaction' },
-    { name: 'showCounter', type: 'boolean', default: 'false', desc: 'Show rating counter' },
-    { name: 'showTooltip', type: 'boolean', default: 'false', desc: 'Show hover tooltips' },
-    { name: 'animation', type: 'object', default: '...', desc: 'Animation config' },
+    { name: 'maxStars', type: 'number', default: '5', desc: 'Maximum number of stars' },
+    { name: 'allowHalf', type: 'boolean', default: 'false', desc: 'Enable half-star ratings' },
+    { name: 'size', type: 'string', default: "'md'", desc: 'Size preset: xs | sm | md | lg | xl' },
+    { name: 'iconSize', type: 'number | object', default: 'auto', desc: 'Custom pixel size or {width, height}' },
+    { name: 'colors', type: 'object', default: '{...}', desc: 'Color configuration object' },
+    { name: 'readonly', type: 'boolean', default: 'false', desc: 'Disable user interaction' },
+    { name: 'showCounter', type: 'boolean', default: 'false', desc: 'Show rating number counter' },
+    { name: 'showTooltip', type: 'boolean', default: 'false', desc: 'Show tooltips on hover' },
+    { name: 'animation', type: 'object', default: '{...}', desc: 'Animation configuration' },
 ];
+
+// Events table
+const eventsData = [
+    { name: 'update:modelValue', payload: 'number', desc: 'Emitted when rating changes' },
+    { name: 'change', payload: '(value, oldValue)', desc: 'Emitted with previous value' },
+    { name: 'hover', payload: 'number | null', desc: 'Emitted on star hover/leave' },
+];
+
+// Navigation
+const navLinks = [
+    { href: '#features', label: 'Features' },
+    { href: '#installation', label: 'Installation' },
+    { href: '#examples', label: 'Examples' },
+    { href: '#api', label: 'API' },
+];
+
+const scrollToSection = (href: string) => {
+    mobileMenuOpen.value = false;
+    const el = document.querySelector(href);
+    if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+    }
+};
 </script>
 
 <template>
@@ -100,64 +248,82 @@ const propsData = [
         <!-- Background Effects -->
         <div class="fixed inset-0 -z-10">
             <div class="absolute inset-0 bg-gradient-to-br from-noir-950 via-black to-noir-950"></div>
-            <div
-                class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-radial from-noir-800/20 via-transparent to-transparent blur-3xl">
-            </div>
-            <div
-                class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-gradient-radial from-noir-700/10 to-transparent blur-3xl">
-            </div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] md:w-[800px] h-[400px] md:h-[600px] bg-gradient-radial from-noir-800/20 via-transparent to-transparent blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-gradient-radial from-noir-700/10 to-transparent blur-3xl"></div>
         </div>
 
         <!-- Navigation -->
         <nav class="fixed top-0 left-0 right-0 z-50 border-b border-noir-900/50 bg-black/80 backdrop-blur-lg">
-            <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-                <div class="flex items-center gap-3">
-                    <Star class="h-6 w-6 text-white" :fill="'currentColor'" />
-                    <span class="text-lg font-semibold tracking-tight">Vue Star Rate</span>
+            <div class="mx-auto flex h-14 md:h-16 max-w-6xl items-center justify-between px-4 md:px-6">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <Star class="h-5 w-5 md:h-6 md:w-6 text-white" :fill="'currentColor'" />
+                    <span class="text-base md:text-lg font-semibold tracking-tight">Vue Star Rate</span>
                 </div>
+                
+                <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#features" class="text-sm text-noir-400 transition-colors hover:text-white">Features</a>
-                    <a href="#examples" class="text-sm text-noir-400 transition-colors hover:text-white">Examples</a>
-                    <a href="#api" class="text-sm text-noir-400 transition-colors hover:text-white">API</a>
+                    <a v-for="link in navLinks" :key="link.href" :href="link.href" 
+                       class="text-sm text-noir-400 transition-colors hover:text-white">
+                        {{ link.label }}
+                    </a>
                 </div>
-                <div class="flex items-center gap-3">
+                
+                <div class="flex items-center gap-2 md:gap-3">
                     <a href="https://github.com/pooyagolchian/vue-star-rate" target="_blank"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-noir-400 transition-colors hover:bg-noir-800 hover:text-white">
-                        <Github class="h-5 w-5" />
+                        class="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-lg text-noir-400 transition-colors hover:bg-noir-800 hover:text-white">
+                        <Github class="h-4 w-4 md:h-5 md:w-5" />
                     </a>
                     <a href="https://www.npmjs.com/package/vue-js-star-rating" target="_blank"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-noir-400 transition-colors hover:bg-noir-800 hover:text-white">
-                        <Package class="h-5 w-5" />
+                        class="flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-lg text-noir-400 transition-colors hover:bg-noir-800 hover:text-white">
+                        <Package class="h-4 w-4 md:h-5 md:w-5" />
                     </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                            class="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-noir-400 hover:bg-noir-800 hover:text-white">
+                        <Menu v-if="!mobileMenuOpen" class="h-5 w-5" />
+                        <X v-else class="h-5 w-5" />
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div v-if="mobileMenuOpen" class="md:hidden border-t border-noir-900/50 bg-black/95 backdrop-blur-lg">
+                <div class="px-4 py-4 space-y-1">
+                    <button v-for="link in navLinks" :key="link.href" 
+                            @click="scrollToSection(link.href)"
+                            class="block w-full text-left px-3 py-2 rounded-lg text-sm text-noir-400 hover:text-white hover:bg-noir-900/50">
+                        {{ link.label }}
+                    </button>
                 </div>
             </div>
         </nav>
 
         <!-- Hero Section -->
-        <section class="relative pt-32 pb-24 px-6">
+        <section class="relative pt-24 md:pt-32 pb-16 md:pb-24 px-4 md:px-6">
             <div class="mx-auto max-w-4xl text-center">
                 <!-- Version Badge -->
-                <div class="mb-8 flex justify-center">
-                    <Badge variant="outline" class="gap-2 px-4 py-1.5">
-                        <span class="h-2 w-2 rounded-full bg-green-400"></span>
+                <div class="mb-6 md:mb-8 flex justify-center">
+                    <Badge variant="outline" class="gap-2 px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm">
+                        <span class="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-green-400"></span>
                         v2.0.0 — Vue 3 + TypeScript
                     </Badge>
                 </div>
 
                 <!-- Title -->
-                <h1 class="mb-6 text-5xl font-bold tracking-tight md:text-7xl">
+                <h1 class="mb-4 md:mb-6 text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight">
                     <span class="gradient-text">Vue Star Rate</span>
                 </h1>
 
-                <p class="mx-auto mb-10 max-w-2xl text-lg text-noir-400 leading-relaxed md:text-xl">
+                <p class="mx-auto mb-8 md:mb-10 max-w-2xl text-base md:text-lg lg:text-xl text-noir-400 leading-relaxed px-4">
                     A highly customizable, accessible, and feature-rich star rating component
                     for Vue 3 with full TypeScript support.
                 </p>
 
                 <!-- Interactive Demo -->
-                <Card class="mx-auto mb-10 max-w-md" hoverable>
-                    <div class="flex flex-col items-center gap-4">
-                        <span class="text-sm text-noir-500 uppercase tracking-wider">Try it out</span>
+                <Card class="mx-auto mb-8 md:mb-10 max-w-sm md:max-w-md" hoverable>
+                    <div class="flex flex-col items-center gap-3 md:gap-4">
+                        <span class="text-xs md:text-sm text-noir-500 uppercase tracking-wider">Try it out</span>
                         <VueStarRate v-model="basicRating" size="xl" :show-counter="true" :colors="{
                             empty: '#3f3f46',
                             filled: '#ffffff',
@@ -167,95 +333,141 @@ const propsData = [
                 </Card>
 
                 <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button size="lg" class="gap-2">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
+                    <Button size="lg" class="w-full sm:w-auto gap-2" @click="scrollToSection('#installation')">
                         Get Started
                         <ArrowRight class="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="lg" class="gap-2">
+                    <Button variant="outline" size="lg" class="w-full sm:w-auto gap-2" as="a" href="https://github.com/pooyagolchian/vue-star-rate" target="_blank">
                         <Github class="h-4 w-4" />
                         View on GitHub
                     </Button>
                 </div>
 
                 <!-- Install Command -->
-                <div class="mt-10 flex justify-center">
-                    <div
-                        class="inline-flex items-center gap-3 rounded-xl border border-noir-800 bg-noir-900/50 px-5 py-3 font-mono text-sm">
+                <div class="mt-8 md:mt-10 flex justify-center px-4">
+                    <button @click="copyToClipboard(installCode, 'install')"
+                        class="group inline-flex items-center gap-2 md:gap-3 rounded-xl border border-noir-800 bg-noir-900/50 px-4 md:px-5 py-2.5 md:py-3 font-mono text-xs md:text-sm hover:border-noir-700 transition-colors">
                         <span class="text-noir-500">$</span>
                         <span class="text-noir-200">{{ installCode }}</span>
-                    </div>
+                        <span class="text-noir-500 group-hover:text-white transition-colors">
+                            <Check v-if="copiedCode === 'install'" class="h-4 w-4 text-green-400" />
+                            <Clipboard v-else class="h-4 w-4" />
+                        </span>
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Divider -->
-        <div class="divider mx-6"></div>
+        <div class="divider mx-4 md:mx-6"></div>
 
         <!-- Features Section -->
-        <section id="features" class="py-24 px-6">
+        <section id="features" class="py-16 md:py-24 px-4 md:px-6">
             <div class="mx-auto max-w-6xl">
-                <div class="mb-16 text-center">
-                    <Badge variant="secondary" class="mb-4">Features</Badge>
-                    <h2 class="text-3xl font-bold tracking-tight md:text-4xl">Everything you need</h2>
-                    <p class="mt-4 text-noir-400">Built for modern Vue applications with best practices in mind.</p>
+                <div class="mb-12 md:mb-16 text-center">
+                    <Badge variant="secondary" class="mb-3 md:mb-4">Features</Badge>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Everything you need</h2>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Built for modern Vue applications with best practices in mind.</p>
                 </div>
 
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                     <Card v-for="feature in features" :key="feature.title" hoverable class="group">
-                        <div
-                            class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-noir-800/50 text-white transition-colors group-hover:bg-white group-hover:text-black">
-                            <component :is="feature.icon" class="h-6 w-6" />
+                        <div class="mb-3 md:mb-4 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-noir-800/50 text-white transition-colors group-hover:bg-white group-hover:text-black">
+                            <component :is="feature.icon" class="h-5 w-5 md:h-6 md:w-6" />
                         </div>
-                        <h3 class="mb-2 text-lg font-semibold">{{ feature.title }}</h3>
-                        <p class="text-sm text-noir-400">{{ feature.desc }}</p>
+                        <h3 class="mb-1 md:mb-2 text-base md:text-lg font-semibold">{{ feature.title }}</h3>
+                        <p class="text-xs md:text-sm text-noir-400">{{ feature.desc }}</p>
                     </Card>
                 </div>
             </div>
         </section>
 
         <!-- Divider -->
-        <div class="divider mx-6"></div>
+        <div class="divider mx-4 md:mx-6"></div>
 
-        <!-- Examples Section -->
-        <section id="examples" class="py-24 px-6">
-            <div class="mx-auto max-w-6xl">
-                <div class="mb-16 text-center">
-                    <Badge variant="secondary" class="mb-4">Examples</Badge>
-                    <h2 class="text-3xl font-bold tracking-tight md:text-4xl">See it in action</h2>
-                    <p class="mt-4 text-noir-400">Interactive examples demonstrating core features.</p>
+        <!-- Installation Section -->
+        <section id="installation" class="py-16 md:py-24 px-4 md:px-6">
+            <div class="mx-auto max-w-4xl">
+                <div class="mb-12 md:mb-16 text-center">
+                    <Badge variant="secondary" class="mb-3 md:mb-4">Installation</Badge>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Get started in seconds</h2>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Choose your package manager and framework version.</p>
                 </div>
 
-                <div class="space-y-12">
-                    <!-- Basic Usage -->
+                <!-- Version Tabs -->
+                <div class="flex justify-center mb-6 md:mb-8">
+                    <div class="inline-flex rounded-lg border border-noir-800 bg-noir-900/50 p-1">
+                        <button @click="activeVersionTab = 'vue3'"
+                                :class="['px-4 md:px-6 py-2 text-sm font-medium rounded-md transition-colors', 
+                                        activeVersionTab === 'vue3' ? 'bg-white text-black' : 'text-noir-400 hover:text-white']">
+                            Vue 3
+                        </button>
+                        <button @click="activeVersionTab = 'vue2'"
+                                :class="['px-4 md:px-6 py-2 text-sm font-medium rounded-md transition-colors', 
+                                        activeVersionTab === 'vue2' ? 'bg-white text-black' : 'text-noir-400 hover:text-white']">
+                            Vue 2
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vue 3 Installation -->
+                <div v-if="activeVersionTab === 'vue3'" class="space-y-6">
                     <Card>
-                        <div class="grid gap-8 lg:grid-cols-2">
+                        <h3 class="mb-4 text-lg font-semibold">1. Install the package</h3>
+                        <CodeBlock :code="'pnpm add vue-js-star-rating\n# or\nnpm install vue-js-star-rating\n# or\nyarn add vue-js-star-rating'" language="bash" />
+                    </Card>
+                    <Card>
+                        <h3 class="mb-4 text-lg font-semibold">2. Import and use</h3>
+                        <CodeBlock :code="vue3BasicUsage" language="vue" />
+                    </Card>
+                </div>
+
+                <!-- Vue 2 Installation -->
+                <div v-else class="space-y-6">
+                    <Card class="border-yellow-500/30 bg-yellow-500/5">
+                        <div class="flex gap-3 text-yellow-400">
+                            <Star class="h-5 w-5 flex-shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="mb-2 text-xl font-semibold">Basic Usage</h3>
-                                <p class="mb-6 text-sm text-noir-400">Simple star rating with v-model binding.</p>
-                                <CodeBlock :code="basicUsage" language="vue" />
-                            </div>
-                            <div
-                                class="flex flex-col items-center justify-center rounded-xl border border-noir-800 bg-noir-900/30 p-8">
-                                <VueStarRate v-model="basicRating" size="lg" :show-counter="true" :colors="{
-                                    empty: '#3f3f46',
-                                    filled: '#ffffff',
-                                    hover: '#a1a1aa',
-                                }" />
+                                <h4 class="font-semibold mb-1">Vue 2 Support</h4>
+                                <p class="text-sm text-yellow-400/80">For Vue 2 projects, use version 1.x of the package. Note that Vue 2 reached End of Life on December 31, 2023.</p>
                             </div>
                         </div>
                     </Card>
+                    <Card>
+                        <h3 class="mb-4 text-lg font-semibold">1. Install the package</h3>
+                        <CodeBlock :code="'npm install vue-star-rate@^1.0.0'" language="bash" />
+                    </Card>
+                    <Card>
+                        <h3 class="mb-4 text-lg font-semibold">2. Import and use</h3>
+                        <CodeBlock :code="vue2BasicUsage" language="vue" />
+                    </Card>
+                </div>
+            </div>
+        </section>
 
+        <!-- Divider -->
+        <div class="divider mx-4 md:mx-6"></div>
+
+        <!-- Examples Section -->
+        <section id="examples" class="py-16 md:py-24 px-4 md:px-6">
+            <div class="mx-auto max-w-6xl">
+                <div class="mb-12 md:mb-16 text-center">
+                    <Badge variant="secondary" class="mb-3 md:mb-4">Examples</Badge>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">See it in action</h2>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Interactive examples demonstrating all features.</p>
+                </div>
+
+                <div class="space-y-8 md:space-y-12">
                     <!-- Half Stars -->
                     <Card>
-                        <div class="grid gap-8 lg:grid-cols-2">
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
                             <div>
-                                <h3 class="mb-2 text-xl font-semibold">Half-Star Ratings</h3>
-                                <p class="mb-6 text-sm text-noir-400">Enable precise half-star values.</p>
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Half-Star Ratings</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Enable precise half-star values with counter display.</p>
                                 <CodeBlock :code="halfStarCode" language="vue" />
                             </div>
-                            <div
-                                class="flex flex-col items-center justify-center rounded-xl border border-noir-800 bg-noir-900/30 p-8">
+                            <div class="flex flex-col items-center justify-center rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
                                 <VueStarRate v-model="halfRating" :allow-half="true" size="lg" :show-counter="true"
                                     :colors="{
                                         empty: '#3f3f46',
@@ -269,17 +481,16 @@ const propsData = [
 
                     <!-- Size Presets -->
                     <Card>
-                        <div class="grid gap-8 lg:grid-cols-2">
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
                             <div>
-                                <h3 class="mb-2 text-xl font-semibold">Size Presets</h3>
-                                <p class="mb-6 text-sm text-noir-400">Five predefined sizes for quick styling.</p>
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Size Presets</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Five predefined sizes or custom pixel values.</p>
                                 <CodeBlock :code="sizePresetsCode" language="vue" />
                             </div>
-                            <div
-                                class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-8">
+                            <div class="flex flex-col items-center justify-center gap-4 md:gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
                                 <div v-for="size in ['xs', 'sm', 'md', 'lg', 'xl']" :key="size"
-                                    class="flex items-center gap-4">
-                                    <span class="w-8 text-xs text-noir-500 uppercase">{{ size }}</span>
+                                    class="flex items-center gap-3 md:gap-4">
+                                    <span class="w-6 md:w-8 text-xs text-noir-500 uppercase">{{ size }}</span>
                                     <VueStarRate v-model="sizeRatings[size as keyof typeof sizeRatings]"
                                         :size="size as 'xs' | 'sm' | 'md' | 'lg' | 'xl'" :colors="{
                                             empty: '#3f3f46',
@@ -293,14 +504,13 @@ const propsData = [
 
                     <!-- Custom Colors -->
                     <Card>
-                        <div class="grid gap-8 lg:grid-cols-2">
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
                             <div>
-                                <h3 class="mb-2 text-xl font-semibold">Custom Colors</h3>
-                                <p class="mb-6 text-sm text-noir-400">Match your design system with custom colors.</p>
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Custom Colors</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Match your design system with custom color configuration.</p>
                                 <CodeBlock :code="customColorsCode" language="vue" />
                             </div>
-                            <div
-                                class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-8">
+                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
                                 <VueStarRate v-model="colorRating" size="xl" :colors="{
                                     empty: '#27272a',
                                     filled: '#ffffff',
@@ -310,16 +520,62 @@ const propsData = [
                         </div>
                     </Card>
 
+                    <!-- Max Stars -->
+                    <Card>
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
+                            <div>
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Custom Star Count</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Configure any number of stars for your rating system.</p>
+                                <CodeBlock :code="maxStarsCode" language="vue" />
+                            </div>
+                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                                <VueStarRate v-model="maxStarsRating" :max-stars="10" size="md" :show-counter="true" :colors="{
+                                    empty: '#3f3f46',
+                                    filled: '#ffffff',
+                                    hover: '#a1a1aa',
+                                }" />
+                            </div>
+                        </div>
+                    </Card>
+
+                    <!-- Counter & Tooltip -->
+                    <Card>
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
+                            <div>
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Counter & Tooltips</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Display rating value and show tooltips on hover.</p>
+                                <CodeBlock :code="counterTooltipCode" language="vue" />
+                            </div>
+                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                                <div class="text-center">
+                                    <span class="text-xs text-noir-500 uppercase tracking-wider block mb-3">With Counter</span>
+                                    <VueStarRate v-model="counterRating" size="lg" :show-counter="true" :allow-half="true" :colors="{
+                                        empty: '#3f3f46',
+                                        filled: '#ffffff',
+                                        hover: '#a1a1aa',
+                                    }" />
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-xs text-noir-500 uppercase tracking-wider block mb-3">With Tooltip</span>
+                                    <VueStarRate v-model="tooltipRating" size="lg" :show-tooltip="true" :colors="{
+                                        empty: '#3f3f46',
+                                        filled: '#ffffff',
+                                        hover: '#a1a1aa',
+                                    }" />
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
                     <!-- Read-only -->
                     <Card>
-                        <div class="grid gap-8 lg:grid-cols-2">
+                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
                             <div>
-                                <h3 class="mb-2 text-xl font-semibold">Read-only Mode</h3>
-                                <p class="mb-6 text-sm text-noir-400">Display ratings without interaction.</p>
-                                <CodeBlock code='<VueStarRate v-model="rating" :readonly="true" />' language="vue" />
+                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Read-only Mode</h3>
+                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Display ratings without user interaction.</p>
+                                <CodeBlock :code="readonlyCode" language="vue" />
                             </div>
-                            <div
-                                class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-8">
+                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
                                 <VueStarRate v-model="readonlyRating" size="lg" :readonly="true" :show-counter="true"
                                     :colors="{
                                         empty: '#3f3f46',
@@ -328,74 +584,76 @@ const propsData = [
                             </div>
                         </div>
                     </Card>
+
+                    <!-- Full Example -->
+                    <Card class="border-noir-700">
+                        <div class="mb-6">
+                            <Badge variant="outline" class="mb-4">Complete Example</Badge>
+                            <h3 class="mb-2 text-lg md:text-xl font-semibold">Full Configuration</h3>
+                            <p class="text-xs md:text-sm text-noir-400">All props combined in a single example.</p>
+                        </div>
+                        <CodeBlock :code="fullExampleCode" language="vue" />
+                    </Card>
                 </div>
             </div>
         </section>
 
         <!-- Divider -->
-        <div class="divider mx-6"></div>
+        <div class="divider mx-4 md:mx-6"></div>
 
         <!-- API Reference -->
-        <section id="api" class="py-24 px-6">
+        <section id="api" class="py-16 md:py-24 px-4 md:px-6">
             <div class="mx-auto max-w-6xl">
-                <div class="mb-16 text-center">
-                    <Badge variant="secondary" class="mb-4">API</Badge>
-                    <h2 class="text-3xl font-bold tracking-tight md:text-4xl">Props Reference</h2>
-                    <p class="mt-4 text-noir-400">Complete list of available configuration options.</p>
+                <div class="mb-12 md:mb-16 text-center">
+                    <Badge variant="secondary" class="mb-3 md:mb-4">API</Badge>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Props Reference</h2>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Complete list of available configuration options.</p>
                 </div>
 
-                <Card class="overflow-hidden p-0">
+                <!-- Props Table -->
+                <Card class="overflow-hidden p-0 mb-8 md:mb-12">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
+                        <table class="w-full text-xs md:text-sm">
                             <thead class="border-b border-noir-800 bg-noir-900/50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left font-medium text-noir-300">Prop</th>
-                                    <th class="px-6 py-4 text-left font-medium text-noir-300">Type</th>
-                                    <th class="px-6 py-4 text-left font-medium text-noir-300">Default</th>
-                                    <th class="px-6 py-4 text-left font-medium text-noir-300">Description</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Prop</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Type</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300 hidden sm:table-cell">Default</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-noir-800/50">
                                 <tr v-for="prop in propsData" :key="prop.name"
                                     class="transition-colors hover:bg-noir-900/30">
-                                    <td class="px-6 py-4 font-mono text-white">{{ prop.name }}</td>
-                                    <td class="px-6 py-4 font-mono text-noir-400">{{ prop.type }}</td>
-                                    <td class="px-6 py-4 font-mono text-noir-500">{{ prop.default }}</td>
-                                    <td class="px-6 py-4 text-noir-300">{{ prop.desc }}</td>
+                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap">{{ prop.name }}</td>
+                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-400 whitespace-nowrap">{{ prop.type }}</td>
+                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-500 hidden sm:table-cell">{{ prop.default }}</td>
+                                    <td class="px-4 md:px-6 py-3 md:py-4 text-noir-300">{{ prop.desc }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </Card>
 
-                <!-- Events -->
-                <div class="mt-12">
-                    <h3 class="mb-6 text-xl font-semibold">Events</h3>
+                <!-- Events Table -->
+                <div class="mb-8 md:mb-12">
+                    <h3 class="mb-4 md:mb-6 text-lg md:text-xl font-semibold">Events</h3>
                     <Card class="overflow-hidden p-0">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
+                            <table class="w-full text-xs md:text-sm">
                                 <thead class="border-b border-noir-800 bg-noir-900/50">
                                     <tr>
-                                        <th class="px-6 py-4 text-left font-medium text-noir-300">Event</th>
-                                        <th class="px-6 py-4 text-left font-medium text-noir-300">Payload</th>
-                                        <th class="px-6 py-4 text-left font-medium text-noir-300">Description</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Event</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Payload</th>
+                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-noir-800/50">
-                                    <tr class="transition-colors hover:bg-noir-900/30">
-                                        <td class="px-6 py-4 font-mono text-white">update:modelValue</td>
-                                        <td class="px-6 py-4 font-mono text-noir-400">number</td>
-                                        <td class="px-6 py-4 text-noir-300">Emitted on rating change</td>
-                                    </tr>
-                                    <tr class="transition-colors hover:bg-noir-900/30">
-                                        <td class="px-6 py-4 font-mono text-white">change</td>
-                                        <td class="px-6 py-4 font-mono text-noir-400">(value, oldValue)</td>
-                                        <td class="px-6 py-4 text-noir-300">Emitted with previous value</td>
-                                    </tr>
-                                    <tr class="transition-colors hover:bg-noir-900/30">
-                                        <td class="px-6 py-4 font-mono text-white">hover</td>
-                                        <td class="px-6 py-4 font-mono text-noir-400">number | null</td>
-                                        <td class="px-6 py-4 text-noir-300">Emitted on star hover</td>
+                                    <tr v-for="event in eventsData" :key="event.name"
+                                        class="transition-colors hover:bg-noir-900/30">
+                                        <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap">{{ event.name }}</td>
+                                        <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-400">{{ event.payload }}</td>
+                                        <td class="px-4 md:px-6 py-3 md:py-4 text-noir-300">{{ event.desc }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -404,32 +662,32 @@ const propsData = [
                 </div>
 
                 <!-- Keyboard Navigation -->
-                <div class="mt-12">
-                    <h3 class="mb-6 text-xl font-semibold">Keyboard Navigation</h3>
-                    <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                        <Card class="flex items-center gap-3 p-4">
+                <div>
+                    <h3 class="mb-4 md:mb-6 text-lg md:text-xl font-semibold">Keyboard Navigation</h3>
+                    <div class="grid gap-3 md:gap-4 grid-cols-2 md:grid-cols-3">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">→</kbd>
-                            <span class="text-sm text-noir-300">Increase rating</span>
+                            <span class="text-xs md:text-sm text-noir-300">Increase</span>
                         </Card>
-                        <Card class="flex items-center gap-3 p-4">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">←</kbd>
-                            <span class="text-sm text-noir-300">Decrease rating</span>
+                            <span class="text-xs md:text-sm text-noir-300">Decrease</span>
                         </Card>
-                        <Card class="flex items-center gap-3 p-4">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">Home</kbd>
-                            <span class="text-sm text-noir-300">Set to minimum</span>
+                            <span class="text-xs md:text-sm text-noir-300">Minimum</span>
                         </Card>
-                        <Card class="flex items-center gap-3 p-4">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">End</kbd>
-                            <span class="text-sm text-noir-300">Set to maximum</span>
+                            <span class="text-xs md:text-sm text-noir-300">Maximum</span>
                         </Card>
-                        <Card class="flex items-center gap-3 p-4">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">1-9</kbd>
-                            <span class="text-sm text-noir-300">Jump to value</span>
+                            <span class="text-xs md:text-sm text-noir-300">Jump to</span>
                         </Card>
-                        <Card class="flex items-center gap-3 p-4">
+                        <Card class="flex items-center gap-2 md:gap-3 p-3 md:p-4">
                             <kbd class="rounded bg-noir-800 px-2 py-1 font-mono text-xs">0</kbd>
-                            <span class="text-sm text-noir-300">Reset</span>
+                            <span class="text-xs md:text-sm text-noir-300">Reset</span>
                         </Card>
                     </div>
                 </div>
@@ -437,15 +695,15 @@ const propsData = [
         </section>
 
         <!-- Footer -->
-        <footer class="border-t border-noir-900 py-12 px-6">
+        <footer class="border-t border-noir-900 py-8 md:py-12 px-4 md:px-6">
             <div class="mx-auto max-w-6xl">
-                <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
-                    <div class="flex items-center gap-3">
-                        <Star class="h-5 w-5 text-white" :fill="'currentColor'" />
-                        <span class="font-medium">Vue Star Rate</span>
+                <div class="flex flex-col items-center gap-6 md:flex-row md:justify-between">
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <Star class="h-4 w-4 md:h-5 md:w-5 text-white" :fill="'currentColor'" />
+                        <span class="text-sm md:text-base font-medium">Vue Star Rate</span>
                     </div>
 
-                    <div class="flex items-center gap-6 text-sm text-noir-500">
+                    <div class="flex items-center gap-4 md:gap-6 text-xs md:text-sm text-noir-500">
                         <a href="https://github.com/pooyagolchian/vue-star-rate" target="_blank"
                             class="transition-colors hover:text-white">
                             GitHub
@@ -454,12 +712,16 @@ const propsData = [
                             class="transition-colors hover:text-white">
                             npm
                         </a>
+                        <a href="/llms.txt" target="_blank"
+                            class="transition-colors hover:text-white">
+                            llms.txt
+                        </a>
                         <a href="https://pooya.blog" target="_blank" class="transition-colors hover:text-white">
                             Author
                         </a>
                     </div>
 
-                    <p class="text-sm text-noir-600">
+                    <p class="text-xs md:text-sm text-noir-600">
                         MIT © 2024 Pooya Golchian
                     </p>
                 </div>

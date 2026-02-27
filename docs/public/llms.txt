@@ -1,0 +1,95 @@
+# Vue Star Rate
+
+> A highly customizable, accessible, and feature-rich star rating component for Vue 3
+
+## Overview
+
+Vue Star Rate (npm: vue-js-star-rating) is a modern star rating component built with Vue 3 and TypeScript. It provides a flexible, accessible solution for implementing star ratings in Vue applications.
+
+## Key Features
+
+- **Half-Star Support**: Enable precise 0.5 increment ratings
+- **Size Presets**: xs (16px), sm (20px), md (24px), lg (32px), xl (40px)
+- **Custom Colors**: Configure empty, filled, hover, and half-star colors
+- **Keyboard Navigation**: Full accessibility with arrow keys, Home, End, number keys
+- **Read-only Mode**: Display ratings without user interaction
+- **TypeScript**: Complete type definitions included
+- **RTL Support**: Right-to-left layout compatibility
+- **WCAG 2.1 Compliant**: Fully accessible
+
+## Installation
+
+```bash
+npm install vue-js-star-rating
+# or
+pnpm add vue-js-star-rating
+```
+
+## Basic Usage (Vue 3)
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { VueStarRate } from 'vue-js-star-rating';
+import 'vue-js-star-rating/dist/style.css';
+
+const rating = ref(0);
+</script>
+
+<template>
+  <VueStarRate v-model="rating" />
+</template>
+```
+
+## Props API
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| modelValue | number | 0 | Rating value (v-model) |
+| maxStars | number | 5 | Maximum number of stars |
+| allowHalf | boolean | false | Enable half ratings |
+| size | 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' | 'md' | Size preset |
+| iconSize | number \| { width, height } | auto | Override size |
+| colors | object | {...} | Color configuration |
+| readonly | boolean | false | Disable interaction |
+| showCounter | boolean | false | Show rating counter |
+| showTooltip | boolean | false | Show hover tooltips |
+| animation | object | {...} | Animation configuration |
+
+## Colors Object
+
+```typescript
+{
+  empty: '#d1d5db',    // Empty star color
+  filled: '#fbbf24',   // Filled star color
+  hover: '#fcd34d',    // Hover state color
+  half: '#fbbf24'      // Half-star color
+}
+```
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| update:modelValue | number | Emitted on rating change |
+| change | (value, oldValue) | Emitted with previous value |
+| hover | number \| null | Emitted on star hover |
+
+## Keyboard Navigation
+
+- Arrow Right/Up: Increase rating
+- Arrow Left/Down: Decrease rating
+- Home: Set to minimum (0)
+- End: Set to maximum
+- 1-9: Jump to specific value
+- 0: Reset to zero
+
+## Links
+
+- Documentation: https://pooyagolchian.github.io/vue-star-rate/
+- GitHub: https://github.com/pooyagolchian/vue-star-rate
+- npm: https://www.npmjs.com/package/vue-js-star-rating
+
+## License
+
+MIT © Pooya Golchian

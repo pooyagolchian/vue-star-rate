@@ -9,7 +9,7 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<im
     showCounter: boolean;
     counterTemplate: string;
     iconProvider: string;
-    iconSize: number;
+    iconSize: undefined;
     gap: number;
     showTooltip: boolean;
     allowReset: boolean;
@@ -41,7 +41,7 @@ declare const _default: __VLS_WithTemplateSlots<import('vue').DefineComponent<im
     showCounter: boolean;
     counterTemplate: string;
     iconProvider: string;
-    iconSize: number;
+    iconSize: undefined;
     gap: number;
     showTooltip: boolean;
     allowReset: boolean;

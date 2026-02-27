@@ -7,6 +7,7 @@ interface Props {
     color?: string;
     emptyColor?: string;
     strokeWidth?: number;
+    index?: number;
 }
 declare const _default: import('vue').DefineComponent<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<Props>, {
     filled: boolean;
@@ -15,6 +16,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     color: string;
     emptyColor: string;
     strokeWidth: number;
+    index: number;
 }>>, {}, {}, {}, {}, import('vue').ComponentOptionsMixin, import('vue').ComponentOptionsMixin, {}, string, import('vue').PublicProps, Readonly<import('vue').ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<Props>, {
     filled: boolean;
     half: boolean;
@@ -22,6 +24,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     color: string;
     emptyColor: string;
     strokeWidth: number;
+    index: number;
 }>>> & Readonly<{}>, {
     filled: boolean;
     half: boolean;
@@ -29,6 +32,7 @@ declare const _default: import('vue').DefineComponent<import('vue').ExtractPropT
     color: string;
     emptyColor: string;
     strokeWidth: number;
+    index: number;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, true, {}, any>;
 export default _default;
 type __VLS_NonUndefinedable<T> = T extends undefined ? never : T;

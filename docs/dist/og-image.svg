@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#171717"/>
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#a1a1aa"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Grid pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#27272a" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.3"/>
+  
+  <!-- Stars -->
+  <g transform="translate(600, 240)">
+    <!-- Star 1 -->
+    <polygon points="-200,0 -185,-45 -140,-52 -170,-88 -162,-133 -200,-112 -238,-133 -230,-88 -260,-52 -215,-45" fill="url(#starGrad)"/>
+    <!-- Star 2 -->
+    <polygon points="-100,0 -85,-45 -40,-52 -70,-88 -62,-133 -100,-112 -138,-133 -130,-88 -160,-52 -115,-45" fill="url(#starGrad)"/>
+    <!-- Star 3 -->
+    <polygon points="0,0 15,-45 60,-52 30,-88 38,-133 0,-112 -38,-133 -30,-88 -60,-52 -15,-45" fill="url(#starGrad)"/>
+    <!-- Star 4 -->
+    <polygon points="100,0 115,-45 160,-52 130,-88 138,-133 100,-112 62,-133 70,-88 40,-52 85,-45" fill="url(#starGrad)"/>
+    <!-- Star 5 (half) -->
+    <polygon points="200,0 215,-45 260,-52 230,-88 238,-133 200,-112 162,-133 170,-88 140,-52 185,-45" fill="#3f3f46"/>
+    <clipPath id="halfClip">
+      <rect x="140" y="-140" width="60" height="180"/>
+    </clipPath>
+    <polygon points="200,0 215,-45 260,-52 230,-88 238,-133 200,-112 162,-133 170,-88 140,-52 185,-45" fill="url(#starGrad)" clip-path="url(#halfClip)"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="380" font-family="Space Grotesk, sans-serif" font-size="72" font-weight="700" fill="white" text-anchor="middle">Vue Star Rate</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="440" font-family="Space Grotesk, sans-serif" font-size="28" font-weight="400" fill="#a1a1aa" text-anchor="middle">A highly customizable star rating component for Vue 3</text>
+  
+  <!-- Tags -->
+  <g transform="translate(600, 500)">
+    <rect x="-220" y="0" width="100" height="36" rx="18" fill="#27272a"/>
+    <text x="-170" y="24" font-family="Space Grotesk, sans-serif" font-size="14" fill="#d4d4d8" text-anchor="middle">Vue 3</text>
+    
+    <rect x="-100" y="0" width="120" height="36" rx="18" fill="#27272a"/>
+    <text x="-40" y="24" font-family="Space Grotesk, sans-serif" font-size="14" fill="#d4d4d8" text-anchor="middle">TypeScript</text>
+    
+    <rect x="40" y="0" width="110" height="36" rx="18" fill="#27272a"/>
+    <text x="95" y="24" font-family="Space Grotesk, sans-serif" font-size="14" fill="#d4d4d8" text-anchor="middle">Accessible</text>
+  </g>
+  
+  <!-- Border -->
+  <rect x="0" y="0" width="1200" height="630" fill="none" stroke="#27272a" stroke-width="2"/>
+</svg>
