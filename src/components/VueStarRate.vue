@@ -4,11 +4,12 @@
  * A highly customizable star rating component for Vue 3
  * Supports Lucide, FontAwesome, and custom icons
  */
-import { computed, ref, watch } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import { useStarRating } from '../composables/useStarRating';
 import type {
     AnimationConfig,
     IconSize,
+    RatingValue,
     StarColors,
     StarRateEmits,
     StarRateProps,
@@ -17,9 +18,11 @@ import FontAwesomeIcon from './icons/FontAwesomeIcon.vue';
 import LucideIcon from './icons/LucideIcon.vue';
 import SvgIcon from './icons/SvgIcon.vue';
 
-// Props with defaults
+// v-model binding — defineModel replaces the modelValue prop + update:modelValue emit
+const modelValue = defineModel<number>({ default: 0 });
+
+// Props with defaults (modelValue is handled by defineModel above)
 const props = withDefaults(defineProps<StarRateProps>(), {
-    modelValue: 0,
     maxStars: 5,
     allowHalf: false,
     readonly: false,
@@ -40,7 +43,7 @@ const props = withDefaults(defineProps<StarRateProps>(), {
     ariaLabel: 'Star rating',
 });
 
-// Emits
+// Emits — update:modelValue is emitted automatically by defineModel
 const emit = defineEmits<StarRateEmits>();
 
 // Default colors
@@ -86,11 +89,31 @@ const computedIconSize = computed<IconSize>(() => {
     if (typeof props.iconSize === 'object') {
         return props.iconSize;
     }
-    const size = sizePresets[props.size] || 24;
+    const size = sizePresets[props.size] ?? 24;
     return { width: size, height: size };
 });
 
-// Use star rating composable
+// Typed emit bridge — routes composable events to the correct defineEmits / defineModel
+// No @ts-ignore needed: each branch is fully typed
+const emitBridge = (
+    event: 'update:modelValue' | 'change' | 'hover' | 'focus' | 'blur',
+    ...args: unknown[]
+): void => {
+    if (event === 'update:modelValue') {
+        modelValue.value = args[0] as RatingValue;
+    } else if (event === 'change') {
+        emit('change', args[0] as RatingValue, args[1] as RatingValue);
+    } else if (event === 'hover') {
+        emit('hover', args[0] as RatingValue | null);
+    } else if (event === 'focus') {
+        emit('focus');
+    } else if (event === 'blur') {
+        emit('blur');
+    }
+};
+
+// Use star rating composable — options are passed as reactive getters
+// so that changes to props after mount are tracked correctly inside the composable
 const {
     stars,
     displayRating,
@@ -106,35 +129,20 @@ const {
     setFocused,
 } = useStarRating(
     {
-        modelValue: props.modelValue,
-        maxStars: props.maxStars,
-        allowHalf: props.allowHalf,
-        readonly: props.readonly,
-        disabled: props.disabled,
-        allowReset: props.allowReset,
-        minRating: props.minRating,
-        step: props.step,
-        colors: mergedColors.value,
-        animation: mergedAnimation.value,
+        modelValue,                          // Ref<number> from defineModel — fully reactive
+        maxStars: () => props.maxStars,
+        allowHalf: () => props.allowHalf,
+        readonly: () => props.readonly,
+        disabled: () => props.disabled,
+        allowReset: () => props.allowReset,
+        minRating: () => props.minRating,
+        step: () => props.step,
     },
-    (event: string, ...args: any[]) => {
-        // @ts-ignore - Dynamic emit
-        emit(event, ...args);
-    }
+    emitBridge,
 );
 
-// Watch for external modelValue changes
-watch(
-    () => props.modelValue,
-    (newValue) => {
-        if (newValue !== undefined) {
-            setRating(newValue);
-        }
-    }
-);
-
-// Container ref for focus management
-const containerRef = ref<HTMLElement | null>(null);
+// Container ref — Vue 3.5 useTemplateRef (matches ref="container" in template)
+const containerRef = useTemplateRef<HTMLElement>('container');
 
 // Counter text
 const counterText = computed(() => {
@@ -259,19 +267,18 @@ const cssVars = computed(() => ({
 </script>
 
 <template>
-    <div ref="containerRef" :class="containerClasses" :style="cssVars" role="slider" :aria-label="ariaLabel"
-        :aria-valuenow="displayRating" :aria-valuemin="minRating" :aria-valuemax="maxStars" :aria-readonly="readonly"
-        :aria-disabled="disabled" :tabindex="disabled ? -1 : 0" @keydown="handleKeyDown" @focus="setFocused(true)"
-        @blur="setFocused(false)">
+    <div ref="container" :class="containerClasses" :style="cssVars" role="group" :aria-label="ariaLabel"
+        :aria-readonly="readonly" :aria-disabled="disabled" :tabindex="disabled ? -1 : 0" @keydown="handleKeyDown"
+        @focus="setFocused(true)" @blur="setFocused(false)">
         <div class="vue-star-rate__stars" @mouseleave="handleMouseLeave">
             <button v-for="star in stars" :key="star.index" type="button" class="vue-star-rate__star" :class="{
                 'vue-star-rate__star--filled': star.filled,
                 'vue-star-rate__star--half': star.half,
                 'vue-star-rate__star--active': star.active,
                 [`vue-star-rate__star--animation-${mergedAnimation.type}`]: mergedAnimation.enabled,
-            }" :disabled="disabled || readonly" :title="showTooltip ? getTooltipLabel(star.index) : undefined"
-                :aria-label="getTooltipLabel(star.index)" @click="onStarClick(star.value, $event)"
-                @mousemove="onStarMouseMove(star.value, $event)">
+            }" :disabled="disabled || readonly" :aria-label="getTooltipLabel(star.index)"
+                :aria-pressed="star.active" :title="showTooltip ? getTooltipLabel(star.index) : undefined"
+                @click="onStarClick(star.value, $event)" @mousemove="onStarMouseMove(star.value, $event)">
                 <!-- Lucide Icons -->
                 <LucideIcon v-if="iconProvider === 'lucide'"
                     :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
@@ -299,7 +306,7 @@ const cssVars = computed(() => ({
         </div>
 
         <!-- Counter -->
-        <span v-if="showCounter" class="vue-star-rate__counter">
+        <span v-if="showCounter" class="vue-star-rate__counter" aria-live="polite">
             <slot name="counter" :value="displayRating" :max="maxStars">
                 {{ counterText }}
             </slot>

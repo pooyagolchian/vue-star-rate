@@ -1,5 +1,6 @@
 import { useStarRating } from '@/composables/useStarRating';
 import type { AnimationConfig, StarColors } from '@/types';
+import { nextTick, ref } from 'vue';
 import { describe, expect, it, vi } from 'vitest';
 
 describe('useStarRating', () => {
@@ -341,6 +342,98 @@ describe('useStarRating', () => {
       setFocused(false);
       expect(isFocused.value).toBe(false);
       expect(emit).toHaveBeenCalledWith('blur');
+    });
+  });
+
+  describe('Reactive options (MaybeRefOrGetter)', () => {
+    it('respects readonly ref changing to true after setup', () => {
+      const emit = createEmit();
+      const readonlyRef = ref(false);
+
+      const { handleClick, internalRating } = useStarRating(
+        { ...defaultOptions, readonly: readonlyRef },
+        emit,
+      );
+
+      handleClick(3);
+      expect(internalRating.value).toBe(3);
+
+      readonlyRef.value = true;
+      handleClick(5);
+      // Rating must not change after readonly becomes true
+      expect(internalRating.value).toBe(3);
+    });
+
+    it('respects disabled ref changing to true after setup', () => {
+      const emit = createEmit();
+      const disabledRef = ref(false);
+
+      const { handleClick, internalRating } = useStarRating(
+        { ...defaultOptions, disabled: disabledRef },
+        emit,
+      );
+
+      handleClick(3);
+      expect(internalRating.value).toBe(3);
+
+      disabledRef.value = true;
+      handleClick(5);
+      // Rating must not change after disabled becomes true
+      expect(internalRating.value).toBe(3);
+    });
+
+    it('re-enables interaction when readonly ref switches back to false', () => {
+      const emit = createEmit();
+      const readonlyRef = ref(true);
+
+      const { handleClick, internalRating } = useStarRating(
+        { ...defaultOptions, readonly: readonlyRef },
+        emit,
+      );
+
+      handleClick(3);
+      expect(internalRating.value).toBe(0); // blocked
+
+      readonlyRef.value = false;
+      handleClick(3);
+      expect(internalRating.value).toBe(3); // now allowed
+    });
+  });
+
+  describe('External modelValue sync', () => {
+    it('syncs internalRating when the modelValue ref is updated externally', async () => {
+      const emit = createEmit();
+      const externalModel = ref<number>(2);
+
+      const { internalRating } = useStarRating(
+        { ...defaultOptions, modelValue: externalModel },
+        emit,
+      );
+
+      expect(internalRating.value).toBe(2);
+
+      externalModel.value = 4;
+      await nextTick();
+
+      expect(internalRating.value).toBe(4);
+    });
+
+    it('does NOT emit "change" when internalRating is synced from external model update', async () => {
+      const emit = createEmit();
+      const externalModel = ref<number>(2);
+
+      const { internalRating } = useStarRating(
+        { ...defaultOptions, modelValue: externalModel },
+        emit,
+      );
+
+      emit.mockClear();
+      externalModel.value = 4;
+      await nextTick();
+
+      expect(internalRating.value).toBe(4);
+      // External sync must NOT fire a user-interaction "change" event
+      expect(emit).not.toHaveBeenCalledWith('change', expect.anything(), expect.anything());
     });
   });
 });

@@ -31,9 +31,10 @@ export default defineConfig({
           vue: 'Vue',
           'lucide-vue-next': 'LucideVue',
         },
+        exports: 'named',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'style.css';
-          return assetInfo.name || 'asset';
+          if (assetInfo.name?.endsWith('.css')) return 'style.css';
+          return assetInfo.name ?? 'asset';
         },
       },
     },

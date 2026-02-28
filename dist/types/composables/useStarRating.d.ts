@@ -1,18 +1,8 @@
 import { Ref, ComputedRef } from 'vue';
-import { StarItem, RatingValue, StarColors, AnimationConfig } from '../types';
-
-export interface UseStarRatingOptions {
-    modelValue?: RatingValue;
-    maxStars: number;
-    allowHalf: boolean;
-    readonly: boolean;
-    disabled: boolean;
-    allowReset: boolean;
-    minRating: number;
-    step: number;
-    colors: StarColors;
-    animation: AnimationConfig;
-}
+import { StarItem, RatingValue, UseStarRatingOptions } from '../types';
+export type { UseStarRatingOptions } from '../types';
+/** Narrow emit type — no more `event: string` + `any[]` */
+type EmitFn = (event: "update:modelValue" | "change" | "hover" | "focus" | "blur", ...args: unknown[]) => void;
 export interface UseStarRatingReturn {
     internalRating: Ref<RatingValue>;
     hoverRating: Ref<RatingValue | null>;
@@ -29,5 +19,5 @@ export interface UseStarRatingReturn {
     getRating: () => RatingValue;
     setFocused: (focused: boolean) => void;
 }
-export declare function useStarRating(options: UseStarRatingOptions, emit: (event: string, ...args: any[]) => void): UseStarRatingReturn;
+export declare function useStarRating(options: UseStarRatingOptions, emit: EmitFn): UseStarRatingReturn;
 export default useStarRating;

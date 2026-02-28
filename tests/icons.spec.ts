@@ -1,4 +1,5 @@
 import FontAwesomeIcon from '@/components/icons/FontAwesomeIcon.vue';
+import LucideIcon from '@/components/icons/LucideIcon.vue';
 import SvgIcon from '@/components/icons/SvgIcon.vue';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
@@ -118,6 +119,47 @@ describe('Icon Components', () => {
       
       const iconWrapper = wrapper.find('.fa-icon-wrapper');
       expect(iconWrapper.attributes('style')).toContain('font-size: 32px');
+    });
+  });
+
+  describe('LucideIcon', () => {
+    it('renders a star icon', () => {
+      const wrapper = mount(LucideIcon);
+
+      expect(wrapper.find('.lucide-icon-wrapper').exists()).toBe(true);
+      // lucide-vue-next renders an SVG
+      expect(wrapper.find('svg').exists()).toBe(true);
+    });
+
+    it('injects a hidden linearGradient SVG for half-star state', () => {
+      const wrapper = mount(LucideIcon, {
+        props: { half: true, color: '#fbbf24', index: 2 },
+      });
+
+      // The hidden gradient SVG must be present
+      expect(wrapper.find('linearGradient').exists()).toBe(true);
+      expect(wrapper.find('linearGradient').attributes('id')).toBe(
+        'half-gradient-lucide-2',
+      );
+    });
+
+    it('does NOT inject a gradient SVG when not in half state', () => {
+      const wrapper = mount(LucideIcon, {
+        props: { filled: true, half: false },
+      });
+
+      expect(wrapper.find('linearGradient').exists()).toBe(false);
+    });
+
+    it('passes the correct width to the Star icon', () => {
+      const wrapper = mount(LucideIcon, {
+        props: { size: { width: 32, height: 32 } },
+      });
+
+      // lucide renders svg with width attribute
+      const svgs = wrapper.findAll('svg');
+      const visibleSvg = svgs.find((s) => s.attributes('width') === '32');
+      expect(visibleSvg).toBeDefined();
     });
   });
 });

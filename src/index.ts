@@ -53,11 +53,6 @@ export default VueStarRatePlugin;
 // Named export for plugin
 export { VueStarRatePlugin };
 
-// For direct script tag usage
-if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.use(VueStarRatePlugin);
-}
-
 // Type augmentation for Vue
 declare module 'vue' {
   export interface GlobalComponents {

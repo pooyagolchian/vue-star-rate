@@ -1,5 +1,7 @@
 import VueStarRate from '@/components/VueStarRate.vue';
+import VueStarRatePlugin from '@/index';
 import { mount } from '@vue/test-utils';
+import { createApp } from 'vue';
 import { describe, expect, it } from 'vitest';
 
 describe('VueStarRate', () => {
@@ -206,10 +208,8 @@ describe('VueStarRate', () => {
       });
       
       const container = wrapper.find('.vue-star-rate');
-      expect(container.attributes('role')).toBe('slider');
-      expect(container.attributes('aria-valuenow')).toBe('3');
-      expect(container.attributes('aria-valuemin')).toBe('0');
-      expect(container.attributes('aria-valuemax')).toBe('5');
+      // role="group" + individual aria-pressed buttons follows WCAG 2.2 for star ratings
+      expect(container.attributes('role')).toBe('group');
       expect(container.attributes('aria-label')).toBe('Rate this item');
     });
 
@@ -360,6 +360,104 @@ describe('VueStarRate', () => {
       const stars = wrapper.findAll('.vue-star-rate__star');
       expect(stars[0].attributes('title')).toBe('Terrible');
       expect(stars[4].attributes('title')).toBe('Excellent');
+    });
+  });
+
+  describe('ARIA pressed state', () => {
+    it('marks filled stars with aria-pressed=true', () => {
+      const wrapper = mount(VueStarRate, {
+        props: { modelValue: 3 },
+      });
+
+      const stars = wrapper.findAll('.vue-star-rate__star');
+      expect(stars[0].attributes('aria-pressed')).toBe('true');
+      expect(stars[2].attributes('aria-pressed')).toBe('true');
+      expect(stars[3].attributes('aria-pressed')).toBe('false');
+      expect(stars[4].attributes('aria-pressed')).toBe('false');
+    });
+
+    it('marks all stars as aria-pressed=false when modelValue is 0', () => {
+      const wrapper = mount(VueStarRate, {
+        props: { modelValue: 0 },
+      });
+
+      wrapper.findAll('.vue-star-rate__star').forEach((star) => {
+        expect(star.attributes('aria-pressed')).toBe('false');
+      });
+    });
+  });
+
+  describe('Counter aria-live', () => {
+    it('counter has aria-live="polite"', () => {
+      const wrapper = mount(VueStarRate, {
+        props: { showCounter: true, modelValue: 3 },
+      });
+
+      expect(wrapper.find('.vue-star-rate__counter').attributes('aria-live')).toBe('polite');
+    });
+  });
+
+  describe('Slot API', () => {
+    it('renders custom icon slot for each star when iconProvider is custom', () => {
+      const wrapper = mount(VueStarRate, {
+        props: { iconProvider: 'custom' },
+        slots: {
+          icon: '<span class="custom-star">★</span>',
+        },
+      });
+
+      expect(wrapper.findAll('.custom-star')).toHaveLength(5);
+    });
+
+    it('renders custom counter slot content', () => {
+      const wrapper = mount(VueStarRate, {
+        props: { showCounter: true, modelValue: 3 },
+        slots: {
+          counter: '<span class="my-counter">custom counter</span>',
+        },
+      });
+
+      expect(wrapper.find('.my-counter').text()).toBe('custom counter');
+    });
+
+    it('renders custom clear slot when clearable and rating > 0', async () => {
+      const wrapper = mount(VueStarRate, {
+        props: { clearable: true, modelValue: 3 },
+        slots: {
+          clear: '<span class="custom-clear">Reset</span>',
+        },
+      });
+
+      expect(wrapper.find('.custom-clear').text()).toBe('Reset');
+    });
+  });
+
+  describe('allowReset=false', () => {
+    it('does not reset when clicking the same star with allowReset=false', async () => {
+      const wrapper = mount(VueStarRate, {
+        props: { modelValue: 3, allowReset: false },
+      });
+
+      await wrapper.findAll('.vue-star-rate__star')[2].trigger('click');
+
+      // Clicking the current star should not emit anything (no change)
+      expect(wrapper.emitted('update:modelValue')).toBeFalsy();
+    });
+  });
+
+  describe('Plugin registration', () => {
+    it('registers VueStarRate globally under the default name', () => {
+      const app = createApp({});
+      VueStarRatePlugin.install!(app, {});
+
+      expect((app as any)._context.components['VueStarRate']).toBeDefined();
+    });
+
+    it('registers VueStarRate under a custom component name', () => {
+      const app = createApp({});
+      VueStarRatePlugin.install!(app, { componentName: 'StarRating' });
+
+      expect((app as any)._context.components['StarRating']).toBeDefined();
     });
   });
 });

@@ -1,6 +1,4 @@
-/**
- * Vue Star Rate - TypeScript Type Definitions
- */
+import { MaybeRefOrGetter, VNode } from 'vue';
 /** Icon provider type */
 export type IconProvider = 'lucide' | 'fontawesome' | 'custom';
 /** Star rating value type */
@@ -37,11 +35,9 @@ export type CustomIconRenderer = (props: {
     size: IconSize;
     color: string;
     index: number;
-}) => any;
+}) => VNode | string | null;
 /** Star rating props */
 export interface StarRateProps {
-    /** Current rating value (v-model) */
-    modelValue?: RatingValue;
     /** Maximum number of stars */
     maxStars?: number;
     /** Allow half-star ratings */
@@ -82,12 +78,6 @@ export interface StarRateProps {
         filled?: string;
         half?: string;
     };
-    /** Lucide icon names */
-    lucideIcons?: {
-        empty?: string;
-        filled?: string;
-        half?: string;
-    };
     /** RTL (right-to-left) support */
     rtl?: boolean;
     /** Clearable - show clear button */
@@ -101,18 +91,19 @@ export interface StarRateProps {
     /** Accessible label */
     ariaLabel?: string;
 }
-/** Emitted events */
+/**
+ * Emitted events (Vue 3.5 object-literal style).
+ * `update:modelValue` is handled automatically by `defineModel` and is not listed here.
+ */
 export interface StarRateEmits {
-    /** Update model value */
-    (e: 'update:modelValue', value: RatingValue): void;
-    /** Rating changed event */
-    (e: 'change', value: RatingValue, previousValue: RatingValue): void;
-    /** Hover event */
-    (e: 'hover', value: RatingValue | null): void;
-    /** Focus event */
-    (e: 'focus'): void;
-    /** Blur event */
-    (e: 'blur'): void;
+    /** Rating changed by user interaction */
+    change: [value: RatingValue, previousValue: RatingValue];
+    /** Hover state changed */
+    hover: [value: RatingValue | null];
+    /** Component gained focus */
+    focus: [];
+    /** Component lost focus */
+    blur: [];
 }
 /** Exposed component methods */
 export interface StarRateExpose {
@@ -144,7 +135,22 @@ export interface StarItem {
     value: number;
     filled: boolean;
     half: boolean;
+    /** Convenience alias: true when filled or half */
     active: boolean;
+}
+/** Options for the `useStarRating` composable.
+ *  All option fields accept a plain value, a `Ref`, or a getter `() => T`
+ *  so reactive prop bindings are tracked correctly.
+ */
+export interface UseStarRatingOptions {
+    modelValue?: MaybeRefOrGetter<RatingValue>;
+    maxStars: MaybeRefOrGetter<number>;
+    allowHalf: MaybeRefOrGetter<boolean>;
+    readonly: MaybeRefOrGetter<boolean>;
+    disabled: MaybeRefOrGetter<boolean>;
+    allowReset: MaybeRefOrGetter<boolean>;
+    minRating: MaybeRefOrGetter<number>;
+    step: MaybeRefOrGetter<number>;
 }
 declare const _default: {};
 export default _default;

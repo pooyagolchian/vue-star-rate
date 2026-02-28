@@ -1,6 +1,5 @@
 import { Plugin } from 'vue';
 import { VueStarRate } from './components';
-
 export { VueStarRate } from './components';
 export { LucideIcon, FontAwesomeIcon, SvgIcon } from './components';
 export { useStarRating } from './composables';
