@@ -156,7 +156,7 @@ const animationCode = `<VueStarRate
   :animation="{
     enabled: true,
     duration: 200,
-    scale: 1.2
+    type: 'scale'
   }"
 />`;
 
@@ -186,7 +186,7 @@ const rating = ref(3.5);
     :animation="{
       enabled: true,
       duration: 200,
-      scale: 1.15
+      type: 'scale'
     }"
     @change="(val, old) => console.log(val, old)"
     @hover="(val) => console.log('hover:', val)"
@@ -200,30 +200,42 @@ const features = [
     { icon: Keyboard, title: 'Keyboard Navigation', desc: 'Full a11y keyboard support' },
     { icon: Zap, title: 'TypeScript', desc: 'Complete type definitions' },
     { icon: Globe, title: 'RTL Support', desc: 'Right-to-left layouts' },
-    { icon: Accessibility, title: 'Accessible', desc: 'WCAG 2.1 compliant' },
+    { icon: Accessibility, title: 'Accessible', desc: 'WCAG 2.2 compliant (role=group, aria-pressed)' },
     { icon: Smartphone, title: 'Responsive', desc: 'Mobile-first design' },
     { icon: Code2, title: 'Lightweight', desc: 'Zero dependencies' },
 ];
 
 // Props table
 const propsData = [
-    { name: 'modelValue', type: 'number', default: '0', desc: 'Rating value (v-model)' },
+    { name: 'v-model', type: 'number', default: '0', desc: 'Rating value' },
     { name: 'maxStars', type: 'number', default: '5', desc: 'Maximum number of stars' },
     { name: 'allowHalf', type: 'boolean', default: 'false', desc: 'Enable half-star ratings' },
     { name: 'size', type: 'string', default: "'md'", desc: 'Size preset: xs | sm | md | lg | xl' },
     { name: 'iconSize', type: 'number | object', default: 'auto', desc: 'Custom pixel size or {width, height}' },
+    { name: 'iconProvider', type: 'string', default: "'custom'", desc: "Icon renderer: 'custom' | 'lucide' | 'fontawesome'" },
     { name: 'colors', type: 'object', default: '{...}', desc: 'Color configuration object' },
+    { name: 'animation', type: 'object', default: '{...}', desc: 'Animation config: { enabled, duration, type }' },
     { name: 'readonly', type: 'boolean', default: 'false', desc: 'Disable user interaction' },
-    { name: 'showCounter', type: 'boolean', default: 'false', desc: 'Show rating number counter' },
-    { name: 'showTooltip', type: 'boolean', default: 'false', desc: 'Show tooltips on hover' },
-    { name: 'animation', type: 'object', default: '{...}', desc: 'Animation configuration' },
+    { name: 'disabled', type: 'boolean', default: 'false', desc: 'Disable + grey out component' },
+    { name: 'clearable', type: 'boolean', default: 'false', desc: 'Show clear button when rating > 0' },
+    { name: 'allowReset', type: 'boolean', default: 'true', desc: 'Click active star again to reset' },
+    { name: 'showCounter', type: 'boolean', default: 'false', desc: 'Show rating counter' },
+    { name: 'counterTemplate', type: 'string', default: "'{value} / {max}'", desc: 'Counter format template' },
+    { name: 'showTooltip', type: 'boolean', default: 'false', desc: 'Show tooltips on star hover' },
+    { name: 'tooltipLabels', type: 'string[]', default: '—', desc: 'Custom tooltip labels per star' },
+    { name: 'minRating', type: 'number', default: '0', desc: 'Minimum selectable value' },
+    { name: 'step', type: 'number', default: '1', desc: 'Increment step (overridden by allowHalf)' },
+    { name: 'rtl', type: 'boolean', default: 'false', desc: 'Right-to-left layout' },
+    { name: 'gap', type: 'number', default: '4', desc: 'Gap between stars in pixels' },
+    { name: 'ariaLabel', type: 'string', default: "'Star rating'", desc: 'Accessible group label' },
 ];
 
 // Events table
 const eventsData = [
-    { name: 'update:modelValue', payload: 'number', desc: 'Emitted when rating changes' },
-    { name: 'change', payload: '(value, oldValue)', desc: 'Emitted with previous value' },
-    { name: 'hover', payload: 'number | null', desc: 'Emitted on star hover/leave' },
+    { name: 'change', payload: '(value, oldValue)', desc: 'Rating changed by user interaction' },
+    { name: 'hover', payload: 'number | null', desc: 'Hover enters / leaves a star' },
+    { name: 'focus', payload: '—', desc: 'Component received keyboard focus' },
+    { name: 'blur', payload: '—', desc: 'Component lost focus' },
 ];
 
 // Navigation
@@ -306,7 +318,7 @@ const scrollToSection = (href: string) => {
                 <div class="mb-6 md:mb-8 flex justify-center">
                     <Badge variant="outline" class="gap-2 px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm">
                         <span class="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-green-400"></span>
-                        v2.0.0 — Vue 3 + TypeScript
+                    v3.0.0 — Vue 3.5 + TypeScript 5.7
                     </Badge>
                 </div>
 
@@ -718,7 +730,7 @@ const scrollToSection = (href: string) => {
                     </div>
 
                     <p class="text-xs md:text-sm text-noir-600">
-                        MIT © 2024 Pooya Golchian
+                        MIT © 2026 Pooya Golchian
                     </p>
                 </div>
             </div>

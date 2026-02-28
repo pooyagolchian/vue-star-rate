@@ -35,16 +35,14 @@
 | ⌨️ **Keyboard navigation** | Full accessibility with arrow keys           |
 | 🔒 **Read-only mode**      | Display-only ratings for reviews             |
 | 📱 **Responsive**          | Mobile-first, works on all screen sizes      |
-| 🔷 **TypeScript**          | Full type definitions included               |
+| 🔷 **TypeScript**          | Full type definitions, `MaybeRefOrGetter` aware |
 | ⚡ **Lightweight**         | Zero dependencies, tiny bundle               |
 | 🌐 **RTL Support**         | Right-to-left layout compatibility           |
-| ♿ **Accessible**          | WCAG 2.1 compliant                           |
+| ♿ **Accessible**          | WCAG 2.2 compliant (`role="group"`, `aria-pressed`, `aria-live`) |
 
 ---
 
 ## 📦 Installation
-
-### Vue 3 (Recommended)
 
 ```bash
 # pnpm (recommended)
@@ -57,19 +55,11 @@ npm install vue-js-star-rating
 yarn add vue-js-star-rating
 ```
 
-### Vue 2 (Legacy)
-
-> ⚠️ **Note**: Vue 2 reached End of Life on December 31, 2023. Consider upgrading to Vue 3.
-
-```bash
-npm install vue-star-rate@^1.0.0
-```
+> **Requires Vue 3.5+** — v3 uses `defineModel`, `useTemplateRef`, and `MaybeRefOrGetter` patterns.
 
 ---
 
 ## 🚀 Quick Start
-
-### Vue 3
 
 ```vue
 <script setup lang="ts">
@@ -85,19 +75,17 @@ const rating = ref(0);
 </template>
 ```
 
-### Vue 2
+### Global Plugin Registration
 
-```vue
-<template>
-  <star-rate :value="rating" @input="rating = $event" :star-count="5" />
-</template>
+```typescript
+// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import VueStarRatePlugin from 'vue-js-star-rating';
+import 'vue-js-star-rating/dist/style.css';
 
-<script>
-import StarRate from 'vue-star-rate';
-
-export default {
-  components: { StarRate },
-  data() {
+createApp(App).use(VueStarRatePlugin).mount('#app');
+```
     return { rating: 0 };
   },
 };
@@ -148,6 +136,38 @@ export default {
 <VueStarRate v-model="rating" :readonly="true" :show-counter="true" />
 ```
 
+### Clearable Rating
+
+```vue
+<VueStarRate v-model="rating" :clearable="true" />
+```
+
+### RTL Layout
+
+```vue
+<VueStarRate v-model="rating" :rtl="true" />
+```
+
+### Icon Providers
+
+```vue
+<!-- Lucide icons (requires lucide-vue-next) -->
+<VueStarRate v-model="rating" icon-provider="lucide" />
+
+<!-- FontAwesome (requires @fortawesome/fontawesome-free CSS) -->
+<VueStarRate v-model="rating" icon-provider="fontawesome" />
+
+<!-- Custom slot icon -->
+<VueStarRate v-model="rating" icon-provider="custom">
+  <template #icon="{ filled, size, color }">
+    <svg :width="size.width" :height="size.height" viewBox="0 0 24 24">
+      <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"
+               :fill="filled ? color : 'none'" :stroke="color" stroke-width="2" />
+    </svg>
+  </template>
+</VueStarRate>
+```
+
 ### Custom Star Count
 
 ```vue
@@ -160,8 +180,18 @@ export default {
 <!-- Show counter -->
 <VueStarRate v-model="rating" :show-counter="true" />
 
-<!-- Show tooltips on hover -->
+<!-- Custom counter template -->
+<VueStarRate v-model="rating" :show-counter="true" counter-template="{value} / {max} stars" />
+
+<!-- Tooltips on hover -->
 <VueStarRate v-model="rating" :show-tooltip="true" />
+
+<!-- Custom tooltip labels -->
+<VueStarRate
+  v-model="rating"
+  :show-tooltip="true"
+  :tooltip-labels="['Terrible', 'Bad', 'OK', 'Good', 'Excellent']"
+/>
 ```
 
 ### Full Configuration
@@ -184,7 +214,7 @@ export default {
   :animation="{
     enabled: true,
     duration: 200,
-    scale: 1.15,
+    type: 'scale',
   }"
   @change="(val, old) => console.log(val, old)"
   @hover="(val) => console.log('hover:', val)"
@@ -195,27 +225,42 @@ export default {
 
 ## 📋 Vue 3 Props API
 
-| Prop          | Type                                   | Default | Description              |
-| ------------- | -------------------------------------- | ------- | ------------------------ |
-| `modelValue`  | `number`                               | `0`     | Rating value (v-model)   |
-| `maxStars`    | `number`                               | `5`     | Maximum number of stars  |
-| `allowHalf`   | `boolean`                              | `false` | Enable half-star ratings |
-| `size`        | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'`  | Size preset              |
-| `iconSize`    | `number \| { width, height }`          | `auto`  | Custom pixel size        |
-| `colors`      | `object`                               | `{...}` | Color configuration      |
-| `readonly`    | `boolean`                              | `false` | Disable user interaction |
-| `showCounter` | `boolean`                              | `false` | Show rating number       |
-| `showTooltip` | `boolean`                              | `false` | Show hover tooltips      |
-| `animation`   | `object`                               | `{...}` | Animation configuration  |
+| Prop               | Type                                       | Default               | Description                              |
+| ------------------ | ------------------------------------------ | --------------------- | ---------------------------------------- |
+| `v-model`          | `number`                                   | `0`                   | Rating value                             |
+| `maxStars`         | `number`                                   | `5`                   | Maximum number of stars                  |
+| `allowHalf`        | `boolean`                                  | `false`               | Enable half-star ratings                 |
+| `size`             | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'`   | `'md'`                | Size preset                              |
+| `iconSize`         | `number \| { width, height }`              | `auto`                | Custom pixel size                        |
+| `iconProvider`     | `'custom' \| 'lucide' \| 'fontawesome'`   | `'custom'`            | Icon renderer                            |
+| `colors`           | `Partial<StarColors>`                      | see below             | Color configuration                      |
+| `animation`        | `Partial<AnimationConfig>`                 | see below             | Animation configuration                  |
+| `readonly`         | `boolean`                                  | `false`               | Disable user interaction                 |
+| `disabled`         | `boolean`                                  | `false`               | Disable + grey out component             |
+| `clearable`        | `boolean`                                  | `false`               | Show a clear button when rating > 0      |
+| `allowReset`       | `boolean`                                  | `true`                | Click active star again to reset         |
+| `showCounter`      | `boolean`                                  | `false`               | Show rating counter                      |
+| `counterTemplate`  | `string`                                   | `'{value} / {max}'`   | Counter format template                  |
+| `showTooltip`      | `boolean`                                  | `false`               | Show tooltips on star hover              |
+| `tooltipLabels`    | `string[]`                                 | —                     | Custom tooltip labels per star           |
+| `minRating`        | `number`                                   | `0`                   | Minimum selectable value                 |
+| `step`             | `number`                                   | `1`                   | Increment step (overridden by allowHalf) |
+| `rtl`              | `boolean`                                  | `false`               | Right-to-left layout                     |
+| `inline`           | `boolean`                                  | `false`               | Inline layout mode                       |
+| `gap`              | `number`                                   | `4`                   | Gap between stars in pixels              |
+| `ariaLabel`        | `string`                                   | `'Star rating'`       | Accessible group label                   |
+| `className`        | `string`                                   | —                     | Extra CSS class on root element          |
+| `faIcons`          | `{ empty?, filled?, half? }`               | —                     | FontAwesome class overrides              |
+| `customIcon`       | `CustomIconRenderer`                       | —                     | Programmatic icon render function        |
 
 ### Colors Object
 
 ```typescript
 {
-  empty: '#d1d5db',    // Empty star color
-  filled: '#fbbf24',   // Filled star color
-  hover: '#fcd34d',    // Hover state color
-  half: '#fbbf24'      // Half-star color
+  empty:  '#d1d5db',  // Empty star color
+  filled: '#fbbf24',  // Filled star color
+  hover:  '#f59e0b',  // Hover state color
+  half?:  '#fbbf24',  // Half-star color (falls back to filled)
 }
 ```
 
@@ -223,21 +268,34 @@ export default {
 
 ```typescript
 {
-  enabled: true,       // Enable animations
-  duration: 200,       // Animation duration in ms
-  scale: 1.15          // Scale factor on hover
+  enabled:  true,      // Enable animations
+  duration: 200,       // Duration in ms
+  type:     'scale',   // 'scale' | 'bounce' | 'pulse' | 'none'
 }
 ```
 
 ---
 
+## 🎰 Slots
+
+| Slot      | Scoped props                           | Description                 |
+| --------- | -------------------------------------- | --------------------------- |
+| `icon`    | `{ filled, half, size, color, index }` | Custom icon per star        |
+| `counter` | `{ value, max }`                       | Custom counter content      |
+| `clear`   | —                                      | Custom clear button content |
+
+---
+
 ## 📡 Events
 
-| Event               | Payload             | Description                 |
-| ------------------- | ------------------- | --------------------------- |
-| `update:modelValue` | `number`            | Emitted when rating changes |
-| `change`            | `(value, oldValue)` | Emitted with previous value |
-| `hover`             | `number \| null`    | Emitted on star hover/leave |
+| Event    | Payload             | Description                        |
+| -------- | ------------------- | ---------------------------------- |
+| `change` | `(value, oldValue)` | Rating changed by user interaction |
+| `hover`  | `number \| null`    | Hover enters / leaves a star       |
+| `focus`  | —                   | Component received keyboard focus  |
+| `blur`   | —                   | Component lost focus               |
+
+> `update:modelValue` is handled automatically by `v-model` / `defineModel`.
 
 ---
 
@@ -247,48 +305,47 @@ export default {
 | ------- | ---------------------- |
 | `→` `↑` | Increase rating        |
 | `←` `↓` | Decrease rating        |
-| `Home`  | Set to minimum (0)     |
+| `Home`  | Set to minimum         |
 | `End`   | Set to maximum         |
 | `1-9`   | Jump to specific value |
-| `0`     | Reset to zero          |
+| `0`     | Reset to minimum       |
 
 ---
 
-## 🔄 Vue 2 to Vue 3 Migration
+## 🖥️ Exposed Methods
+
+```typescript
+const ratingRef = ref<InstanceType<typeof VueStarRate>>();
+
+ratingRef.value?.reset();          // Reset to initial value
+ratingRef.value?.setRating(3.5);   // Set programmatically
+ratingRef.value?.getRating();      // Get current value
+ratingRef.value?.focus();          // Focus the component
+ratingRef.value?.blur();           // Blur the component
+```
+
+---
+
+## 🔄 Migrating from v2 to v3
 
 ### Breaking Changes
 
-| Vue 2 (v1.x)                    | Vue 3 (v2.x)             |
-| ------------------------------- | ------------------------ |
-| `:value` + `@input`             | `v-model`                |
-| `:star-count`                   | `:max-stars`             |
-| `:half-star`                    | `:allow-half`            |
-| `activeColor` / `inactiveColor` | `:colors` object         |
-| Component: `star-rate`          | Component: `VueStarRate` |
+| v2.x                                         | v3.x                                                   |
+| -------------------------------------------- | ------------------------------------------------------ |
+| `modelValue` is a prop                       | Managed by `defineModel` — no change in template usage |
+| `lucideIcons` prop                           | **Removed** — `iconProvider="lucide"` uses `Star` only |
+| `role="slider"` on container                 | `role="group"` — WCAG 2.2 compliant                    |
+| Animation `scale: number` key                | Animation `type: 'scale' \| 'bounce' \| 'pulse'`       |
+| `peerDependencies: vue ^3.3.0`               | `peerDependencies: vue ^3.5.0`                         |
 
-### Migration Example
+### Animation Migration
 
 ```vue
-<!-- Vue 2 -->
-<star-rate
-  :value="rating"
-  @input="rating = $event"
-  :star-count="5"
-  :half-star="true"
-  active-color="#fbbf24"
-  inactive-color="#d1d5db"
-/>
+<!-- v2 (wrong shape — scale was never a valid AnimationConfig key) -->
+:animation="{ enabled: true, duration: 200, scale: 1.15 }"
 
-<!-- Vue 3 -->
-<VueStarRate
-  v-model="rating"
-  :max-stars="5"
-  :allow-half="true"
-  :colors="{
-    filled: '#fbbf24',
-    empty: '#d1d5db',
-  }"
-/>
+<!-- v3 (correct) -->
+:animation="{ enabled: true, duration: 200, type: 'scale' }"
 ```
 
 ---
