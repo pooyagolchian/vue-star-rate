@@ -31,7 +31,7 @@ async function copyCode(code: string) {
     
     <!-- Code -->
     <div class="relative">
-      <pre class="overflow-x-auto p-4 text-sm leading-relaxed"><code class="font-mono text-noir-200">{{ code }}</code></pre>
+      <pre class="overflow-x-auto p-3 md:p-4 text-xs sm:text-sm leading-relaxed"><code class="font-mono text-noir-200 whitespace-pre">{{ code }}</code></pre>
       
       <!-- Copy button -->
       <button

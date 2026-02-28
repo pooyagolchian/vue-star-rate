@@ -237,7 +237,7 @@ const scrollToSection = (href: string) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-black">
+    <div class="min-h-screen bg-black overflow-x-hidden">
         <!-- Background Effects -->
         <div class="fixed inset-0 -z-10 pointer-events-none">
             <div class="absolute inset-0 bg-linear-to-br from-noir-950 via-black to-noir-950"></div>
@@ -314,10 +314,21 @@ const scrollToSection = (href: string) => {
                 </p>
 
                 <!-- Interactive Demo -->
-                <Card class="mx-auto mb-8 md:mb-10 max-w-sm md:max-w-md" hoverable>
+                <Card class="mx-auto mb-8 md:mb-10 max-w-xs sm:max-w-sm md:max-w-md" hoverable>
                     <div class="flex flex-col items-center gap-3 md:gap-4">
                         <span class="text-xs md:text-sm text-noir-500 uppercase tracking-wider">Try it out</span>
-                        <VueStarRate v-model="basicRating" size="xl" :show-counter="true" :colors="{
+                        <VueStarRate v-model="basicRating"
+                            :size="'lg'"
+                            class="sm:hidden"
+                            :show-counter="true" :colors="{
+                            empty: '#3f3f46',
+                            filled: '#ffffff',
+                            hover: '#a1a1aa',
+                        }" />
+                        <VueStarRate v-model="basicRating"
+                            :size="'xl'"
+                            class="hidden sm:block"
+                            :show-counter="true" :colors="{
                             empty: '#3f3f46',
                             filled: '#ffffff',
                             hover: '#a1a1aa',
@@ -340,10 +351,10 @@ const scrollToSection = (href: string) => {
                 <!-- Install Command -->
                 <div class="mt-8 md:mt-10 flex justify-center px-4">
                     <button @click="copyToClipboard(installCode, 'install')"
-                        class="group inline-flex items-center gap-2 md:gap-3 rounded-xl border border-noir-800 bg-noir-900/50 px-4 md:px-5 py-2.5 md:py-3 font-mono text-xs md:text-sm hover:border-noir-700 transition-colors">
-                        <span class="text-noir-500">$</span>
-                        <span class="text-noir-200">{{ installCode }}</span>
-                        <span class="text-noir-500 group-hover:text-white transition-colors">
+                        class="group inline-flex w-full max-w-xs sm:w-auto items-center justify-between gap-2 md:gap-3 rounded-xl border border-noir-800 bg-noir-900/50 px-4 md:px-5 py-2.5 md:py-3 font-mono text-xs md:text-sm hover:border-noir-700 transition-colors overflow-hidden">
+                        <span class="text-noir-500 shrink-0">$</span>
+                        <span class="text-noir-200 truncate">{{ installCode }}</span>
+                        <span class="text-noir-500 group-hover:text-white transition-colors shrink-0">
                             <Check v-if="copiedCode === 'install'" class="h-4 w-4 text-green-400" />
                             <Clipboard v-else class="h-4 w-4" />
                         </span>
@@ -419,16 +430,18 @@ const scrollToSection = (href: string) => {
                     <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Interactive examples demonstrating all features.</p>
                 </div>
 
-                <div class="space-y-8 md:space-y-12">
+                <div class="space-y-6 md:space-y-10">
                     <!-- Half Stars -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Half-Star Ratings</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Enable precise half-star values with counter display.</p>
-                                <CodeBlock :code="halfStarCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Half-Star Ratings</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Enable precise half-star values with counter display.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="halfStarCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                            <div class="flex min-h-[100px] md:min-h-[140px] flex-col items-center justify-center rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8">
                                 <VueStarRate v-model="halfRating" :allow-half="true" size="lg" :show-counter="true"
                                     :colors="{
                                         empty: '#3f3f46',
@@ -442,16 +455,18 @@ const scrollToSection = (href: string) => {
 
                     <!-- Size Presets -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Size Presets</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Five predefined sizes or custom pixel values.</p>
-                                <CodeBlock :code="sizePresetsCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Size Presets</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Five predefined sizes or custom pixel values.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="sizePresetsCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center gap-4 md:gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                            <div class="flex flex-col items-start justify-center gap-3 md:gap-5 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8 overflow-x-auto">
                                 <div v-for="size in ['xs', 'sm', 'md', 'lg', 'xl']" :key="size"
-                                    class="flex items-center gap-3 md:gap-4">
-                                    <span class="w-6 md:w-8 text-xs text-noir-500 uppercase">{{ size }}</span>
+                                    class="flex items-center gap-2 md:gap-4">
+                                    <span class="w-5 md:w-8 shrink-0 text-xs text-noir-500 uppercase">{{ size }}</span>
                                     <VueStarRate v-model="sizeRatings[size as keyof typeof sizeRatings]"
                                         :size="size as 'xs' | 'sm' | 'md' | 'lg' | 'xl'" :colors="{
                                             empty: '#3f3f46',
@@ -465,14 +480,21 @@ const scrollToSection = (href: string) => {
 
                     <!-- Custom Colors -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Custom Colors</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Match your design system with custom color configuration.</p>
-                                <CodeBlock :code="customColorsCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Custom Colors</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Match your design system with custom color configuration.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="customColorsCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
-                                <VueStarRate v-model="colorRating" size="xl" :colors="{
+                            <div class="flex min-h-[100px] flex-col items-center justify-center gap-4 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8">
+                                <VueStarRate v-model="colorRating" size="lg" class="sm:hidden" :colors="{
+                                    empty: '#27272a',
+                                    filled: '#ffffff',
+                                    hover: '#71717a',
+                                }" />
+                                <VueStarRate v-model="colorRating" size="xl" class="hidden sm:block" :colors="{
                                     empty: '#27272a',
                                     filled: '#ffffff',
                                     hover: '#71717a',
@@ -483,14 +505,27 @@ const scrollToSection = (href: string) => {
 
                     <!-- Max Stars -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Custom Star Count</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Configure any number of stars for your rating system.</p>
-                                <CodeBlock :code="maxStarsCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Custom Star Count</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Configure any number of stars for your rating system.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="maxStarsCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
-                                <VueStarRate v-model="maxStarsRating" :max-stars="10" size="md" :show-counter="true" :colors="{
+                            <div class="flex min-h-[100px] flex-col items-center justify-center gap-4 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8 overflow-x-auto">
+                                <!-- xs: size sm so 10 stars fit; md+: size md -->
+                                <VueStarRate v-model="maxStarsRating" :max-stars="10" size="xs" :show-counter="true" class="sm:hidden" :colors="{
+                                    empty: '#3f3f46',
+                                    filled: '#ffffff',
+                                    hover: '#a1a1aa',
+                                }" />
+                                <VueStarRate v-model="maxStarsRating" :max-stars="10" size="sm" :show-counter="true" class="hidden sm:block md:hidden" :colors="{
+                                    empty: '#3f3f46',
+                                    filled: '#ffffff',
+                                    hover: '#a1a1aa',
+                                }" />
+                                <VueStarRate v-model="maxStarsRating" :max-stars="10" size="md" :show-counter="true" class="hidden md:block" :colors="{
                                     empty: '#3f3f46',
                                     filled: '#ffffff',
                                     hover: '#a1a1aa',
@@ -501,13 +536,15 @@ const scrollToSection = (href: string) => {
 
                     <!-- Counter & Tooltip -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Counter & Tooltips</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Display rating value and show tooltips on hover.</p>
-                                <CodeBlock :code="counterTooltipCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Counter & Tooltips</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Display rating value and show tooltips on hover.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="counterTooltipCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                            <div class="flex min-h-[100px] flex-col items-center justify-center gap-5 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8">
                                 <div class="text-center">
                                     <span class="text-xs text-noir-500 uppercase tracking-wider block mb-3">With Counter</span>
                                     <VueStarRate v-model="counterRating" size="lg" :show-counter="true" :allow-half="true" :colors="{
@@ -530,13 +567,15 @@ const scrollToSection = (href: string) => {
 
                     <!-- Read-only -->
                     <Card>
-                        <div class="grid gap-6 md:gap-8 lg:grid-cols-2">
-                            <div>
-                                <h3 class="mb-2 text-lg md:text-xl font-semibold">Read-only Mode</h3>
-                                <p class="mb-4 md:mb-6 text-xs md:text-sm text-noir-400">Display ratings without user interaction.</p>
-                                <CodeBlock :code="readonlyCode" language="vue" />
+                        <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
+                            <div class="min-w-0">
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Read-only Mode</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Display ratings without user interaction.</p>
+                                <div class="overflow-x-auto">
+                                    <CodeBlock :code="readonlyCode" language="vue" />
+                                </div>
                             </div>
-                            <div class="flex flex-col items-center justify-center gap-6 rounded-xl border border-noir-800 bg-noir-900/30 p-6 md:p-8">
+                            <div class="flex min-h-[100px] flex-col items-center justify-center gap-4 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8">
                                 <VueStarRate v-model="readonlyRating" size="lg" :readonly="true" :show-counter="true"
                                     :colors="{
                                         empty: '#3f3f46',
@@ -604,17 +643,17 @@ const scrollToSection = (href: string) => {
                             <table class="w-full text-xs md:text-sm">
                                 <thead class="border-b border-noir-800 bg-noir-900/50">
                                     <tr>
-                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Event</th>
-                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Payload</th>
-                                        <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
+                                        <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Event</th>
+                                        <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300 hidden sm:table-cell">Payload</th>
+                                        <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-noir-800/50">
                                     <tr v-for="event in eventsData" :key="event.name"
                                         class="transition-colors hover:bg-noir-900/30">
-                                        <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap">{{ event.name }}</td>
-                                        <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-400">{{ event.payload }}</td>
-                                        <td class="px-4 md:px-6 py-3 md:py-4 text-noir-300">{{ event.desc }}</td>
+                                        <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap">{{ event.name }}</td>
+                                        <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-noir-400 hidden sm:table-cell">{{ event.payload }}</td>
+                                        <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">{{ event.desc }}</td>
                                     </tr>
                                 </tbody>
                             </table>

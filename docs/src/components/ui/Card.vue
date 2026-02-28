@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const cardClass = computed(() =>
     cn(
-        'rounded-2xl border border-noir-800 bg-noir-950/50 p-6 backdrop-blur-sm transition-all duration-300',
+        'rounded-2xl border border-noir-800 bg-noir-950/50 p-4 md:p-6 backdrop-blur-sm transition-all duration-300 overflow-hidden',
         {
             'hover:border-noir-700 hover:bg-noir-900/50': props.hoverable,
         },
