@@ -3,10 +3,8 @@ import {
     Accessibility,
     ArrowRight,
     Check,
-    ChevronDown,
     Clipboard,
     Code2,
-    ExternalLink,
     Github,
     Globe,
     Keyboard,
@@ -18,7 +16,7 @@ import {
     X,
     Zap
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import Badge from '@/components/ui/Badge.vue';
 import Button from '@/components/ui/Button.vue';
@@ -45,9 +43,6 @@ const readonlyRating = ref(4);
 const animationRating = ref(3);
 const maxStarsRating = ref(7);
 const counterRating = ref(3.5);
-
-// Active version tab
-const activeVersionTab = ref<'vue3' | 'vue2'>('vue3');
 
 // Copy state
 const copiedCode = ref<string | null>(null);
@@ -78,28 +73,6 @@ const rating = ref(0);
 <template>
   <VueStarRate v-model="rating" />
 </template>`;
-
-const vue2BasicUsage = `<template>
-  <star-rate
-    :value="rating"
-    @input="rating = $event"
-    :star-count="5"
-    :half-star="false"
-  />
-</template>
-
-<script>
-import StarRate from 'vue-star-rate';
-
-export default {
-  components: { StarRate },
-  data() {
-    return {
-      rating: 0
-    };
-  }
-};
-<\/script>`;
 
 const halfStarCode = `<VueStarRate 
   v-model="rating" 
@@ -159,6 +132,14 @@ const animationCode = `<VueStarRate
     type: 'scale'
   }"
 />`;
+
+const globalPluginCode = `// main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import VueStarRatePlugin from 'vue-js-star-rating';
+import 'vue-js-star-rating/dist/style.css';
+
+createApp(App).use(VueStarRatePlugin).mount('#app');`;
 
 const fullExampleCode = `<script setup lang="ts">
 import { ref } from 'vue';
@@ -258,10 +239,10 @@ const scrollToSection = (href: string) => {
 <template>
     <div class="min-h-screen bg-black">
         <!-- Background Effects -->
-        <div class="fixed inset-0 -z-10">
-            <div class="absolute inset-0 bg-gradient-to-br from-noir-950 via-black to-noir-950"></div>
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] md:w-[800px] h-[400px] md:h-[600px] bg-gradient-radial from-noir-800/20 via-transparent to-transparent blur-3xl"></div>
-            <div class="absolute bottom-0 right-0 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-gradient-radial from-noir-700/10 to-transparent blur-3xl"></div>
+        <div class="fixed inset-0 -z-10 pointer-events-none">
+            <div class="absolute inset-0 bg-linear-to-br from-noir-950 via-black to-noir-950"></div>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[min(600px,90vw)] md:w-[800px] h-[400px] md:h-[600px] bg-[radial-gradient(ellipse_at_center,#27272a33,transparent)] blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-[radial-gradient(ellipse_at_center,#3f3f461a,transparent)] blur-3xl"></div>
         </div>
 
         <!-- Navigation -->
@@ -323,11 +304,11 @@ const scrollToSection = (href: string) => {
                 </div>
 
                 <!-- Title -->
-                <h1 class="mb-4 md:mb-6 text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight">
+                <h1 class="mb-4 md:mb-6 text-[clamp(2.25rem,8vw,4.5rem)] font-bold tracking-tight leading-none">
                     <span class="gradient-text">Vue Star Rate</span>
                 </h1>
 
-                <p class="mx-auto mb-8 md:mb-10 max-w-2xl text-base md:text-lg lg:text-xl text-noir-400 leading-relaxed px-4">
+                <p class="mx-auto mb-8 md:mb-10 max-w-2xl text-sm md:text-lg lg:text-xl text-noir-400 leading-relaxed px-2">
                     A highly customizable, accessible, and feature-rich star rating component
                     for Vue 3 with full TypeScript support.
                 </p>
@@ -404,55 +385,23 @@ const scrollToSection = (href: string) => {
                 <div class="mb-12 md:mb-16 text-center">
                     <Badge variant="secondary" class="mb-3 md:mb-4">Installation</Badge>
                     <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Get started in seconds</h2>
-                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Choose your package manager and framework version.</p>
-                </div>
-
-                <!-- Version Tabs -->
-                <div class="flex justify-center mb-6 md:mb-8">
-                    <div class="inline-flex rounded-lg border border-noir-800 bg-noir-900/50 p-1">
-                        <button @click="activeVersionTab = 'vue3'"
-                                :class="['px-4 md:px-6 py-2 text-sm font-medium rounded-md transition-colors', 
-                                        activeVersionTab === 'vue3' ? 'bg-white text-black' : 'text-noir-400 hover:text-white']">
-                            Vue 3
-                        </button>
-                        <button @click="activeVersionTab = 'vue2'"
-                                :class="['px-4 md:px-6 py-2 text-sm font-medium rounded-md transition-colors', 
-                                        activeVersionTab === 'vue2' ? 'bg-white text-black' : 'text-noir-400 hover:text-white']">
-                            Vue 2
-                        </button>
-                    </div>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Vue 3.5+ · TypeScript-first · Zero dependencies.</p>
                 </div>
 
                 <!-- Vue 3 Installation -->
-                <div v-if="activeVersionTab === 'vue3'" class="space-y-6">
+                <div class="space-y-4 md:space-y-6">
                     <Card>
-                        <h3 class="mb-4 text-lg font-semibold">1. Install the package</h3>
+                        <h3 class="mb-3 md:mb-4 text-base md:text-lg font-semibold">1. Install the package</h3>
                         <CodeBlock :code="'pnpm add vue-js-star-rating\n# or\nnpm install vue-js-star-rating\n# or\nyarn add vue-js-star-rating'" language="bash" />
+                        <p class="mt-3 text-xs text-noir-500">Requires Vue 3.5+ · Zero runtime dependencies</p>
                     </Card>
                     <Card>
-                        <h3 class="mb-4 text-lg font-semibold">2. Import and use</h3>
+                        <h3 class="mb-3 md:mb-4 text-base md:text-lg font-semibold">2. Import and use</h3>
                         <CodeBlock :code="vue3BasicUsage" language="vue" />
                     </Card>
-                </div>
-
-                <!-- Vue 2 Installation -->
-                <div v-else class="space-y-6">
-                    <Card class="border-yellow-500/30 bg-yellow-500/5">
-                        <div class="flex gap-3 text-yellow-400">
-                            <Star class="h-5 w-5 flex-shrink-0 mt-0.5" />
-                            <div>
-                                <h4 class="font-semibold mb-1">Vue 2 Support</h4>
-                                <p class="text-sm text-yellow-400/80">For Vue 2 projects, use version 1.x of the package. Note that Vue 2 reached End of Life on December 31, 2023.</p>
-                            </div>
-                        </div>
-                    </Card>
                     <Card>
-                        <h3 class="mb-4 text-lg font-semibold">1. Install the package</h3>
-                        <CodeBlock :code="'npm install vue-star-rate@^1.0.0'" language="bash" />
-                    </Card>
-                    <Card>
-                        <h3 class="mb-4 text-lg font-semibold">2. Import and use</h3>
-                        <CodeBlock :code="vue2BasicUsage" language="vue" />
+                        <h3 class="mb-3 md:mb-4 text-base md:text-lg font-semibold">3. Register globally (optional)</h3>
+                        <CodeBlock :code="globalPluginCode" language="typescript" />
                     </Card>
                 </div>
             </div>
@@ -628,19 +577,19 @@ const scrollToSection = (href: string) => {
                         <table class="w-full text-xs md:text-sm">
                             <thead class="border-b border-noir-800 bg-noir-900/50">
                                 <tr>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Prop</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Type</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300 hidden sm:table-cell">Default</th>
-                                    <th class="px-4 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
+                                    <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Prop</th>
+                                    <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300 hidden sm:table-cell">Type</th>
+                                    <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300 hidden md:table-cell">Default</th>
+                                    <th class="px-3 md:px-6 py-3 md:py-4 text-left font-medium text-noir-300">Description</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-noir-800/50">
                                 <tr v-for="prop in propsData" :key="prop.name"
                                     class="transition-colors hover:bg-noir-900/30">
-                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap">{{ prop.name }}</td>
-                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-400 whitespace-nowrap">{{ prop.type }}</td>
-                                    <td class="px-4 md:px-6 py-3 md:py-4 font-mono text-noir-500 hidden sm:table-cell">{{ prop.default }}</td>
-                                    <td class="px-4 md:px-6 py-3 md:py-4 text-noir-300">{{ prop.desc }}</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white whitespace-nowrap text-xs md:text-sm">{{ prop.name }}</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-noir-400 whitespace-nowrap text-xs hidden sm:table-cell">{{ prop.type }}</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-noir-500 text-xs hidden md:table-cell">{{ prop.default }}</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300 text-xs md:text-sm">{{ prop.desc }}</td>
                                 </tr>
                             </tbody>
                         </table>
