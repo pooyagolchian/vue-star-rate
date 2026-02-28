@@ -1,7 +1,7 @@
-<h1 align="center">⭐ Vue Star Rate</h1>
+<h1 align="center">⭐ vue-js-star-rating</h1>
 
 <p align="center">
-  <strong>A highly customizable, accessible star rating component for Vue</strong>
+  <strong>Zero-dependency Vue 3.5+ star rating — WCAG 2.2 accessible, TypeScript-first, half-star precision, Lucide / FontAwesome / custom icons</strong>
 </p>
 
 <p align="center">
@@ -27,18 +27,20 @@
 
 ## ✨ Features
 
-| Feature                    | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| 🎯 **Half-star ratings**   | Support for precise 0.5 increment ratings    |
-| 📐 **Size presets**        | Built-in `xs`, `sm`, `md`, `lg`, `xl` sizes  |
-| 🎨 **Custom colors**       | Fully customizable empty/filled/hover colors |
-| ⌨️ **Keyboard navigation** | Full accessibility with arrow keys           |
-| 🔒 **Read-only mode**      | Display-only ratings for reviews             |
-| 📱 **Responsive**          | Mobile-first, works on all screen sizes      |
-| 🔷 **TypeScript**          | Full type definitions, `MaybeRefOrGetter` aware |
-| ⚡ **Lightweight**         | Zero dependencies, tiny bundle               |
-| 🌐 **RTL Support**         | Right-to-left layout compatibility           |
-| ♿ **Accessible**          | WCAG 2.2 compliant (`role="group"`, `aria-pressed`, `aria-live`) |
+| Feature                    | Description                                                       |
+| -------------------------- | ----------------------------------------------------------------- |
+| 🎯 **Half-star ratings**   | Precise 0.5-step ratings with visual half-fill support            |
+| 📐 **Size presets**        | Five built-in sizes — `xs` · `sm` · `md` · `lg` · `xl`           |
+| 🎨 **Custom colors**       | Per-state color tokens: empty, filled, hover, half                |
+| 🔌 **Icon providers**      | Lucide, FontAwesome, or bring your own via scoped slot/render fn  |
+| ⌨️ **Keyboard navigation** | Arrow keys, `Home`, `End`, `0–9` — fully operable without mouse   |
+| 🔒 **Read-only mode**      | Display-only ratings for reviews and dashboards                   |
+| ♿ **WCAG 2.2 accessible** | `role="group"`, `aria-pressed` per star, `aria-live` counter      |
+| 🔷 **TypeScript-first**    | Full generics, `MaybeRefOrGetter<T>` reactive options             |
+| ⚡ **Zero dependencies**   | No runtime deps — only Vue 3.5+ as a peer                         |
+| 🌐 **RTL support**         | Right-to-left layout via `:rtl="true"`                            |
+| 🔁 **Clearable / reset**   | Built-in clear button and allow-reset-on-reclick behaviour        |
+| 🧩 **Slots API**           | Override icon, counter, and clear button with your own markup     |
 
 ---
 
@@ -55,7 +57,7 @@ npm install vue-js-star-rating
 yarn add vue-js-star-rating
 ```
 
-> **Requires Vue 3.5+** — v3 uses `defineModel`, `useTemplateRef`, and `MaybeRefOrGetter` patterns.
+> **Requires Vue 3.5+.** This package uses [`defineModel`](https://vuejs.org/api/sfc-script-setup.html#definemodel), [`useTemplateRef`](https://vuejs.org/api/composition-api-helpers.html#usetemplateref), and `MaybeRefOrGetter` — all stable in Vue 3.5. It has **zero runtime dependencies**.
 
 ---
 
@@ -86,15 +88,10 @@ import 'vue-js-star-rating/dist/style.css';
 
 createApp(App).use(VueStarRatePlugin).mount('#app');
 ```
-    return { rating: 0 };
-  },
-};
-</script>
-```
 
 ---
 
-## 📖 Vue 3 Examples
+## 📖 Examples
 
 ### Half-Star Ratings
 
@@ -223,7 +220,7 @@ createApp(App).use(VueStarRatePlugin).mount('#app');
 
 ---
 
-## 📋 Vue 3 Props API
+## 📋 Props API
 
 | Prop               | Type                                       | Default               | Description                              |
 | ------------------ | ------------------------------------------ | --------------------- | ---------------------------------------- |
@@ -253,24 +250,24 @@ createApp(App).use(VueStarRatePlugin).mount('#app');
 | `faIcons`          | `{ empty?, filled?, half? }`               | —                     | FontAwesome class overrides              |
 | `customIcon`       | `CustomIconRenderer`                       | —                     | Programmatic icon render function        |
 
-### Colors Object
+### `StarColors` type
 
 ```typescript
-{
-  empty:  '#d1d5db',  // Empty star color
-  filled: '#fbbf24',  // Filled star color
-  hover:  '#f59e0b',  // Hover state color
-  half?:  '#fbbf24',  // Half-star color (falls back to filled)
+interface StarColors {
+  empty:   string  // default '#d1d5db' — unfilled star
+  filled:  string  // default '#fbbf24' — filled star
+  hover:   string  // default '#f59e0b' — hovered star
+  half?:   string  // default = filled  — half-filled star
 }
 ```
 
-### Animation Object
+### `AnimationConfig` type
 
 ```typescript
-{
-  enabled:  true,      // Enable animations
-  duration: 200,       // Duration in ms
-  type:     'scale',   // 'scale' | 'bounce' | 'pulse' | 'none'
+interface AnimationConfig {
+  enabled:  boolean                               // default true
+  duration: number                                // default 200 ms
+  type:     'scale' | 'bounce' | 'pulse' | 'none' // default 'scale'
 }
 ```
 
@@ -330,21 +327,22 @@ ratingRef.value?.blur();           // Blur the component
 
 ### Breaking Changes
 
-| v2.x                                         | v3.x                                                   |
-| -------------------------------------------- | ------------------------------------------------------ |
-| `modelValue` is a prop                       | Managed by `defineModel` — no change in template usage |
-| `lucideIcons` prop                           | **Removed** — `iconProvider="lucide"` uses `Star` only |
-| `role="slider"` on container                 | `role="group"` — WCAG 2.2 compliant                    |
-| Animation `scale: number` key                | Animation `type: 'scale' \| 'bounce' \| 'pulse'`       |
-| `peerDependencies: vue ^3.3.0`               | `peerDependencies: vue ^3.5.0`                         |
+| v2.x                              | v3.x                                                      |
+| --------------------------------- | --------------------------------------------------------- |
+| `modelValue` prop                 | Managed by `defineModel` — template syntax unchanged      |
+| `lucideIcons` prop                | **Removed** — use `icon-provider="lucide"` instead        |
+| `role="slider"` on container      | `role="group"` — WCAG 2.2 compliant                       |
+| `animation: { scale: 1.15 }`      | `animation: { type: 'scale' }` — no numeric scale key    |
+| `peerDependencies: vue ^3.3.0`    | `peerDependencies: vue ^3.5.0`                            |
+| Options API `data()`/`methods`    | Composition API + `<script setup>` / `defineModel`       |
 
 ### Animation Migration
 
 ```vue
-<!-- v2 (wrong shape — scale was never a valid AnimationConfig key) -->
+<!-- v2 — scale was never a valid AnimationConfig key -->
 :animation="{ enabled: true, duration: 200, scale: 1.15 }"
 
-<!-- v3 (correct) -->
+<!-- v3 — use type instead -->
 :animation="{ enabled: true, duration: 200, type: 'scale' }"
 ```
 

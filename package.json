@@ -1,7 +1,7 @@
 {
   "name": "vue-js-star-rating",
-  "version": "3.0.0",
-  "description": "A highly customizable star rating component for Vue 3 with Lucide, FontAwesome, and custom icon support",
+  "version": "3.0.1",
+  "description": "Zero-dependency Vue 3.5+ star rating component — WCAG 2.2 accessible, TypeScript-first, half-star precision, Lucide/FontAwesome/custom icons",
   "author": "Pooya Golchian <pooya.golchian@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -33,9 +33,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx --fix",
     "typecheck": "vue-tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "docs:dev": "cd docs && npx vite",
-    "docs:build": "cd docs && npx vite build",
-    "docs:preview": "cd docs && npx vite preview"
+    "docs:dev": "cd docs && pnpm run dev",
+    "docs:build": "cd docs && pnpm run build",
+    "docs:preview": "cd docs && pnpm run preview"
   },
   "dependencies": {},
   "peerDependencies": {
@@ -81,16 +81,26 @@
     "vue",
     "vue3",
     "vue-3",
+    "vue3.5",
     "star-rating",
     "rating",
     "stars",
+    "half-stars",
+    "star-rating-component",
+    "rating-component",
     "vue-component",
+    "vue-plugin",
     "fontawesome",
     "lucide",
     "typescript",
     "accessible",
+    "a11y",
+    "wcag",
+    "wcag2",
+    "aria",
     "customizable",
-    "half-stars",
-    "rating-component"
+    "v-model",
+    "composition-api",
+    "define-model"
   ]
 }

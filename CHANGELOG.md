@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [3.0.1] — 2026-02-28
+
+### Fixes
+- **readme: stray Options API code removed** — orphaned `return { rating: 0 }` / `</script>` fragment after the Global Plugin Registration block is gone.
+- **`docs:*` npm scripts fixed** — `npx vite` replaced with `pnpm run dev/build/preview` so the docs sub-package's own vite version is used.
+
+### Documentation
+- Rewrote hero tagline to be more concise and descriptive.
+- Expanded Features table with icon-provider and slots rows; sharpened all descriptions.
+- Improved Installation section: links to `defineModel` / `useTemplateRef` Vue docs; explicit "zero runtime dependencies" callout.
+- `StarColors` and `AnimationConfig` documented as named interfaces with field-level comments.
+- Migration table extended with Options API → Composition API row.
+- Section headings de-duplicated ("Vue 3 Examples" → "Examples", "Vue 3 Props API" → "Props API").
+
+### Meta
+- Package `description` updated to include "zero-dependency", "WCAG 2.2", "TypeScript-first".
+- Keywords expanded: `vue3.5`, `wcag`, `wcag2`, `a11y`, `aria`, `v-model`, `composition-api`, `define-model`, `vue-plugin`, `star-rating-component` added.
+
+---
+
 ## [3.0.0] — 2026-02-28
 
 ### Breaking Changes
