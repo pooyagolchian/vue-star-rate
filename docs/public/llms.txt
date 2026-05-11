@@ -1,95 +1,82 @@
-# Vue Star Rate
+# Vue Star Rate (vue-js-star-rating)
 
-> A highly customizable, accessible, and feature-rich star rating component for Vue 3
+> Zero-dependency Vue 3.5+ star rating component — WCAG 2.2 accessible, TypeScript-first, half-star precision, tree-shakeable lazy-loaded Lucide / FontAwesome / custom icons, SSR & Nuxt ready.
 
-## Overview
+**Package:** `vue-js-star-rating` · **License:** MIT · **Peer:** `vue ^3.5.0` · **Bundle:** ~3 KB gzip (default SVG)
 
-Vue Star Rate (npm: vue-js-star-rating) is a modern star rating component built with Vue 3 and TypeScript. It provides a flexible, accessible solution for implementing star ratings in Vue applications.
+Vue Star Rate is the modern, accessibility-first star rating component for Vue 3 applications. Built with `<script setup>`, `defineModel`, `useTemplateRef`, and full TypeScript generics. Icon providers (Lucide, FontAwesome) load lazily via `defineAsyncComponent`, so consumers who pick the default SVG or a custom slot do not need to install `lucide-vue-next` or any FontAwesome runtime package.
 
-## Key Features
-
-- **Half-Star Support**: Enable precise 0.5 increment ratings
-- **Size Presets**: xs (16px), sm (20px), md (24px), lg (32px), xl (40px)
-- **Custom Colors**: Configure empty, filled, hover, and half-star colors
-- **Keyboard Navigation**: Full accessibility with arrow keys, Home, End, number keys
-- **Read-only Mode**: Display ratings without user interaction
-- **TypeScript**: Complete type definitions included
-- **RTL Support**: Right-to-left layout compatibility
-- **WCAG 2.1 Compliant**: Fully accessible
-
-## Installation
+## Quick start
 
 ```bash
-npm install vue-js-star-rating
-# or
 pnpm add vue-js-star-rating
 ```
-
-## Basic Usage (Vue 3)
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import { VueStarRate } from 'vue-js-star-rating';
 import 'vue-js-star-rating/dist/style.css';
-
 const rating = ref(0);
 </script>
 
 <template>
-  <VueStarRate v-model="rating" />
+  <VueStarRate v-model="rating" :allow-half="true" :show-counter="true" />
 </template>
 ```
 
-## Props API
+## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| modelValue | number | 0 | Rating value (v-model) |
-| maxStars | number | 5 | Maximum number of stars |
-| allowHalf | boolean | false | Enable half ratings |
-| size | 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' | 'md' | Size preset |
-| iconSize | number \| { width, height } | auto | Override size |
-| colors | object | {...} | Color configuration |
-| readonly | boolean | false | Disable interaction |
-| showCounter | boolean | false | Show rating counter |
-| showTooltip | boolean | false | Show hover tooltips |
-| animation | object | {...} | Animation configuration |
-
-## Colors Object
-
-```typescript
-{
-  empty: '#d1d5db',    // Empty star color
-  filled: '#fbbf24',   // Filled star color
-  hover: '#fcd34d',    // Hover state color
-  half: '#fbbf24'      // Half-star color
-}
-```
+- `v-model` (`number`, default `0`) — current rating value
+- `maxStars` (`number`, default `5`)
+- `allowHalf` (`boolean`, default `false`) — enable 0.5 increments
+- `size` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`, default `'md'`)
+- `iconSize` (`number | { width, height }`) — override pixel size
+- `iconProvider` (`'custom' | 'lucide' | 'fontawesome'`, default `'custom'`)
+- `colors` (`Partial<StarColors>`) — `{ empty, filled, hover, half }`
+- `animation` (`Partial<AnimationConfig>`) — `{ enabled, duration, type: 'scale'|'bounce'|'pulse'|'none' }`
+- `readonly` (`boolean`, default `false`)
+- `disabled` (`boolean`, default `false`)
+- `clearable` (`boolean`, default `false`)
+- `allowReset` (`boolean`, default `true`) — click active star again to reset
+- `showCounter` / `counterTemplate` (default template `'{value} / {max}'`)
+- `showTooltip` / `tooltipLabels` (`string[]`)
+- `minRating` (`number`, default `0`) / `step` (`number`, default `1`)
+- `rtl` (`boolean`) / `inline` (`boolean`) / `gap` (`number`, px)
+- `ariaLabel` (`string`, default `'Star rating'`) / `className` / `faIcons` / `customIcon`
 
 ## Events
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| update:modelValue | number | Emitted on rating change |
-| change | (value, oldValue) | Emitted with previous value |
-| hover | number \| null | Emitted on star hover |
+- `update:modelValue` (`number`) — emitted by `v-model`
+- `change` (`value`, `oldValue`)
+- `hover` (`number | null`)
+- `focus` / `blur`
 
-## Keyboard Navigation
+## Slots
 
-- Arrow Right/Up: Increase rating
-- Arrow Left/Down: Decrease rating
-- Home: Set to minimum (0)
-- End: Set to maximum
-- 1-9: Jump to specific value
-- 0: Reset to zero
+- `icon` — scoped: `{ filled, half, size, color, index }`
+- `counter` — scoped: `{ value, max }`
+- `clear` — content of the clear button
+
+## Keyboard
+
+- `→` / `↑` — increase · `←` / `↓` — decrease
+- `Home` — minimum · `End` — maximum
+- `1`–`9` — jump to value · `0` — reset
+
+## Exposed methods
+
+`reset()`, `setRating(value)`, `getRating()`, `focus()`, `blur()`
+
+## Optional peers
+
+- `lucide-vue-next` — only required when `iconProvider="lucide"` is rendered
+- `@fortawesome/fontawesome-free` (CSS) — only required when `iconProvider="fontawesome"` is rendered
 
 ## Links
 
-- Documentation: https://pooyagolchian.github.io/vue-star-rate/
+- Docs: https://pooyagolchian.github.io/vue-star-rate/
+- llms-full: https://pooyagolchian.github.io/vue-star-rate/llms-full.txt
 - GitHub: https://github.com/pooyagolchian/vue-star-rate
 - npm: https://www.npmjs.com/package/vue-js-star-rating
-
-## License
-
-MIT © Pooya Golchian
+- Issues: https://github.com/pooyagolchian/vue-star-rate/issues

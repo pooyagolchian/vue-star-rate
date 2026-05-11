@@ -81,6 +81,123 @@
         }
       }
     </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Vue Star Rate",
+        "alternateName": "vue-js-star-rating",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Vue Component",
+        "operatingSystem": "Cross-platform",
+        "description": "Zero-dependency Vue 3.5+ star rating component with half-star precision, full keyboard navigation, WCAG 2.2 compliance, and tree-shakeable lazy-loaded icon providers.",
+        "softwareVersion": "3.1.0",
+        "url": "https://www.npmjs.com/package/vue-js-star-rating",
+        "downloadUrl": "https://www.npmjs.com/package/vue-js-star-rating",
+        "license": "https://opensource.org/licenses/MIT",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": {
+          "@type": "Person",
+          "name": "Pooya Golchian",
+          "url": "https://pooya.blog"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Do I need lucide-vue-next if I use FontAwesome or a custom icon?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Since v3.1.0, vue-js-star-rating loads icon providers with defineAsyncComponent, so the lucide-vue-next package is only required when iconProvider=\"lucide\" is rendered. Consumer bundlers (Vite, Webpack, Rollup, esbuild) will not attempt to resolve it at build time when you use the default SVG, FontAwesome, or custom slot icon."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is vue-js-star-rating SSR-safe and Nuxt 3 compatible?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The component renders deterministically on the server. Async icon providers resolve on the client after hydration. Wrap in <ClientOnly> for Nuxt or <Suspense> to control loading state. The default SVG provider works fully server-side."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the bundle size of vue-js-star-rating?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "About 3 KB gzipped for the default SVG path (component + composable + types stripped). Lucide and FontAwesome chunks are emitted as separate files and only fetched when the matching provider is rendered."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is it accessible?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The root carries role=\"group\" and an aria-label. Each star button exposes aria-pressed. The counter uses aria-live=\"polite\" for live announcements. Full keyboard navigation: arrow keys, Home, End, 0-9. Animations are gated on prefers-reduced-motion. Compliant with WCAG 2.2 Level AA."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use it without v-model?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Pass :model-value and listen to @change or @update:modelValue. The useStarRating composable is also exported for headless control."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which Vue versions are supported?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Vue 3.5+ is required. The component uses defineModel, useTemplateRef, and MaybeRefOrGetter, all stable in Vue 3.5. Vue 2 is not supported."
+            }
+          }
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to add a star rating component to a Vue 3 app",
+        "description": "Install and configure vue-js-star-rating in a Vue 3.5+ application.",
+        "totalTime": "PT2M",
+        "tool": [
+          { "@type": "HowToTool", "name": "pnpm or npm or yarn" },
+          { "@type": "HowToTool", "name": "Vue 3.5+" }
+        ],
+        "step": [
+          {
+            "@type": "HowToStep",
+            "name": "Install the package",
+            "text": "Run: pnpm add vue-js-star-rating (or npm install vue-js-star-rating).",
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#installation"
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Import the component and styles",
+            "text": "In your Vue component: import { VueStarRate } from 'vue-js-star-rating' and import 'vue-js-star-rating/dist/style.css'.",
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#quick-start"
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Bind a v-model to the rating value",
+            "text": "Declare const rating = ref(0) in script setup, then write <VueStarRate v-model=\"rating\" /> in the template.",
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#quick-start"
+          },
+          {
+            "@type": "HowToStep",
+            "name": "Optional: enable half-star precision and a counter",
+            "text": "Add :allow-half=\"true\" and :show-counter=\"true\" props for 0.5-step ratings with a live counter.",
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#examples"
+          }
+        ]
+      }
+    </script>
 
     <!-- Space Grotesk Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

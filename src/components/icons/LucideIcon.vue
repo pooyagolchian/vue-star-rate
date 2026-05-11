@@ -3,9 +3,17 @@
  * Lucide Icon Provider Component
  * Renders star icons using Lucide Vue icons
  */
-import { computed } from 'vue';
-import { Star } from 'lucide-vue-next';
+import { computed, defineAsyncComponent } from 'vue';
 import type { IconSize } from '../../types';
+
+// Dynamic import keeps `lucide-vue-next` out of any consumer bundle that doesn't
+// actually render LucideIcon, even if the chunk is statically referenced.
+// We unwrap the named `Star` export and return it as the component value —
+// Vue does not auto-unwrap arbitrary `{ default: ... }` objects unless they carry
+// the `__esModule` marker that bundlers attach to real ES-module Promises.
+const Star = defineAsyncComponent(() =>
+    import('lucide-vue-next').then((m) => m.Star),
+);
 
 interface Props {
     filled?: boolean;

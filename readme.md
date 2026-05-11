@@ -348,6 +348,80 @@ ratingRef.value?.blur();           // Blur the component
 
 ---
 
+## 📦 Bundle size & optional peers
+
+`vue-js-star-rating` is **zero-dependency** at the package boundary. The default SVG icon ships inside the main bundle; **Lucide and FontAwesome icon providers are loaded lazily** via `defineAsyncComponent`, so their optional peers are only required — and only fetched at runtime — when you actually render them.
+
+| What you import | What's pulled into your bundle |
+| --- | --- |
+| `import { VueStarRate } from 'vue-js-star-rating'` + default icon | Component + SVG star only (~3 KB gzipped) |
+| `<VueStarRate icon-provider="lucide" />` | Above + a separate `LucideIcon-[hash].js` chunk + `lucide-vue-next` |
+| `<VueStarRate icon-provider="fontawesome" />` | Above + a separate `FontAwesomeIcon-[hash].js` chunk |
+| `<VueStarRate icon-provider="custom"><template #icon /></VueStarRate>` | Component only — you supply the markup |
+
+If you choose a non-Lucide provider, you do **not** need to install `lucide-vue-next` — the consumer bundler will not try to resolve it at build time. ([Issue #7](https://github.com/pooyagolchian/vue-star-rate/issues/7) regression test ships in `tests/lazyIcons.spec.ts`.)
+
+```bash
+# Only when you set icon-provider="lucide"
+pnpm add lucide-vue-next
+
+# Only when you set icon-provider="fontawesome"
+# (the CSS classes the wrapper emits ship with the free pack)
+pnpm add @fortawesome/fontawesome-free
+```
+
+---
+
+## ❓ FAQ
+
+### Do I need `lucide-vue-next` if I use FontAwesome (or my own icon)?
+
+No. Since v3.1.0, icon providers are loaded with `defineAsyncComponent`. The static dependency graph from `import { VueStarRate } from 'vue-js-star-rating'` does not include `lucide-vue-next`, so consumer bundlers (Vite, Webpack, Rollup, esbuild) will not require it to be installed.
+
+### Is it SSR-safe? Does it work with Nuxt 3?
+
+Yes. The component renders deterministically on the server. Async icon providers resolve on the client after hydration — wrap your usage in `<ClientOnly>` (Nuxt) or `<Suspense>` if you need the icon present in the initial HTML, otherwise the default SVG provider works fully server-side.
+
+### What is the bundle size?
+
+About **3 KB gzipped** for the default SVG path (component + composable + types stripped). Lucide and FontAwesome chunks are emitted as separate files and only fetched when the matching provider is rendered.
+
+### Is it accessible?
+
+The root carries `role="group"` + `aria-label`. Each star button exposes `aria-pressed`. The counter uses `aria-live="polite"` for live announcements. Full keyboard navigation: arrow keys, `Home`, `End`, `0–9`. Animations are gated on `prefers-reduced-motion` since v3.1.0. Compliant with WCAG 2.2 Level AA.
+
+### Can I use it without `v-model`?
+
+Yes — pass `:model-value` and listen to `@change` (or `@update:modelValue`). The composable `useStarRating` is also exported if you want headless control.
+
+### How do I clear the rating programmatically?
+
+```ts
+const star = ref<InstanceType<typeof VueStarRate>>();
+star.value?.setRating(0); // or star.value?.reset()
+```
+
+---
+
+## ⚖️ Comparison
+
+| Feature | **vue-js-star-rating** | `vue-star-rating` | `vue3-star-ratings` |
+| --- | :---: | :---: | :---: |
+| Vue 3.5+ (`defineModel`) | ✅ | — | partial |
+| TypeScript-first | ✅ | — | partial |
+| Runtime dependencies | **0** | 1 | 1 |
+| Tree-shakeable lazy icons | ✅ | — | — |
+| Half-star precision | ✅ | ✅ | ✅ |
+| Keyboard navigation | ✅ (full) | partial | partial |
+| `aria-pressed` + `aria-live` | ✅ | — | — |
+| WCAG 2.2 compliant | ✅ | — | — |
+| RTL | ✅ | — | — |
+| `prefers-reduced-motion` | ✅ | — | — |
+| Custom icon via slot | ✅ | partial | — |
+| SSR / Nuxt 3 | ✅ | partial | ✅ |
+
+---
+
 ## 🛠️ Development
 
 ```bash

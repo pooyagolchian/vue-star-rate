@@ -4,7 +4,7 @@
  * A highly customizable star rating component for Vue 3
  * Supports Lucide, FontAwesome, and custom icons
  */
-import { computed, useTemplateRef } from 'vue';
+import { computed, defineAsyncComponent, useTemplateRef } from 'vue';
 import { useStarRating } from '../composables/useStarRating';
 import type {
     AnimationConfig,
@@ -14,9 +14,34 @@ import type {
     StarRateEmits,
     StarRateProps,
 } from '../types';
-import FontAwesomeIcon from './icons/FontAwesomeIcon.vue';
-import LucideIcon from './icons/LucideIcon.vue';
 import SvgIcon from './icons/SvgIcon.vue';
+
+// Lazy-loaded icon providers — only fetched (and only require their optional peer
+// `lucide-vue-next` / `@fortawesome/fontawesome-free`) when actually rendered.
+const LucideIcon = defineAsyncComponent(() => import('./icons/LucideIcon.vue'));
+const FontAwesomeIcon = defineAsyncComponent(() => import('./icons/FontAwesomeIcon.vue'));
+
+// Hoisted defaults — never change, allocate once per module instead of per component.
+const defaultColors: StarColors = {
+    empty: '#d1d5db',
+    filled: '#fbbf24',
+    hover: '#f59e0b',
+    half: '#fbbf24',
+};
+
+const defaultAnimation: AnimationConfig = {
+    enabled: true,
+    duration: 200,
+    type: 'scale',
+};
+
+const sizePresets: Record<string, number> = {
+    xs: 16,
+    sm: 20,
+    md: 24,
+    lg: 32,
+    xl: 40,
+};
 
 // v-model binding — defineModel replaces the modelValue prop + update:modelValue emit
 const modelValue = defineModel<number>({ default: 0 });
@@ -46,41 +71,16 @@ const props = withDefaults(defineProps<StarRateProps>(), {
 // Emits — update:modelValue is emitted automatically by defineModel
 const emit = defineEmits<StarRateEmits>();
 
-// Default colors
-const defaultColors: StarColors = {
-    empty: '#d1d5db',
-    filled: '#fbbf24',
-    hover: '#f59e0b',
-    half: '#fbbf24',
-};
-
-// Default animation
-const defaultAnimation: AnimationConfig = {
-    enabled: true,
-    duration: 200,
-    type: 'scale',
-};
-
-// Merged colors
+// Merged colors / animation pull from module-scope defaults declared above
 const mergedColors = computed<StarColors>(() => ({
     ...defaultColors,
     ...props.colors,
 }));
 
-// Merged animation
 const mergedAnimation = computed<AnimationConfig>(() => ({
     ...defaultAnimation,
     ...props.animation,
 }));
-
-// Icon size based on size preset
-const sizePresets: Record<string, number> = {
-    xs: 16,
-    sm: 20,
-    md: 24,
-    lg: 32,
-    xl: 40,
-};
 
 const computedIconSize = computed<IconSize>(() => {
     if (typeof props.iconSize === 'number') {
@@ -153,9 +153,8 @@ const counterText = computed(() => {
 
 // Tooltip labels
 const getTooltipLabel = (index: number): string => {
-    if (props.tooltipLabels && props.tooltipLabels[index]) {
-        return props.tooltipLabels[index];
-    }
+    const label = props.tooltipLabels?.[index];
+    if (label) return label;
     return `${index + 1} star${index === 0 ? '' : 's'}`;
 };
 
@@ -173,45 +172,42 @@ const getIconColor = (filled: boolean, half: boolean): string => {
     return mergedColors.value.empty;
 };
 
-// Handle star click with half support
-const onStarClick = (starValue: number, event: MouseEvent): void => {
-    if (props.readonly || props.disabled) return;
+// Half-star geometry — cache the entered star's rect + midpoint so mousemove
+// doesn't call getBoundingClientRect() (a forced reflow) on every pixel.
+// Also remember the last emitted value so we skip redundant reactive writes.
+let activeStarRect: DOMRect | null = null;
+let lastHoverValue: number | null = null;
 
-    let value = starValue;
-
-    if (props.allowHalf) {
-        const target = event.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const isLeftHalf = props.rtl
-            ? event.clientX > rect.left + rect.width / 2
-            : event.clientX < rect.left + rect.width / 2;
-
-        if (isLeftHalf) {
-            value = starValue - 0.5;
-        }
-    }
-
-    handleClick(value);
+const computeHalfValue = (starValue: number, event: MouseEvent): number => {
+    if (!props.allowHalf) return starValue;
+    const rect =
+        activeStarRect ?? (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const isLeftHalf = props.rtl
+        ? event.clientX > rect.left + rect.width / 2
+        : event.clientX < rect.left + rect.width / 2;
+    return isLeftHalf ? starValue - 0.5 : starValue;
 };
 
-// Handle mouse move for half-star hover
+const onStarClick = (starValue: number, event: MouseEvent): void => {
+    if (props.readonly || props.disabled) return;
+    handleClick(computeHalfValue(starValue, event));
+};
+
+const onStarEnter = (event: MouseEvent): void => {
+    if (props.readonly || props.disabled || !props.allowHalf) return;
+    activeStarRect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+};
+
+const onStarLeave = (): void => {
+    activeStarRect = null;
+    lastHoverValue = null;
+};
+
 const onStarMouseMove = (starValue: number, event: MouseEvent): void => {
     if (props.readonly || props.disabled) return;
-
-    let value = starValue;
-
-    if (props.allowHalf) {
-        const target = event.currentTarget as HTMLElement;
-        const rect = target.getBoundingClientRect();
-        const isLeftHalf = props.rtl
-            ? event.clientX > rect.left + rect.width / 2
-            : event.clientX < rect.left + rect.width / 2;
-
-        if (isLeftHalf) {
-            value = starValue - 0.5;
-        }
-    }
-
+    const value = computeHalfValue(starValue, event);
+    if (value === lastHoverValue) return;
+    lastHoverValue = value;
     handleMouseEnter(value);
 };
 
@@ -270,7 +266,7 @@ const cssVars = computed(() => ({
     <div ref="container" :class="containerClasses" :style="cssVars" role="group" :aria-label="ariaLabel"
         :aria-readonly="readonly" :aria-disabled="disabled" :tabindex="disabled ? -1 : 0" @keydown="handleKeyDown"
         @focus="setFocused(true)" @blur="setFocused(false)">
-        <div class="vue-star-rate__stars" @mouseleave="handleMouseLeave">
+        <div class="vue-star-rate__stars" @mouseleave="onStarLeave(); handleMouseLeave();">
             <button v-for="star in stars" :key="star.index" type="button" class="vue-star-rate__star" :class="{
                 'vue-star-rate__star--filled': star.filled,
                 'vue-star-rate__star--half': star.half,
@@ -278,7 +274,8 @@ const cssVars = computed(() => ({
                 [`vue-star-rate__star--animation-${mergedAnimation.type}`]: mergedAnimation.enabled,
             }" :disabled="disabled || readonly" :aria-label="getTooltipLabel(star.index)"
                 :aria-pressed="star.active" :title="showTooltip ? getTooltipLabel(star.index) : undefined"
-                @click="onStarClick(star.value, $event)" @mousemove="onStarMouseMove(star.value, $event)">
+                @click="onStarClick(star.value, $event)" @mouseenter="onStarEnter($event)"
+                @mousemove="onStarMouseMove(star.value, $event)">
                 <!-- Lucide Icons -->
                 <LucideIcon v-if="iconProvider === 'lucide'"
                     :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
@@ -376,7 +373,6 @@ const cssVars = computed(() => ({
     border: none;
     background: transparent;
     cursor: pointer;
-    transition: transform var(--animation-duration) ease;
 }
 
 .vue-star-rate__star:disabled {
@@ -387,21 +383,27 @@ const cssVars = computed(() => ({
     outline: none;
 }
 
-.vue-star-rate:not(.vue-star-rate--readonly):not(.vue-star-rate--disabled) .vue-star-rate__star:hover {
-    transform: scale(1.1);
-}
+/* Motion — only when the user hasn't requested reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+    .vue-star-rate__star {
+        transition: transform var(--animation-duration) ease;
+    }
 
-/* Animation classes */
-.vue-star-rate--animated .vue-star-rate__star--animation-scale:hover {
-    transform: scale(1.2);
-}
+    .vue-star-rate:not(.vue-star-rate--readonly):not(.vue-star-rate--disabled) .vue-star-rate__star:hover {
+        transform: scale(1.1);
+    }
 
-.vue-star-rate--animated .vue-star-rate__star--animation-bounce:hover {
-    animation: star-bounce var(--animation-duration) ease;
-}
+    .vue-star-rate--animated .vue-star-rate__star--animation-scale:hover {
+        transform: scale(1.2);
+    }
 
-.vue-star-rate--animated .vue-star-rate__star--animation-pulse:hover {
-    animation: star-pulse var(--animation-duration) ease infinite;
+    .vue-star-rate--animated .vue-star-rate__star--animation-bounce:hover {
+        animation: star-bounce var(--animation-duration) ease;
+    }
+
+    .vue-star-rate--animated .vue-star-rate__star--animation-pulse:hover {
+        animation: star-pulse var(--animation-duration) ease infinite;
+    }
 }
 
 @keyframes star-bounce {

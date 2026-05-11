@@ -1,7 +1,7 @@
 import FontAwesomeIcon from '@/components/icons/FontAwesomeIcon.vue';
 import LucideIcon from '@/components/icons/LucideIcon.vue';
 import SvgIcon from '@/components/icons/SvgIcon.vue';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 describe('Icon Components', () => {
@@ -122,12 +122,24 @@ describe('Icon Components', () => {
     });
   });
 
+  // The Star icon inside LucideIcon is loaded via defineAsyncComponent
+  // for tree-shakeable isolation of `lucide-vue-next`. The dynamic import
+  // resolves on a macrotask under Vitest's transformer, so we need real
+  // setTimeout ticks (not just flushPromises) to settle.
+  const settleAsync = async (wrapper: ReturnType<typeof mount>) => {
+    for (let i = 0; i < 20; i++) {
+      await flushPromises();
+      await new Promise((r) => setTimeout(r, 10));
+      if (wrapper.html().includes('<svg')) return;
+    }
+  };
+
   describe('LucideIcon', () => {
-    it('renders a star icon', () => {
+    it('renders a star icon', async () => {
       const wrapper = mount(LucideIcon);
+      await settleAsync(wrapper);
 
       expect(wrapper.find('.lucide-icon-wrapper').exists()).toBe(true);
-      // lucide-vue-next renders an SVG
       expect(wrapper.find('svg').exists()).toBe(true);
     });
 
@@ -136,7 +148,7 @@ describe('Icon Components', () => {
         props: { half: true, color: '#fbbf24', index: 2 },
       });
 
-      // The hidden gradient SVG must be present
+      // Local gradient SVG is sync — does not require flushing
       expect(wrapper.find('linearGradient').exists()).toBe(true);
       expect(wrapper.find('linearGradient').attributes('id')).toBe(
         'half-gradient-lucide-2',
@@ -151,12 +163,12 @@ describe('Icon Components', () => {
       expect(wrapper.find('linearGradient').exists()).toBe(false);
     });
 
-    it('passes the correct width to the Star icon', () => {
+    it('passes the correct width to the Star icon', async () => {
       const wrapper = mount(LucideIcon, {
         props: { size: { width: 32, height: 32 } },
       });
+      await settleAsync(wrapper);
 
-      // lucide renders svg with width attribute
       const svgs = wrapper.findAll('svg');
       const visibleSvg = svgs.find((s) => s.attributes('width') === '32');
       expect(visibleSvg).toBeDefined();

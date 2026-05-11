@@ -1,11 +1,10 @@
-import { defineComponent as A, computed as c, openBlock as b, createElementBlock as S, createElementVNode as x, createCommentVNode as _, createVNode as te, unref as m, normalizeStyle as q, normalizeClass as U, toValue as u, ref as M, watch as ae, useModel as oe, useTemplateRef as ne, Fragment as ie, renderList as re, createBlock as O, renderSlot as W, createTextVNode as se, toDisplayString as ue, mergeModels as Z } from "vue";
-import { Star as de } from "lucide-vue-next";
-const ce = { class: "lucide-icon-wrapper" }, fe = {
+import { defineComponent as T, defineAsyncComponent as U, computed as f, openBlock as g, createElementBlock as z, createElementVNode as x, createCommentVNode as F, createVNode as de, unref as h, normalizeStyle as le, normalizeClass as Z, toValue as d, ref as _, watch as ce, useModel as fe, useTemplateRef as ve, Fragment as me, renderList as he, createBlock as W, renderSlot as X, createTextVNode as ye, toDisplayString as pe, mergeModels as ee } from "vue";
+const ge = { class: "lucide-icon-wrapper" }, be = {
   key: 0,
   width: 0,
   height: 0,
   style: { position: "absolute", visibility: "hidden" }
-}, ve = ["id"], he = ["stop-color"], me = /* @__PURE__ */ A({
+}, we = ["id"], xe = ["stop-color"], Se = /* @__PURE__ */ T({
   __name: "LucideIcon",
   props: {
     filled: { type: Boolean, default: !1 },
@@ -16,37 +15,42 @@ const ce = { class: "lucide-icon-wrapper" }, fe = {
     strokeWidth: { default: 2 },
     index: { default: 0 }
   },
-  setup(l) {
-    const e = l, v = c(() => typeof e.size == "number" ? { width: e.size, height: e.size } : e.size), i = c(() => e.filled || e.half ? e.color : e.emptyColor), t = c(() => e.filled ? e.color : e.half ? `url(#half-gradient-lucide-${e.index})` : "none"), p = c(() => `half-gradient-lucide-${e.index}`);
-    return ($, w) => (b(), S("span", ce, [
-      l.half ? (b(), S("svg", fe, [
+  setup(e) {
+    const l = U(
+      () => import("lucide-vue-next").then((b) => b.Star)
+    ), r = e, s = f(() => typeof r.size == "number" ? { width: r.size, height: r.size } : r.size), y = f(() => r.filled || r.half ? r.color : r.emptyColor), S = f(() => r.filled ? r.color : r.half ? `url(#half-gradient-lucide-${r.index})` : "none"), $ = f(() => `half-gradient-lucide-${r.index}`);
+    return (b, V) => (g(), z("span", ge, [
+      e.half ? (g(), z("svg", be, [
         x("defs", null, [
-          x("linearGradient", { id: p.value }, [
+          x("linearGradient", { id: $.value }, [
             x("stop", {
               offset: "50%",
-              "stop-color": l.color
-            }, null, 8, he),
-            w[0] || (w[0] = x("stop", {
+              "stop-color": e.color
+            }, null, 8, xe),
+            V[0] || (V[0] = x("stop", {
               offset: "50%",
               "stop-color": "transparent"
             }, null, -1))
-          ], 8, ve)
+          ], 8, we)
         ])
-      ])) : _("", !0),
-      te(m(de), {
-        size: v.value.width,
-        color: i.value,
-        fill: t.value,
-        "stroke-width": l.strokeWidth
+      ])) : F("", !0),
+      de(h(l), {
+        size: s.value.width,
+        color: y.value,
+        fill: S.value,
+        "stroke-width": e.strokeWidth
       }, null, 8, ["size", "color", "fill", "stroke-width"])
     ]));
   }
-}), N = (l, e) => {
-  const v = l.__vccOpts || l;
-  for (const [i, t] of e)
-    v[i] = t;
-  return v;
-}, pe = /* @__PURE__ */ N(me, [["__scopeId", "data-v-b5183b10"]]), ye = /* @__PURE__ */ A({
+}), P = (e, l) => {
+  const r = e.__vccOpts || e;
+  for (const [s, y] of l)
+    r[s] = y;
+  return r;
+}, ze = /* @__PURE__ */ P(Se, [["__scopeId", "data-v-ca6e5d3f"]]), Re = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: ze
+}, Symbol.toStringTag, { value: "Module" })), ke = /* @__PURE__ */ T({
   __name: "FontAwesomeIcon",
   props: {
     filled: { type: Boolean, default: !1 },
@@ -58,26 +62,29 @@ const ce = { class: "lucide-icon-wrapper" }, fe = {
     iconFilled: { default: "fa-solid fa-star" },
     iconHalf: { default: "fa-solid fa-star-half-stroke" }
   },
-  setup(l) {
-    const e = l, v = c(() => typeof e.size == "number" ? { width: e.size, height: e.size } : e.size), i = c(() => e.half ? e.iconHalf : e.filled ? e.iconFilled : e.iconEmpty), t = c(() => e.filled || e.half ? e.color : e.emptyColor), p = c(() => ({
-      fontSize: `${v.value.width}px`,
-      color: t.value,
-      width: `${v.value.width}px`,
-      height: `${v.value.height}px`,
+  setup(e) {
+    const l = e, r = f(() => typeof l.size == "number" ? { width: l.size, height: l.size } : l.size), s = f(() => l.half ? l.iconHalf : l.filled ? l.iconFilled : l.iconEmpty), y = f(() => l.filled || l.half ? l.color : l.emptyColor), S = f(() => ({
+      fontSize: `${r.value.width}px`,
+      color: y.value,
+      width: `${r.value.width}px`,
+      height: `${r.value.height}px`,
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center"
     }));
-    return ($, w) => (b(), S("span", {
+    return ($, b) => (g(), z("span", {
       class: "fa-icon-wrapper",
-      style: q(p.value)
+      style: le(S.value)
     }, [
       x("i", {
-        class: U(i.value)
+        class: Z(s.value)
       }, null, 2)
     ], 4));
   }
-}), ge = /* @__PURE__ */ N(ye, [["__scopeId", "data-v-cab526cc"]]), be = { class: "svg-icon-wrapper" }, we = ["width", "height"], xe = { key: 0 }, ze = ["id"], Se = ["stop-color"], ke = ["stroke", "fill"], Re = /* @__PURE__ */ A({
+}), Ce = /* @__PURE__ */ P(ke, [["__scopeId", "data-v-cab526cc"]]), $e = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Ce
+}, Symbol.toStringTag, { value: "Module" })), Ve = { class: "svg-icon-wrapper" }, Ie = ["width", "height"], Le = { key: 0 }, Me = ["id"], Be = ["stop-color"], He = ["stroke", "fill"], _e = /* @__PURE__ */ T({
   __name: "SvgIcon",
   props: {
     filled: { type: Boolean, default: !1 },
@@ -87,81 +94,81 @@ const ce = { class: "lucide-icon-wrapper" }, fe = {
     emptyColor: { default: "#d1d5db" },
     index: { default: 0 }
   },
-  setup(l) {
-    const e = l, v = c(() => typeof e.size == "number" ? { width: e.size, height: e.size } : e.size), i = c(() => e.filled || e.half ? e.color : e.emptyColor), t = c(() => e.half ? `url(#half-gradient-${e.index})` : e.filled ? e.color : "none"), p = c(() => `half-gradient-${e.index}`);
-    return ($, w) => (b(), S("span", be, [
-      (b(), S("svg", {
-        width: v.value.width,
-        height: v.value.height,
+  setup(e) {
+    const l = e, r = f(() => typeof l.size == "number" ? { width: l.size, height: l.size } : l.size), s = f(() => l.filled || l.half ? l.color : l.emptyColor), y = f(() => l.half ? `url(#half-gradient-${l.index})` : l.filled ? l.color : "none"), S = f(() => `half-gradient-${l.index}`);
+    return ($, b) => (g(), z("span", Ve, [
+      (g(), z("svg", {
+        width: r.value.width,
+        height: r.value.height,
         viewBox: "0 0 24 24",
         fill: "none",
         xmlns: "http://www.w3.org/2000/svg"
       }, [
-        l.half ? (b(), S("defs", xe, [
-          x("linearGradient", { id: p.value }, [
+        e.half ? (g(), z("defs", Le, [
+          x("linearGradient", { id: S.value }, [
             x("stop", {
               offset: "50%",
-              "stop-color": l.color
-            }, null, 8, Se),
-            w[0] || (w[0] = x("stop", {
+              "stop-color": e.color
+            }, null, 8, Be),
+            b[0] || (b[0] = x("stop", {
               offset: "50%",
               "stop-color": "transparent"
             }, null, -1))
-          ], 8, ze)
-        ])) : _("", !0),
+          ], 8, Me)
+        ])) : F("", !0),
         x("path", {
           d: "M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z",
-          stroke: i.value,
+          stroke: s.value,
           "stroke-width": "2",
           "stroke-linecap": "round",
           "stroke-linejoin": "round",
-          fill: t.value
-        }, null, 8, ke)
-      ], 8, we))
+          fill: y.value
+        }, null, 8, He)
+      ], 8, Ie))
     ]));
   }
-}), Ce = /* @__PURE__ */ N(Re, [["__scopeId", "data-v-558cdd76"]]);
-function $e(l, e) {
-  const v = u(l.modelValue) ?? 0, i = M(v), t = M(null), p = M(!1), $ = M(!1), w = M(v), y = c(() => p.value && t.value !== null ? t.value : i.value), B = c(() => {
-    const o = [], f = y.value, g = u(l.maxStars), h = u(l.allowHalf);
-    for (let s = 1; s <= g; s++) {
-      const d = s <= Math.floor(f), k = h && !d && s === Math.ceil(f) && f % 1 !== 0, R = s <= f || k && s === Math.ceil(f);
-      o.push({ index: s - 1, value: s, filled: d, half: k, active: R });
+}), Ae = /* @__PURE__ */ P(_e, [["__scopeId", "data-v-558cdd76"]]);
+function Fe(e, l) {
+  const r = d(e.modelValue) ?? 0, s = _(r), y = _(null), S = _(!1), $ = _(!1), b = _(r), V = f(() => S.value && y.value !== null ? y.value : s.value), a = f(() => {
+    const n = [], v = V.value, p = d(e.maxStars), m = d(e.allowHalf);
+    for (let u = 1; u <= p; u++) {
+      const c = u <= Math.floor(v), k = m && !c && u === Math.ceil(v) && v % 1 !== 0, C = u <= v || k && u === Math.ceil(v);
+      n.push({ index: u - 1, value: u, filled: c, half: k, active: C });
     }
-    return o;
-  }), V = (o) => {
-    const f = u(l.minRating), g = u(l.maxStars), h = u(l.allowHalf), s = u(l.step);
-    let d = Math.max(f, Math.min(g, o));
-    return !h && s === 1 ? d = Math.round(d) : h ? d = Math.round(d * 2) / 2 : d = Math.round(d / s) * s, d;
-  }, I = (o) => {
-    if (u(l.readonly) || u(l.disabled)) return;
-    const f = u(l.minRating), g = u(l.allowReset);
-    let h;
-    g && i.value === o ? h = f : h = V(o);
-    const s = i.value;
-    h !== s && (i.value = h, e("update:modelValue", h), e("change", h, s));
-  }, E = (o) => {
-    u(l.readonly) || u(l.disabled) || (p.value = !0, t.value = V(o), e("hover", t.value));
-  }, P = () => {
-    u(l.readonly) || u(l.disabled) || (p.value = !1, t.value = null, e("hover", null));
-  }, C = () => u(l.allowHalf) ? 0.5 : u(l.step), L = (o) => {
-    if (u(l.readonly) || u(l.disabled)) return;
-    const { key: f } = o, g = C(), h = u(l.maxStars), s = u(l.minRating);
-    let d = i.value;
-    switch (f) {
+    return n;
+  }), R = (n) => {
+    const v = d(e.minRating), p = d(e.maxStars), m = d(e.allowHalf), u = d(e.step);
+    let c = Math.max(v, Math.min(p, n));
+    return !m && u === 1 ? c = Math.round(c) : m ? c = Math.round(c * 2) / 2 : c = Math.round(c / u) * u, c;
+  }, w = (n) => {
+    if (d(e.readonly) || d(e.disabled)) return;
+    const v = d(e.minRating), p = d(e.allowReset);
+    let m;
+    p && s.value === n ? m = v : m = R(n);
+    const u = s.value;
+    m !== u && (s.value = m, l("update:modelValue", m), l("change", m, u));
+  }, M = (n) => {
+    d(e.readonly) || d(e.disabled) || (S.value = !0, y.value = R(n), l("hover", y.value));
+  }, B = () => {
+    d(e.readonly) || d(e.disabled) || (S.value = !1, y.value = null, l("hover", null));
+  }, D = () => d(e.allowHalf) ? 0.5 : d(e.step), N = (n) => {
+    if (d(e.readonly) || d(e.disabled)) return;
+    const { key: v } = n, p = D(), m = d(e.maxStars), u = d(e.minRating);
+    let c = s.value;
+    switch (v) {
       case "ArrowRight":
       case "ArrowUp":
-        o.preventDefault(), d = Math.min(h, i.value + g);
+        n.preventDefault(), c = Math.min(m, s.value + p);
         break;
       case "ArrowLeft":
       case "ArrowDown":
-        o.preventDefault(), d = Math.max(s, i.value - g);
+        n.preventDefault(), c = Math.max(u, s.value - p);
         break;
       case "Home":
-        o.preventDefault(), d = s;
+        n.preventDefault(), c = u;
         break;
       case "End":
-        o.preventDefault(), d = h;
+        n.preventDefault(), c = m;
         break;
       case "1":
       case "2":
@@ -172,57 +179,57 @@ function $e(l, e) {
       case "7":
       case "8":
       case "9": {
-        const R = Number.parseInt(f, 10);
-        R <= h && (o.preventDefault(), d = R);
+        const C = Number.parseInt(v, 10);
+        C <= m && (n.preventDefault(), c = C);
         break;
       }
       case "0":
-        o.preventDefault(), d = s;
+        n.preventDefault(), c = u;
         break;
     }
-    const k = V(d);
-    if (k !== i.value) {
-      const R = i.value;
-      i.value = k, e("update:modelValue", k), e("change", k, R);
+    const k = R(c);
+    if (k !== s.value) {
+      const C = s.value;
+      s.value = k, l("update:modelValue", k), l("change", k, C);
     }
-  }, X = () => {
-    const o = i.value;
-    i.value = w.value, o !== w.value && (e("update:modelValue", w.value), e("change", w.value, o));
-  }, j = (o) => {
-    const f = V(o), g = i.value;
-    f !== g && (i.value = f, e("update:modelValue", f), e("change", f, g));
-  }, K = () => i.value, H = (o) => {
-    $.value = o, e(o ? "focus" : "blur");
+  }, I = () => {
+    const n = s.value;
+    s.value = b.value, n !== b.value && (l("update:modelValue", b.value), l("change", b.value, n));
+  }, L = (n) => {
+    const v = R(n), p = s.value;
+    v !== p && (s.value = v, l("update:modelValue", v), l("change", v, p));
+  }, E = () => s.value, j = (n) => {
+    $.value = n, l(n ? "focus" : "blur");
   };
-  return ae(
-    () => u(l.modelValue),
-    (o) => {
-      o !== void 0 && o !== i.value && (i.value = V(o));
+  return ce(
+    () => d(e.modelValue),
+    (n) => {
+      n !== void 0 && n !== s.value && (s.value = R(n));
     }
   ), {
-    internalRating: i,
-    hoverRating: t,
-    isHovering: p,
+    internalRating: s,
+    hoverRating: y,
+    isHovering: S,
     isFocused: $,
-    stars: B,
-    displayRating: y,
-    handleClick: I,
-    handleMouseEnter: E,
-    handleMouseLeave: P,
-    handleKeyDown: L,
-    reset: X,
-    setRating: j,
-    getRating: K,
-    setFocused: H
+    stars: a,
+    displayRating: V,
+    handleClick: w,
+    handleMouseEnter: M,
+    handleMouseLeave: B,
+    handleKeyDown: N,
+    reset: I,
+    setRating: L,
+    getRating: E,
+    setFocused: j
   };
 }
-const Ve = ["aria-label", "aria-readonly", "aria-disabled", "tabindex"], Le = ["disabled", "aria-label", "aria-pressed", "title", "onClick", "onMousemove"], Be = {
+const Te = ["aria-label", "aria-readonly", "aria-disabled", "tabindex"], Pe = ["disabled", "aria-label", "aria-pressed", "title", "onClick", "onMousemove"], De = {
   key: 0,
   class: "vue-star-rate__counter",
   "aria-live": "polite"
-}, Ie = /* @__PURE__ */ A({
+}, Ne = /* @__PURE__ */ T({
   __name: "VueStarRate",
-  props: /* @__PURE__ */ Z({
+  props: /* @__PURE__ */ ee({
     maxStars: { default: 5 },
     allowHalf: { type: Boolean, default: !1 },
     readonly: { type: Boolean, default: !1 },
@@ -251,207 +258,213 @@ const Ve = ["aria-label", "aria-readonly", "aria-disabled", "tabindex"], Le = ["
     modelValue: { default: 0 },
     modelModifiers: {}
   }),
-  emits: /* @__PURE__ */ Z(["change", "hover", "focus", "blur"], ["update:modelValue"]),
-  setup(l, { expose: e, emit: v }) {
-    const i = oe(l, "modelValue"), t = l, p = v, $ = {
+  emits: /* @__PURE__ */ ee(["change", "hover", "focus", "blur"], ["update:modelValue"]),
+  setup(e, { expose: l, emit: r }) {
+    const s = U(() => Promise.resolve().then(() => Re)), y = U(() => Promise.resolve().then(() => $e)), S = {
       empty: "#d1d5db",
       filled: "#fbbf24",
       hover: "#f59e0b",
       half: "#fbbf24"
-    }, w = {
+    }, $ = {
       enabled: !0,
       duration: 200,
       type: "scale"
-    }, y = c(() => ({
-      ...$,
-      ...t.colors
-    })), B = c(() => ({
-      ...w,
-      ...t.animation
-    })), V = {
+    }, b = {
       xs: 16,
       sm: 20,
       md: 24,
       lg: 32,
       xl: 40
-    }, I = c(() => {
-      if (typeof t.iconSize == "number")
-        return { width: t.iconSize, height: t.iconSize };
-      if (typeof t.iconSize == "object")
-        return t.iconSize;
-      const n = V[t.size] ?? 24;
-      return { width: n, height: n };
-    }), E = (n, ...r) => {
-      n === "update:modelValue" ? i.value = r[0] : n === "change" ? p("change", r[0], r[1]) : n === "hover" ? p("hover", r[0]) : n === "focus" ? p("focus") : n === "blur" && p("blur");
+    }, V = fe(e, "modelValue"), a = e, R = r, w = f(() => ({
+      ...S,
+      ...a.colors
+    })), M = f(() => ({
+      ...$,
+      ...a.animation
+    })), B = f(() => {
+      if (typeof a.iconSize == "number")
+        return { width: a.iconSize, height: a.iconSize };
+      if (typeof a.iconSize == "object")
+        return a.iconSize;
+      const o = b[a.size] ?? 24;
+      return { width: o, height: o };
+    }), D = (o, ...i) => {
+      o === "update:modelValue" ? V.value = i[0] : o === "change" ? R("change", i[0], i[1]) : o === "hover" ? R("hover", i[0]) : o === "focus" ? R("focus") : o === "blur" && R("blur");
     }, {
-      stars: P,
-      displayRating: C,
+      stars: N,
+      displayRating: I,
       isHovering: L,
-      isFocused: X,
+      isFocused: E,
       handleClick: j,
-      handleMouseEnter: K,
-      handleMouseLeave: H,
-      handleKeyDown: o,
-      reset: f,
-      setRating: g,
-      getRating: h,
-      setFocused: s
-    } = $e(
+      handleMouseEnter: n,
+      handleMouseLeave: v,
+      handleKeyDown: p,
+      reset: m,
+      setRating: u,
+      getRating: c,
+      setFocused: k
+    } = Fe(
       {
-        modelValue: i,
+        modelValue: V,
         // Ref<number> from defineModel — fully reactive
-        maxStars: () => t.maxStars,
-        allowHalf: () => t.allowHalf,
-        readonly: () => t.readonly,
-        disabled: () => t.disabled,
-        allowReset: () => t.allowReset,
-        minRating: () => t.minRating,
-        step: () => t.step
+        maxStars: () => a.maxStars,
+        allowHalf: () => a.allowHalf,
+        readonly: () => a.readonly,
+        disabled: () => a.disabled,
+        allowReset: () => a.allowReset,
+        minRating: () => a.minRating,
+        step: () => a.step
       },
-      E
-    ), d = ne("container"), k = c(() => t.counterTemplate.replace("{value}", C.value.toString()).replace("{max}", t.maxStars.toString())), R = (n) => t.tooltipLabels && t.tooltipLabels[n] ? t.tooltipLabels[n] : `${n + 1} star${n === 0 ? "" : "s"}`, D = (n, r) => L.value ? y.value.hover : n ? y.value.filled : r ? y.value.half || y.value.filled : y.value.empty, J = (n, r) => {
-      if (t.readonly || t.disabled) return;
-      let a = n;
-      if (t.allowHalf) {
-        const z = r.currentTarget.getBoundingClientRect();
-        (t.rtl ? r.clientX > z.left + z.width / 2 : r.clientX < z.left + z.width / 2) && (a = n - 0.5);
-      }
-      j(a);
-    }, Q = (n, r) => {
-      if (t.readonly || t.disabled) return;
-      let a = n;
-      if (t.allowHalf) {
-        const z = r.currentTarget.getBoundingClientRect();
-        (t.rtl ? r.clientX > z.left + z.width / 2 : r.clientX < z.left + z.width / 2) && (a = n - 0.5);
-      }
-      K(a);
-    }, Y = () => {
-      (t.allowReset || t.clearable) && g(t.minRating);
+      D
+    ), C = ve("container"), te = f(() => a.counterTemplate.replace("{value}", I.value.toString()).replace("{max}", a.maxStars.toString())), q = (o) => {
+      var t;
+      const i = (t = a.tooltipLabels) == null ? void 0 : t[o];
+      return i || `${o + 1} star${o === 0 ? "" : "s"}`;
+    }, A = (o, i) => L.value ? w.value.hover : o ? w.value.filled : i ? w.value.half || w.value.filled : w.value.empty;
+    let O = null, K = null;
+    const J = (o, i) => {
+      if (!a.allowHalf) return o;
+      const t = O ?? i.currentTarget.getBoundingClientRect();
+      return (a.rtl ? i.clientX > t.left + t.width / 2 : i.clientX < t.left + t.width / 2) ? o - 0.5 : o;
+    }, ae = (o, i) => {
+      a.readonly || a.disabled || j(J(o, i));
+    }, oe = (o) => {
+      a.readonly || a.disabled || !a.allowHalf || (O = o.currentTarget.getBoundingClientRect());
+    }, ne = () => {
+      O = null, K = null;
+    }, re = (o, i) => {
+      if (a.readonly || a.disabled) return;
+      const t = J(o, i);
+      t !== K && (K = t, n(t));
+    }, ie = () => {
+      (a.allowReset || a.clearable) && u(a.minRating);
     };
-    e({
-      reset: f,
-      setRating: g,
-      getRating: h,
+    l({
+      reset: m,
+      setRating: u,
+      getRating: c,
       focus: () => {
-        var n;
-        (n = d.value) == null || n.focus();
+        var o;
+        (o = C.value) == null || o.focus();
       },
       blur: () => {
-        var n;
-        (n = d.value) == null || n.blur();
+        var o;
+        (o = C.value) == null || o.blur();
       }
     });
-    const ee = c(() => [
+    const se = f(() => [
       "vue-star-rate",
-      `vue-star-rate--${t.size}`,
+      `vue-star-rate--${a.size}`,
       {
-        "vue-star-rate--readonly": t.readonly,
-        "vue-star-rate--disabled": t.disabled,
+        "vue-star-rate--readonly": a.readonly,
+        "vue-star-rate--disabled": a.disabled,
         "vue-star-rate--hovering": L.value,
-        "vue-star-rate--focused": X.value,
-        "vue-star-rate--inline": t.inline,
-        "vue-star-rate--rtl": t.rtl,
-        "vue-star-rate--animated": B.value.enabled
+        "vue-star-rate--focused": E.value,
+        "vue-star-rate--inline": a.inline,
+        "vue-star-rate--rtl": a.rtl,
+        "vue-star-rate--animated": M.value.enabled
       },
-      t.className
-    ]), le = c(() => ({
-      "--star-gap": `${t.gap}px`,
-      "--star-color-empty": y.value.empty,
-      "--star-color-filled": y.value.filled,
-      "--star-color-hover": y.value.hover,
-      "--animation-duration": `${B.value.duration}ms`
+      a.className
+    ]), ue = f(() => ({
+      "--star-gap": `${a.gap}px`,
+      "--star-color-empty": w.value.empty,
+      "--star-color-filled": w.value.filled,
+      "--star-color-hover": w.value.hover,
+      "--animation-duration": `${M.value.duration}ms`
     }));
-    return (n, r) => (b(), S("div", {
+    return (o, i) => (g(), z("div", {
       ref: "container",
-      class: U(ee.value),
-      style: q(le.value),
+      class: Z(se.value),
+      style: le(ue.value),
       role: "group",
-      "aria-label": l.ariaLabel,
-      "aria-readonly": l.readonly,
-      "aria-disabled": l.disabled,
-      tabindex: l.disabled ? -1 : 0,
-      onKeydown: r[1] || (r[1] = //@ts-ignore
-      (...a) => m(o) && m(o)(...a)),
-      onFocus: r[2] || (r[2] = (a) => m(s)(!0)),
-      onBlur: r[3] || (r[3] = (a) => m(s)(!1))
+      "aria-label": e.ariaLabel,
+      "aria-readonly": e.readonly,
+      "aria-disabled": e.disabled,
+      tabindex: e.disabled ? -1 : 0,
+      onKeydown: i[2] || (i[2] = //@ts-ignore
+      (...t) => h(p) && h(p)(...t)),
+      onFocus: i[3] || (i[3] = (t) => h(k)(!0)),
+      onBlur: i[4] || (i[4] = (t) => h(k)(!1))
     }, [
       x("div", {
         class: "vue-star-rate__stars",
-        onMouseleave: r[0] || (r[0] = //@ts-ignore
-        (...a) => m(H) && m(H)(...a))
+        onMouseleave: i[1] || (i[1] = (t) => {
+          ne(), h(v)();
+        })
       }, [
-        (b(!0), S(ie, null, re(m(P), (a) => {
-          var F, z, T;
-          return b(), S("button", {
-            key: a.index,
+        (g(!0), z(me, null, he(h(N), (t) => {
+          var G, Q, Y;
+          return g(), z("button", {
+            key: t.index,
             type: "button",
-            class: U(["vue-star-rate__star", {
-              "vue-star-rate__star--filled": a.filled,
-              "vue-star-rate__star--half": a.half,
-              "vue-star-rate__star--active": a.active,
-              [`vue-star-rate__star--animation-${B.value.type}`]: B.value.enabled
+            class: Z(["vue-star-rate__star", {
+              "vue-star-rate__star--filled": t.filled,
+              "vue-star-rate__star--half": t.half,
+              "vue-star-rate__star--active": t.active,
+              [`vue-star-rate__star--animation-${M.value.type}`]: M.value.enabled
             }]),
-            disabled: l.disabled || l.readonly,
-            "aria-label": R(a.index),
-            "aria-pressed": a.active,
-            title: l.showTooltip ? R(a.index) : void 0,
-            onClick: (G) => J(a.value, G),
-            onMousemove: (G) => Q(a.value, G)
+            disabled: e.disabled || e.readonly,
+            "aria-label": q(t.index),
+            "aria-pressed": t.active,
+            title: e.showTooltip ? q(t.index) : void 0,
+            onClick: (H) => ae(t.value, H),
+            onMouseenter: i[0] || (i[0] = (H) => oe(H)),
+            onMousemove: (H) => re(t.value, H)
           }, [
-            l.iconProvider === "lucide" ? (b(), O(pe, {
+            e.iconProvider === "lucide" ? (g(), W(h(s), {
               key: 0,
-              filled: a.filled || m(L) && a.value <= m(C),
-              half: a.half,
-              size: I.value,
-              color: D(a.filled, a.half),
-              "empty-color": y.value.empty,
-              index: a.index
-            }, null, 8, ["filled", "half", "size", "color", "empty-color", "index"])) : l.iconProvider === "fontawesome" ? (b(), O(ge, {
+              filled: t.filled || h(L) && t.value <= h(I),
+              half: t.half,
+              size: B.value,
+              color: A(t.filled, t.half),
+              "empty-color": w.value.empty,
+              index: t.index
+            }, null, 8, ["filled", "half", "size", "color", "empty-color", "index"])) : e.iconProvider === "fontawesome" ? (g(), W(h(y), {
               key: 1,
-              filled: a.filled || m(L) && a.value <= m(C),
-              half: a.half,
-              size: I.value,
-              color: D(a.filled, a.half),
-              "empty-color": y.value.empty,
-              "icon-empty": (F = l.faIcons) == null ? void 0 : F.empty,
-              "icon-filled": (z = l.faIcons) == null ? void 0 : z.filled,
-              "icon-half": (T = l.faIcons) == null ? void 0 : T.half
-            }, null, 8, ["filled", "half", "size", "color", "empty-color", "icon-empty", "icon-filled", "icon-half"])) : l.iconProvider === "custom" && n.$slots.icon ? W(n.$slots, "icon", {
+              filled: t.filled || h(L) && t.value <= h(I),
+              half: t.half,
+              size: B.value,
+              color: A(t.filled, t.half),
+              "empty-color": w.value.empty,
+              "icon-empty": (G = e.faIcons) == null ? void 0 : G.empty,
+              "icon-filled": (Q = e.faIcons) == null ? void 0 : Q.filled,
+              "icon-half": (Y = e.faIcons) == null ? void 0 : Y.half
+            }, null, 8, ["filled", "half", "size", "color", "empty-color", "icon-empty", "icon-filled", "icon-half"])) : e.iconProvider === "custom" && o.$slots.icon ? X(o.$slots, "icon", {
               key: 2,
-              filled: a.filled,
-              half: a.half,
-              size: I.value,
-              color: D(a.filled, a.half),
-              index: a.index
-            }, void 0, !0) : (b(), O(Ce, {
+              filled: t.filled,
+              half: t.half,
+              size: B.value,
+              color: A(t.filled, t.half),
+              index: t.index
+            }, void 0, !0) : (g(), W(Ae, {
               key: 3,
-              filled: a.filled || m(L) && a.value <= m(C),
-              half: a.half,
-              size: I.value,
-              color: D(a.filled, a.half),
-              "empty-color": y.value.empty,
-              index: a.index
+              filled: t.filled || h(L) && t.value <= h(I),
+              half: t.half,
+              size: B.value,
+              color: A(t.filled, t.half),
+              "empty-color": w.value.empty,
+              index: t.index
             }, null, 8, ["filled", "half", "size", "color", "empty-color", "index"]))
-          ], 42, Le);
+          ], 42, Pe);
         }), 128))
       ], 32),
-      l.showCounter ? (b(), S("span", Be, [
-        W(n.$slots, "counter", {
-          value: m(C),
-          max: l.maxStars
+      e.showCounter ? (g(), z("span", De, [
+        X(o.$slots, "counter", {
+          value: h(I),
+          max: e.maxStars
         }, () => [
-          se(ue(k.value), 1)
+          ye(pe(te.value), 1)
         ], !0)
-      ])) : _("", !0),
-      l.clearable && m(C) > l.minRating && !l.readonly && !l.disabled ? (b(), S("button", {
+      ])) : F("", !0),
+      e.clearable && h(I) > e.minRating && !e.readonly && !e.disabled ? (g(), z("button", {
         key: 1,
         type: "button",
         class: "vue-star-rate__clear",
         "aria-label": "Clear rating",
-        onClick: Y
+        onClick: ie
       }, [
-        W(n.$slots, "clear", {}, () => [
-          r[4] || (r[4] = x("svg", {
+        X(o.$slots, "clear", {}, () => [
+          i[5] || (i[5] = x("svg", {
             width: "16",
             height: "16",
             viewBox: "0 0 24 24",
@@ -473,10 +486,10 @@ const Ve = ["aria-label", "aria-readonly", "aria-disabled", "tabindex"], Le = ["
             })
           ], -1))
         ], !0)
-      ])) : _("", !0)
-    ], 46, Ve));
+      ])) : F("", !0)
+    ], 46, Te));
   }
-}), Me = /* @__PURE__ */ N(Ie, [["__scopeId", "data-v-33546d7d"]]);
+}), Ee = /* @__PURE__ */ P(Ne, [["__scopeId", "data-v-f42e6244"]]);
 /**
  * Vue Star Rate
  * A highly customizable star rating component for Vue 3
@@ -484,19 +497,19 @@ const Ve = ["aria-label", "aria-readonly", "aria-disabled", "tabindex"], Le = ["
  * @author Pooya Golchian
  * @license MIT
  */
-const _e = {
-  install(l, e = {}) {
-    const v = e.componentName || "VueStarRate";
-    l.component(v, Me), (e.defaultIconProvider || e.defaultColors || e.defaultAnimation) && l.provide("vueStarRateOptions", e);
+const Ge = {
+  install(e, l = {}) {
+    const r = l.componentName || "VueStarRate";
+    e.component(r, Ee), (l.defaultIconProvider || l.defaultColors || l.defaultAnimation) && e.provide("vueStarRateOptions", l);
   }
 };
 export {
-  ge as FontAwesomeIcon,
-  pe as LucideIcon,
-  Ce as SvgIcon,
-  Me as VueStarRate,
-  _e as VueStarRatePlugin,
-  _e as default,
-  $e as useStarRating
+  Ce as FontAwesomeIcon,
+  ze as LucideIcon,
+  Ae as SvgIcon,
+  Ee as VueStarRate,
+  Ge as VueStarRatePlugin,
+  Ge as default,
+  Fe as useStarRating
 };
 //# sourceMappingURL=vue-star-rate.js.map

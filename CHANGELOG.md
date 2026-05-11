@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [3.1.0] — 2026-05-11
+
+### Fixes
+- **Issue [#7](https://github.com/pooyagolchian/vue-star-rate/issues/7) — `lucide-vue-next` no longer forced on consumers.** Previously, importing `VueStarRate` pulled `lucide-vue-next` into every consumer bundle even when `iconProvider` was set to `fontawesome` or `custom` (or left at the default `svg`). Icon providers are now loaded via `defineAsyncComponent`, so the optional peer is only fetched — and only required — when the matching provider is actually rendered.
+
+### Performance
+- **Lazy-loaded icon providers** — `LucideIcon` and `FontAwesomeIcon` are now async chunks, split out of the main bundle. Default-bundle footprint drops to the SVG-only path.
+- **Cached half-star geometry** — the per-star `DOMRect` is captured on `mouseenter` instead of being re-measured on every `mousemove`, eliminating layout thrash during hover-drag on rating widgets.
+- **Hoisted defaults** — `defaultColors`, `defaultAnimation`, and `sizePresets` moved to module scope; one allocation per module instead of one per component instance.
+- **Reduced-motion guard** — hover scale / bounce / pulse animations are now wrapped in `@media (prefers-reduced-motion: no-preference)`, honouring the OS accessibility setting and skipping unnecessary GPU work for users who opt out.
+
+### Documentation
+- New README sections: **Bundle size & optional peers**, **FAQ** (SSR, Nuxt, bundle size, optional peers), **Comparison** vs other Vue star-rating libs.
+- Demo site (`docs/`) extended with `FAQPage`, `HowTo`, and `SoftwareApplication` JSON-LD for SEO + Answer Engine Optimization (Google AI Overviews, Bing Copilot, Perplexity, ChatGPT browsing).
+- `docs/public/robots.txt` and `docs/public/sitemap.xml` added.
+- `docs/public/llms.txt` rewritten per the [llmstxt.org](https://llmstxt.org) spec and `docs/public/llms-full.txt` added for long-context LLM consumers.
+
+### Meta
+- Package `description` calls out tree-shakeable lazy icons, SSR, and Nuxt support.
+- Keywords expanded: `tree-shakeable`, `zero-dependency`, `zero-dep`, `ssr`, `nuxt`, `nuxt3`, `vue-3.5`, `wcag2.2`, `keyboard-navigation`, `accessible-rating`.
+- Publish workflow trigger updated from `master` to `main`.
+
+---
+
 ## [3.0.1] — 2026-02-28
 
 ### Fixes

@@ -1,7 +1,7 @@
 {
   "name": "vue-js-star-rating",
-  "version": "3.0.1",
-  "description": "Zero-dependency Vue 3.5+ star rating component — WCAG 2.2 accessible, TypeScript-first, half-star precision, Lucide/FontAwesome/custom icons",
+  "version": "3.1.0",
+  "description": "Zero-dependency Vue 3.5+ star rating component — WCAG 2.2 accessible, TypeScript-first, half-star precision, tree-shakeable lazy-loaded Lucide/FontAwesome/custom icons, SSR & Nuxt ready",
   "author": "Pooya Golchian <pooya.golchian@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -82,6 +82,7 @@
     "vue3",
     "vue-3",
     "vue3.5",
+    "vue-3.5",
     "star-rating",
     "rating",
     "stars",
@@ -94,13 +95,22 @@
     "lucide",
     "typescript",
     "accessible",
+    "accessible-rating",
     "a11y",
     "wcag",
     "wcag2",
+    "wcag2.2",
     "aria",
+    "keyboard-navigation",
     "customizable",
     "v-model",
     "composition-api",
-    "define-model"
+    "define-model",
+    "tree-shakeable",
+    "zero-dependency",
+    "zero-dep",
+    "ssr",
+    "nuxt",
+    "nuxt3"
   ]
 }
