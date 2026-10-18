@@ -1,8 +1,8 @@
 # Vue Star Rate — Full Reference (vue-js-star-rating)
 
-> Zero-dependency Vue 3.5+ star rating component. WCAG 2.2 Level AA accessible. TypeScript-first. Half-star precision. Tree-shakeable lazy-loaded Lucide / FontAwesome / custom icon providers. SSR & Nuxt 3 ready.
+> Zero-dependency Vue 3.5+ star rating component. Keyboard accessible. TypeScript-first. Half-star precision. Lucide / FontAwesome / custom icon providers. SSR & Nuxt 3 ready.
 
-This document is the long-form, LLM-optimized reference: install steps, every prop, every event, every slot, accessibility contract, performance notes, frequently asked questions, and migration guidance — flattened into a single text file for retrieval-augmented generation (RAG) and chat-style answer engines.
+This document is the long-form, LLM-optimized reference: install steps, every prop, every event, every slot, accessibility notes, performance notes, frequently asked questions, and migration guidance — flattened into a single text file for retrieval-augmented generation (RAG) and chat-style answer engines.
 
 ---
 
@@ -11,20 +11,20 @@ This document is the long-form, LLM-optimized reference: install steps, every pr
 | Field | Value |
 | --- | --- |
 | npm package | `vue-js-star-rating` |
-| Current version | 3.1.0 (2026-05-11) |
+| Current version | 3.1.1 (2026-10-18) |
 | License | MIT |
 | Author | Pooya Golchian — https://pooya.blog |
 | Repo | https://github.com/pooyagolchian/vue-star-rate |
 | Docs / live demo | https://pooyagolchian.github.io/vue-star-rate/ |
 | Peer dep | `vue ^3.5.0` |
 | Runtime deps | none |
-| Optional peers | `lucide-vue-next` (only for Lucide provider), `@fortawesome/fontawesome-free` (only for FontAwesome provider) |
-| Default bundle | ~3 KB gzipped (component + composable + default SVG icon) |
+| Optional peers | none (see section 10 for the caveat about releases 2.0.0 to 3.1.0) |
+| Bundle size | `import { VueStarRate }`: about 4.6 KB gzipped JavaScript (12.4 KB raw) plus 0.75 KB gzipped CSS (2.9 KB raw); all three icon providers included, nothing lazy-loaded. `useStarRating` alone: about 1 KB gzipped. See section 10 |
 | Node engines | >= 18 |
 | Module formats | ESM (`vue-star-rate.js`) + UMD (`vue-star-rate.umd.cjs`) + d.ts |
-| Accessibility | WCAG 2.2 Level AA — keyboard navigation, ARIA, `prefers-reduced-motion` |
-| SSR | safe (default provider renders server-side; async chunks resolve on client) |
-| Nuxt 3 | compatible — wrap in `<ClientOnly>` if you need the icon present in initial HTML |
+| Accessibility | Keyboard navigation, ARIA group with per-star buttons, `prefers-reduced-motion`. Not audited against WCAG; known gaps are listed in section 11 |
+| SSR | safe (all three icon providers render server-side; nothing is loaded asynchronously) |
+| Nuxt 3 | compatible — no `<ClientOnly>` wrapper needed |
 
 ---
 
@@ -41,11 +41,16 @@ npm install vue-js-star-rating
 yarn add vue-js-star-rating
 ```
 
-Optional peers — install only the one matching your chosen provider:
+There are no optional peers: `vue ^3.5.0` is the only peer dependency, and `lucide-vue-next` is not needed. `icon-provider="lucide"` draws Lucide's own star geometry inline as an SVG, so there is nothing to install for it. (Releases 2.0.0 to 3.1.0 are the exception: they import it, so builds fail unless `lucide-vue-next` is installed, see section 10.)
+
+`icon-provider="fontawesome"` renders `<i>` elements with Font Awesome class names, so your app must load Font Awesome's stylesheet itself. Without it the stars are invisible. For example, with `@fortawesome/fontawesome-free` installed in your app:
 
 ```bash
-pnpm add lucide-vue-next               # for icon-provider="lucide"
-pnpm add @fortawesome/fontawesome-free # for icon-provider="fontawesome" (provides the .fa-* CSS classes)
+pnpm add @fortawesome/fontawesome-free
+```
+
+```ts
+import '@fortawesome/fontawesome-free/css/all.min.css';
 ```
 
 ---
@@ -89,12 +94,12 @@ createApp(App).use(VueStarRatePlugin).mount('#app');
 | `allowHalf` | `boolean` | `false` | Enable 0.5-step ratings |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Size preset (16 / 20 / 24 / 32 / 40 px) |
 | `iconSize` | `number \| { width: number; height: number }` | auto | Override pixel size |
-| `iconProvider` | `'custom' \| 'lucide' \| 'fontawesome'` | `'custom'` | Icon renderer (custom uses the bundled SVG fallback when no slot is provided) |
-| `colors` | `Partial<StarColors>` | see §6 | Color configuration |
-| `animation` | `Partial<AnimationConfig>` | see §6 | Animation configuration |
+| `iconProvider` | `'custom' \| 'lucide' \| 'fontawesome'` | `'custom'` | Icon renderer (custom uses the bundled SVG fallback when no slot is provided; fontawesome needs Font Awesome's stylesheet loaded by your app) |
+| `colors` | `Partial<StarColors>` | see below | Color configuration |
+| `animation` | `Partial<AnimationConfig>` | see below | Animation configuration |
 | `readonly` | `boolean` | `false` | Disable user interaction (clickable false, focusable true) |
 | `disabled` | `boolean` | `false` | Disable + grey out the entire component |
-| `clearable` | `boolean` | `false` | Show a clear button when rating > 0 |
+| `clearable` | `boolean` | `false` | Show a clear button when the rating is above `minRating` (hidden when `readonly` or `disabled`) |
 | `allowReset` | `boolean` | `true` | Click the active star again to reset |
 | `showCounter` | `boolean` | `false` | Show the rating counter |
 | `counterTemplate` | `string` | `'{value} / {max}'` | Counter template; tokens `{value}` and `{max}` are replaced |
@@ -102,13 +107,13 @@ createApp(App).use(VueStarRatePlugin).mount('#app');
 | `tooltipLabels` | `string[]` | — | Custom tooltip text per star (index-based) |
 | `minRating` | `number` | `0` | Minimum selectable value |
 | `step` | `number` | `1` | Increment step (overridden by `allowHalf`) |
-| `rtl` | `boolean` | `false` | Right-to-left layout |
-| `inline` | `boolean` | `false` | Inline layout mode |
+| `rtl` | `boolean` | `false` | Right-to-left layout. Known gap: the half-star fill is still painted on the left side of the star and `ArrowLeft` / `ArrowRight` are not mirrored; pointer clicks on half stars are mirrored |
+| `inline` | `boolean` | `false` | Accepted but not implemented (no visual effect) |
 | `gap` | `number` | `4` | Gap between stars in pixels |
 | `ariaLabel` | `string` | `'Star rating'` | Accessible group label |
 | `className` | `string` | — | Extra CSS class on the root element |
 | `faIcons` | `{ empty?: string; filled?: string; half?: string }` | — | FontAwesome class overrides |
-| `customIcon` | `CustomIconRenderer` | — | Programmatic icon render function |
+| `customIcon` | `CustomIconRenderer` | — | Not implemented: declared in the types, but the component ignores it. Use the `icon` slot instead |
 
 ### `StarColors` interface
 
@@ -117,7 +122,7 @@ interface StarColors {
   empty: string;  // default '#d1d5db'
   filled: string; // default '#fbbf24'
   hover: string;  // default '#f59e0b'
-  half?: string;  // default = filled
+  half?: string;  // default '#fbbf24' (fixed; does not follow a custom filled color)
 }
 ```
 
@@ -131,7 +136,9 @@ interface AnimationConfig {
 }
 ```
 
-Animations are automatically suppressed when the user has `prefers-reduced-motion: reduce` set at the OS level.
+The hover animations are switched off when the user has `prefers-reduced-motion: reduce` set at the OS level.
+
+`enabled: false` and `type: 'none'` are not a full off-switch: on interactive stars the base hover transition and `scale(1.1)` remain unless the user prefers reduced motion. Because of that base scale, `type: 'scale'` (1.2) only differs from `'none'` on read-only and disabled stars, which have no base hover scale and so do stop animating with `enabled: false`; `'bounce'` and `'pulse'` play on hover for every star.
 
 ---
 
@@ -139,11 +146,11 @@ Animations are automatically suppressed when the user has `prefers-reduced-motio
 
 | Event | Payload | Description |
 | --- | --- | --- |
-| `update:modelValue` | `number` | Emitted by `v-model` (handled automatically) |
-| `change` | `(value: number, oldValue: number)` | Emitted on user-initiated changes only (external `v-model` writes do not re-emit) |
-| `hover` | `number \| null` | Hover enters or leaves a star (null on leave) |
-| `focus` | `()` | Component received keyboard focus |
-| `blur` | `()` | Component lost focus |
+| `update:modelValue` | `number` | Emitted whenever the committed rating changes through the component (click, keyboard, `setRating()`, `reset()`); not emitted when the parent itself changes `v-model` |
+| `change` | `(value: number, oldValue: number)` | Emitted right after `update:modelValue`, on the same occasions (click, keyboard, `setRating()`, `reset()`); external `v-model` writes do not re-emit |
+| `hover` | `number \| null` | Previewed value while the pointer is over the stars; `null` when it leaves them |
+| `focus` | `()` | Root element received focus (not emitted when focus lands directly on a star button) |
+| `blur` | `()` | Root element lost focus (also emitted when focus moves onto a star button inside it) |
 
 ---
 
@@ -165,7 +172,7 @@ Animations are automatically suppressed when the user has `prefers-reduced-motio
 | `←`, `↓` | Decrease rating by step |
 | `Home` | Set to `minRating` |
 | `End` | Set to `maxStars` |
-| `1`–`9` | Jump to numeric value (clamped) |
+| `1`–`9` | Jump to numeric value (ignored when greater than `maxStars`) |
 | `0` | Reset to `minRating` |
 
 ---
@@ -176,7 +183,7 @@ Animations are automatically suppressed when the user has `prefers-reduced-motio
 const star = ref<InstanceType<typeof VueStarRate>>();
 
 star.value?.reset();          // back to initial value
-star.value?.setRating(3.5);   // set programmatically
+star.value?.setRating(3.5);   // set programmatically (with the default step and no allowHalf, 3.5 snaps to 4)
 star.value?.getRating();      // current value
 star.value?.focus();          // focus the root element
 star.value?.blur();           // remove focus
@@ -213,46 +220,56 @@ Options accept `MaybeRefOrGetter<T>` for full reactivity.
 
 ## 10. Bundle composition
 
-| Path taken by consumer | Bundle additions |
-| --- | --- |
-| `import { VueStarRate }` + default icon | Component + SVG path (~3 KB gz) |
-| `<VueStarRate icon-provider="lucide" />` | + async `LucideIcon-[hash].js` chunk + `lucide-vue-next` |
-| `<VueStarRate icon-provider="fontawesome" />` | + async `FontAwesomeIcon-[hash].js` chunk (you provide the FA CSS) |
-| `<VueStarRate icon-provider="custom"><template #icon /></VueStarRate>` | Component only — your slot markup wins |
+Both entry files (ESM and UMD) import only `vue` and contain all three icon providers: the built-in SVG star, Lucide's star (drawn inline) and the Font Awesome `<i>` renderer. Nothing is lazy-loaded: there is no dynamic `import()`, no async chunk and no per-provider code splitting. Measured with Vite 6 and esbuild minification, `vue` external, gzip -9:
 
-The lazy-loaded providers were introduced in v3.1.0 in response to GitHub issue #7, where consumers who picked the FontAwesome provider were still forced to install `lucide-vue-next`. After the fix, the static dependency graph from `import { VueStarRate } from 'vue-js-star-rating'` no longer touches `lucide-vue-next`.
+| Import | Cost |
+| --- | --- |
+| `import { VueStarRate } from 'vue-js-star-rating'` | about 12.4 KB raw / 4.6 KB gzipped JavaScript, plus 2.9 KB raw / 0.75 KB gzipped CSS (`vue-js-star-rating/dist/style.css`) |
+| `import { useStarRating } from 'vue-js-star-rating'` | about 1 KB gzipped JavaScript |
+
+Export-level tree-shaking works, which is why `useStarRating` alone is small. There is no component-level code splitting: importing `VueStarRate` includes all three icon providers, whichever `iconProvider` you use.
+
+History: version 3.1.0 claimed lazy-loaded icon chunks and documented `lucide-vue-next` as an optional peer. That was wrong. Its entry file contained `import("lucide-vue-next")`, which bundlers resolve at build time, so Vite, webpack, esbuild, Nuxt and Storybook builds fail unless `lucide-vue-next` is installed (GitHub issue #13; issue #7 had been closed earlier with the same wrong claim). This is fixed in 3.1.1; see CHANGELOG.md.
 
 ---
 
-## 11. Accessibility contract
+## 11. Accessibility notes
 
-- Container: `role="group"` + `aria-label` (configurable via `ariaLabel`); `aria-readonly`, `aria-disabled` reflect props; `tabindex="0"` for keyboard focus (`-1` when disabled).
-- Stars: each is a `<button type="button">` with `aria-pressed` reflecting state and `aria-label` describing the star value. Disabled buttons inherit `:disabled` for screen-reader semantics.
-- Counter: `aria-live="polite"` for live announcements.
-- Focus indicator: `outline: 2px solid var(--star-color-filled)` on `:focus-visible`.
+- Container: `role="group"` + `aria-label` (configurable via `ariaLabel`); `aria-disabled` reflects the `disabled` prop; `tabindex="0"` for keyboard focus (`-1` when disabled).
+- Stars: each is a `<button type="button">` with `aria-pressed` reflecting state and an `aria-label` describing the star value (for example "3 stars"). The buttons are `disabled` when the component is `readonly` or `disabled`; read-only is conveyed this way because `aria-readonly` is not valid on `role="group"` and is not used.
+- Counter: `aria-live="polite"` for live announcements (rendered only when `showCounter` is on).
+- Keyboard: arrow keys (by `step`, or 0.5 with `allowHalf`), `Home`, `End` and the digits `0`–`9` set the rating. Ctrl, Alt and Meta key combinations are left to the browser; `Tab` and any other non-rating key never change the value.
+- Focus indicator: the container shows `outline: 2px solid var(--star-color-filled)` on `:focus-visible`; the star buttons show the browser's default focus ring on keyboard focus.
 - Motion: hover scale / bounce / pulse animations are wrapped in `@media (prefers-reduced-motion: no-preference)`.
+
+The package has not been audited against WCAG, so it makes no conformance claim. Known gaps:
+
+- The default star colors have low contrast on white: the empty color `#d1d5db` is 1.47:1 and the filled color `#fbbf24` is 1.67:1. Pass your own `colors`.
+- `size="xs"` targets are 16 px, below the 24 px target-size minimum of WCAG 2.2.
+- A half value such as 2.5 is announced to a screen reader like the next whole number, because the half star is `aria-pressed` like a full one.
+- The numeric value is only available as text when `showCounter` is on.
 
 ---
 
 ## 12. Frequently asked questions
 
 **Do I need `lucide-vue-next` if I use FontAwesome or a custom icon?**
-No. Since v3.1.0 icon providers are loaded with `defineAsyncComponent`. The static dependency graph from `import { VueStarRate } from 'vue-js-star-rating'` does not include `lucide-vue-next`, so consumer bundlers will not try to resolve it.
+No. `vue-js-star-rating` has no runtime dependencies and its only peer dependency is `vue` (`^3.5.0`); there are no optional peers. `iconProvider="lucide"` draws Lucide's own star geometry inline as an SVG, so there is nothing to install for it. `iconProvider="fontawesome"` renders `<i>` elements with Font Awesome class names, so your app must load Font Awesome's stylesheet itself, for example `import '@fortawesome/fontawesome-free/css/all.min.css'`; without it the stars are invisible. The exception is releases 2.0.0 to 3.1.0, which imported `lucide-vue-next` at build time (3.1.0 also wrongly documented it as an optional peer), so Vite, webpack, esbuild, Nuxt and Storybook builds fail unless it is installed (GitHub issue #13). This is fixed in 3.1.1; see CHANGELOG.md.
 
 **Is it SSR-safe?**
-Yes. The default SVG provider renders fully on the server. Async chunks resolve on the client after hydration.
+Yes. The component renders deterministically on the server, and the markup of all three icon providers (default SVG, Lucide, Font Awesome) is part of the server-rendered HTML. Nothing is loaded asynchronously, so no `<ClientOnly>` or `<Suspense>` wrapper is needed.
 
 **Does it work with Nuxt 3?**
-Yes. For Lucide / FontAwesome providers, wrap the component in `<ClientOnly>` if you need the icon present in the initial HTML.
+Yes. No `<ClientOnly>` or `<Suspense>` wrapper is needed: nothing is loaded asynchronously and every icon provider renders on the server.
 
 **What is the bundle size?**
-~3 KB gzipped for the default path. Each lazy provider adds its own small chunk only when rendered.
+Measured with Vite 6 and esbuild minification, `vue` external, gzip -9: `import { VueStarRate }` costs about 12.4 KB raw / 4.6 KB gzipped of JavaScript plus 2.9 KB raw / 0.75 KB gzipped of CSS (`vue-js-star-rating/dist/style.css`). All three icon providers are inside that one entry file; nothing is lazy-loaded or split into chunks. `useStarRating` alone costs about 1 KB gzipped because export-level tree-shaking works; there is no component-level code splitting.
 
 **Can I use it without `v-model`?**
 Yes. Pass `:model-value` and listen to `@update:modelValue` (or `@change`). The `useStarRating` composable is exported for headless usage.
 
 **Is it tree-shakeable?**
-Yes. `sideEffects` is set to `**/*.css` only, so unused named exports are eliminated by Rollup, Vite, Webpack, and esbuild.
+Yes, at export level. `sideEffects` is set to `**/*.css` only, so unused named exports are eliminated: importing only `useStarRating` costs about 1 KB gzipped (measured with Vite 6 and esbuild minification). There is no component-level code splitting: importing `VueStarRate` always brings all three icon providers, whichever `iconProvider` you use.
 
 **Which Vue versions are supported?**
 Vue 3.5+. The component uses `defineModel`, `useTemplateRef`, and `MaybeRefOrGetter`. Vue 2 is not supported.
@@ -261,9 +278,9 @@ Vue 3.5+. The component uses `defineModel`, `useTemplateRef`, and `MaybeRefOrGet
 
 ## 13. Migration
 
-### v3.0 → v3.1 (this release)
+### v3.0 → v3.1
 
-- No breaking changes. The only consumer-visible behaviour change is that `LucideIcon` and `FontAwesomeIcon` now resolve asynchronously the first time they are rendered. If you have an explicit `<Suspense>` in your tree you can configure its fallback; otherwise the change is transparent.
+- 3.1.0 documented lazy-loaded icon providers and `lucide-vue-next` as an optional peer. That was wrong: no separate icon chunks were emitted, and the 3.1.0 entry file contains `import("lucide-vue-next")`, so Vite, webpack, esbuild, Nuxt and Storybook builds fail unless it is installed (GitHub issue #13). This is fixed in 3.1.1; see section 10 and CHANGELOG.md.
 
 ### v2 → v3
 
@@ -271,7 +288,6 @@ Vue 3.5+. The component uses `defineModel`, `useTemplateRef`, and `MaybeRefOrGet
 - `role="slider"` → `role="group"`
 - `animation.scale: 1.15` → `animation.type: 'scale'`
 - Vue peer raised from `^3.3.0` → `^3.5.0`
-- Options API → Composition API with `defineModel`
 
 ---
 

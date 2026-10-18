@@ -41,7 +41,8 @@ const VueStarRatePlugin: Plugin = {
     // Register the component globally
     app.component(componentName, VueStarRate);
 
-    // Provide global options
+    // Provide global options. Not implemented: nothing injects 'vueStarRateOptions', so
+    // defaultIconProvider, defaultColors and defaultAnimation have no effect today.
     if (options.defaultIconProvider || options.defaultColors || options.defaultAnimation) {
       app.provide('vueStarRateOptions', options);
     }

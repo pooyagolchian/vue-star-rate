@@ -19,12 +19,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          # No `cache: pnpm`: the smoke test below runs freshly resolved third-party bundlers, and a
+          # release job must not write to (or restore from) a shared cache.
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
       - run: pnpm run test:run
       - run: pnpm run build
+      # Installs the packed tarball into clean apps without lucide-vue-next (issues #7 and #13).
+      - run: pnpm run smoke:consumers
       - run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

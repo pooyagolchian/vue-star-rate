@@ -196,10 +196,11 @@ const animationCode = `<!-- type can be 'scale' | 'bounce' | 'pulse' | 'none' --
 const iconProvidersCode = `<!-- 1. Default SVG — bundled, zero deps -->
 <VueStarRate v-model="rating" />
 
-<!-- 2. Lucide — lazy-loaded chunk, requires lucide-vue-next -->
+<!-- 2. Lucide — Lucide's star drawn inline, nothing to install -->
 <VueStarRate v-model="rating" icon-provider="lucide" />
 
-<!-- 3. FontAwesome — lazy-loaded chunk, requires FA CSS -->
+<!-- 3. FontAwesome — renders <i> elements, so your app must load Font Awesome's CSS,
+        e.g. import '@fortawesome/fontawesome-free/css/all.min.css' -->
 <VueStarRate v-model="rating" icon-provider="fontawesome" />
 
 <!-- 4. Custom via scoped slot -->
@@ -214,7 +215,7 @@ const iconProvidersCode = `<!-- 1. Default SVG — bundled, zero deps -->
 
 const disabledCode = `<VueStarRate v-model="rating" :disabled="true" />`;
 
-const clearableCode = `<!-- Built-in clear button when rating > 0 -->
+const clearableCode = `<!-- Built-in clear button when rating > minRating -->
 <VueStarRate v-model="rating" :clearable="true" />
 
 <!-- allowReset = click the active star again to clear (default true) -->
@@ -222,7 +223,7 @@ const clearableCode = `<!-- Built-in clear button when rating > 0 -->
 
 const rtlCode = `<VueStarRate v-model="rating" :rtl="true" :allow-half="true" />`;
 
-const inlineCode = `<p>Inline rating: <VueStarRate v-model="rating" :inline="true" size="sm" /> within text.</p>`;
+const inlineCode = `<p>Inline rating: <VueStarRate v-model="rating" size="sm" /> within text.</p>`;
 
 const stepMinCode = `<!-- Increment by 1, but never go below 2 -->
 <VueStarRate v-model="rating" :min-rating="2" :step="1" />`;
@@ -239,7 +240,8 @@ const customTooltipsCode = `<VueStarRate
   :tooltip-labels="['Terrible', 'Bad', 'OK', 'Good', 'Excellent']"
 />`;
 
-const customSlotCode = `<VueStarRate v-model="rating" icon-provider="custom">
+const customSlotCode = `<!-- Heart is an icon from your own icon library (here lucide-vue-next), not from this package -->
+<VueStarRate v-model="rating" icon-provider="custom">
   <template #icon="{ filled, size, color }">
     <Heart :size="size.width" :fill="filled ? color : 'none'" :color="color" />
   </template>
@@ -278,6 +280,11 @@ const { stars, displayRating, handleClick, handleKeyDown } = useStarRating(
     modelValue,
     maxStars: 5,
     allowHalf: true,
+    readonly: false,
+    disabled: false,
+    allowReset: true,
+    minRating: 0,
+    step: 1,
   },
   emit,
 );
@@ -332,9 +339,9 @@ const features = [
     { icon: Keyboard, title: 'Keyboard Navigation', desc: 'Full a11y keyboard support' },
     { icon: Zap, title: 'TypeScript', desc: 'Complete type definitions' },
     { icon: Globe, title: 'RTL Support', desc: 'Right-to-left layouts' },
-    { icon: Accessibility, title: 'Accessible', desc: 'WCAG 2.2 compliant + prefers-reduced-motion' },
+    { icon: Accessibility, title: 'Keyboard & ARIA', desc: 'ARIA group, aria-pressed + prefers-reduced-motion' },
     { icon: Smartphone, title: 'Responsive', desc: 'Mobile-first design' },
-    { icon: Code2, title: 'Tree-shakeable', desc: 'Zero runtime deps · ~3 KB gz default' },
+    { icon: Code2, title: 'Tree-shakeable', desc: 'Zero runtime deps · ~4.6 KB gz JS + 0.75 KB gz CSS' },
 ];
 
 // Props table
@@ -349,7 +356,7 @@ const propsData = [
     { name: 'animation', type: 'object', default: '{...}', desc: 'Animation config: { enabled, duration, type }' },
     { name: 'readonly', type: 'boolean', default: 'false', desc: 'Disable user interaction' },
     { name: 'disabled', type: 'boolean', default: 'false', desc: 'Disable + grey out component' },
-    { name: 'clearable', type: 'boolean', default: 'false', desc: 'Show clear button when rating > 0' },
+    { name: 'clearable', type: 'boolean', default: 'false', desc: 'Show clear button when rating > minRating' },
     { name: 'allowReset', type: 'boolean', default: 'true', desc: 'Click active star again to reset' },
     { name: 'showCounter', type: 'boolean', default: 'false', desc: 'Show rating counter' },
     { name: 'counterTemplate', type: 'string', default: "'{value} / {max}'", desc: 'Counter format template' },
@@ -357,18 +364,22 @@ const propsData = [
     { name: 'tooltipLabels', type: 'string[]', default: '—', desc: 'Custom tooltip labels per star' },
     { name: 'minRating', type: 'number', default: '0', desc: 'Minimum selectable value' },
     { name: 'step', type: 'number', default: '1', desc: 'Increment step (overridden by allowHalf)' },
-    { name: 'rtl', type: 'boolean', default: 'false', desc: 'Right-to-left layout' },
+    { name: 'rtl', type: 'boolean', default: 'false', desc: 'Right-to-left layout. Known gap: the half-star fill is still painted on the left and the arrow keys are not mirrored' },
     { name: 'gap', type: 'number', default: '4', desc: 'Gap between stars in pixels' },
     { name: 'ariaLabel', type: 'string', default: "'Star rating'", desc: 'Accessible group label' },
+    { name: 'className', type: 'string', default: '—', desc: 'Extra CSS class on the root element' },
+    { name: 'faIcons', type: 'object', default: '{...}', desc: "Font Awesome class names per state: { empty, filled, half } (iconProvider 'fontawesome' only)" },
+    { name: 'inline', type: 'boolean', default: 'false', desc: 'Accepted but not implemented: no visual effect' },
+    { name: 'customIcon', type: 'function', default: '—', desc: 'Not implemented: accepted but ignored. Use the #icon slot instead' },
 ];
 
 // Events table
 const eventsData = [
     { name: 'update:modelValue', payload: 'number', desc: 'Emitted by v-model (handled automatically)' },
-    { name: 'change', payload: '(value, oldValue)', desc: 'Rating changed by user interaction only' },
-    { name: 'hover', payload: 'number | null', desc: 'Hover enters / leaves a star (null on leave)' },
-    { name: 'focus', payload: '—', desc: 'Component received keyboard focus' },
-    { name: 'blur', payload: '—', desc: 'Component lost focus' },
+    { name: 'change', payload: '(value, oldValue)', desc: 'Right after update:modelValue, when the rating changes via click, keyboard, setRating() or reset() — not when the parent changes v-model' },
+    { name: 'hover', payload: 'number | null', desc: 'Previewed value while the pointer is over the stars; null when it leaves them' },
+    { name: 'focus', payload: '—', desc: 'Root element received focus (not emitted when focus lands directly on a star button)' },
+    { name: 'blur', payload: '—', desc: 'Root element lost focus (also emitted when focus moves onto a star button inside it)' },
 ];
 
 // Slots
@@ -391,19 +402,19 @@ const methodsData = [
 const faqData = [
     {
         q: 'Do I need lucide-vue-next if I use FontAwesome or a custom icon?',
-        a: 'No. Since v3.1.0, icon providers are loaded with defineAsyncComponent. The static dependency graph from "import { VueStarRate } from \'vue-js-star-rating\'" does not include lucide-vue-next, so consumer bundlers (Vite, Webpack, Rollup, esbuild) will not require it.',
+        a: 'No. This package has no optional peer dependencies: the only peer dependency is vue (^3.5.0), and the entry files import nothing else. iconProvider="lucide" draws Lucide\'s own star inline as an SVG, so it needs nothing installed. The Font Awesome provider only needs Font Awesome\'s stylesheet to be loaded by your app. Releases 2.0.0 to 3.1.0 imported lucide-vue-next at build time, and 3.1.0 also documented it as optional with lazy-loaded icon providers; that was wrong, because bundlers resolve import("lucide-vue-next") while building, so Vite, webpack, esbuild, Nuxt and Storybook builds failed unless the package was installed (issue #13). This is fixed in 3.1.1.',
     },
     {
         q: 'Is it SSR-safe? Does it work with Nuxt 3?',
-        a: 'Yes. The component renders deterministically on the server. The default SVG provider is fully server-side. Async chunks (Lucide / FontAwesome) resolve on the client after hydration — wrap in <ClientOnly> (Nuxt) or <Suspense> if you need the icon present in the initial HTML.',
+        a: 'Yes. The component renders deterministically on the server. All three icon providers are part of the single entry file and render synchronously, so the stars are in the server-rendered HTML and no <ClientOnly> wrapper is needed. With iconProvider="fontawesome" the stars appear once Font Awesome\'s CSS is loaded.',
     },
     {
         q: 'What is the bundle size?',
-        a: 'About 3 KB gzipped for the default SVG path (component + composable + types stripped). Lucide and FontAwesome chunks are emitted as separate files and only fetched when the matching provider is rendered.',
+        a: 'Importing VueStarRate costs about 4.6 KB gzipped JavaScript (12.4 KB raw) plus about 0.75 KB gzipped CSS (2.9 KB raw), measured with Vite 6 and esbuild minification, vue external, gzip -9. All three icon providers are inside that one entry file; nothing is split into lazy chunks. Export-level tree-shaking works: useStarRating alone is about 1 KB gzipped.',
     },
     {
         q: 'Is it accessible?',
-        a: 'The root carries role="group" + aria-label. Each star button exposes aria-pressed. The counter uses aria-live="polite". Full keyboard navigation (arrows, Home, End, 0–9). Animations are gated on prefers-reduced-motion since v3.1.0. Compliant with WCAG 2.2 Level AA.',
+        a: 'The root carries role="group" + aria-label. Each star button exposes aria-pressed. The counter uses aria-live="polite". Full keyboard navigation (arrows, Home, End, 0–9). The star hover animations are gated on prefers-reduced-motion since v3.1.0. The package has not been audited against WCAG, so it makes no conformance claim. Known gaps: the default star colors have low contrast on white (pass your own colors); size="xs" targets are 16 px, below the 24 px WCAG 2.2 target-size minimum; a half value such as 2.5 is announced like the next whole number; the numeric value is only available as text when showCounter is on.',
     },
     {
         q: 'Can I use it without v-model?',
@@ -417,18 +428,9 @@ const faqData = [
 
 // Comparison
 const comparisonRows: { feature: string; us: string | true | false; a: string | true | false; b: string | true | false }[] = [
-    { feature: 'Vue 3.5+ (defineModel)', us: true, a: false, b: 'partial' },
-    { feature: 'TypeScript-first', us: true, a: false, b: 'partial' },
     { feature: 'Runtime dependencies', us: '0', a: '1', b: '1' },
-    { feature: 'Tree-shakeable lazy icons', us: true, a: false, b: false },
-    { feature: 'Half-star precision', us: true, a: true, b: true },
-    { feature: 'Keyboard navigation', us: 'full', a: 'partial', b: 'partial' },
+    { feature: 'Keyboard navigation', us: true, a: false, b: false },
     { feature: 'aria-pressed + aria-live', us: true, a: false, b: false },
-    { feature: 'WCAG 2.2 compliant', us: true, a: false, b: false },
-    { feature: 'RTL', us: true, a: false, b: false },
-    { feature: 'prefers-reduced-motion', us: true, a: false, b: false },
-    { feature: 'Custom icon via slot', us: true, a: 'partial', b: false },
-    { feature: 'SSR / Nuxt 3', us: true, a: 'partial', b: true },
 ];
 const cellLabel = (v: string | true | false) =>
     v === true ? '✓' : v === false ? '—' : v;
@@ -514,7 +516,7 @@ const scrollToSection = (href: string) => {
                 <div class="mb-6 md:mb-8 flex justify-center">
                     <Badge variant="outline" class="gap-2 px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm">
                         <span class="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-green-400"></span>
-                    v3.1.0 — Lazy icon providers · Reduced-motion · Vue 3.5
+                    Vue 3.5+ · Icon providers · Reduced-motion
                     </Badge>
                 </div>
 
@@ -524,7 +526,7 @@ const scrollToSection = (href: string) => {
                 </h1>
 
                 <p class="mx-auto mb-8 md:mb-10 max-w-2xl text-sm md:text-lg lg:text-xl text-noir-400 leading-relaxed px-2">
-                    A highly customizable, accessible, and feature-rich star rating component
+                    A highly customizable, keyboard-accessible star rating component
                     for Vue 3 with full TypeScript support.
                 </p>
 
@@ -856,7 +858,7 @@ const scrollToSection = (href: string) => {
                         <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
                             <div class="min-w-0">
                                 <h3 class="mb-2 text-base md:text-xl font-semibold">Right-to-Left Layout</h3>
-                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Mirror the stars for RTL languages (Arabic, Hebrew, Persian). Half-star detection respects direction.</p>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Mirror the stars for RTL languages (Arabic, Hebrew, Persian). A pointer click on the half of a star respects direction. Known gap: the half-star fill is still painted on the left side of the star, and the arrow keys are not mirrored.</p>
                                 <div class="overflow-x-auto">
                                     <CodeBlock :code="rtlCode" language="vue" />
                                 </div>
@@ -875,8 +877,8 @@ const scrollToSection = (href: string) => {
                     <Card>
                         <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
                             <div class="min-w-0">
-                                <h3 class="mb-2 text-base md:text-xl font-semibold">Inline Mode</h3>
-                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Embed stars inside flowing text or tables.</p>
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Inline usage</h3>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">The component is already inline-flex, so it sits inside flowing text or table cells as it is. The inline prop is accepted but has no effect.</p>
                                 <div class="overflow-x-auto">
                                     <CodeBlock :code="inlineCode" language="vue" />
                                 </div>
@@ -884,7 +886,7 @@ const scrollToSection = (href: string) => {
                             <div class="flex min-h-[100px] flex-col items-center justify-center gap-4 rounded-xl border border-noir-800 bg-noir-900/30 p-4 md:p-8 text-center">
                                 <p class="text-sm md:text-base text-noir-200 leading-relaxed">
                                     The reviewer scored this
-                                    <VueStarRate v-model="inlineRating" :inline="true" size="sm" :colors="{
+                                    <VueStarRate v-model="inlineRating" size="sm" :colors="{
                                         empty: '#3f3f46',
                                         filled: '#ffffff',
                                         hover: '#a1a1aa',
@@ -963,7 +965,7 @@ const scrollToSection = (href: string) => {
                         <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
                             <div class="min-w-0">
                                 <h3 class="mb-2 text-base md:text-xl font-semibold">Animation Types</h3>
-                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Choose <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">scale</code>, <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">bounce</code>, or <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">pulse</code>. Automatically disabled when <em>prefers-reduced-motion</em> is set.</p>
+                                <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">Choose <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">scale</code>, <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">bounce</code>, or <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">pulse</code>. Automatically disabled when <em>prefers-reduced-motion</em> is set. <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">enabled: false</code> and <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">none</code> are not a full off-switch: interactive stars still scale to 1.1 on hover.</p>
                                 <div class="overflow-x-auto">
                                     <CodeBlock :code="animationCode" language="vue" />
                                 </div>
@@ -995,11 +997,14 @@ const scrollToSection = (href: string) => {
                     <Card>
                         <div class="grid gap-4 md:gap-8 lg:grid-cols-2">
                             <div class="min-w-0">
-                                <h3 class="mb-2 text-base md:text-xl font-semibold">Icon Providers (lazy-loaded)</h3>
+                                <h3 class="mb-2 text-base md:text-xl font-semibold">Icon Providers</h3>
                                 <p class="mb-3 md:mb-6 text-xs md:text-sm text-noir-400">
-                                    Default SVG ships in the bundle (zero deps). Lucide and FontAwesome providers
-                                    load on demand via <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">defineAsyncComponent</code> —
-                                    you only need to install their packages if you actually render them.
+                                    The default is a built-in SVG star (zero deps). <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">lucide</code>
+                                    draws Lucide's own star inline as an SVG, so nothing needs installing.
+                                    <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">fontawesome</code> renders
+                                    <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">&lt;i&gt;</code> elements with Font Awesome class names,
+                                    so your app must load Font Awesome's stylesheet; without it the stars are invisible.
+                                    All three providers are in the one entry file.
                                 </p>
                                 <div class="overflow-x-auto">
                                     <CodeBlock :code="iconProvidersCode" language="vue" />
@@ -1023,6 +1028,7 @@ const scrollToSection = (href: string) => {
                                     <VueStarRate v-model="faRating" size="lg" icon-provider="fontawesome" :colors="{
                                         empty: '#3f3f46', filled: '#ffffff', hover: '#a1a1aa',
                                     }" />
+                                    <p class="mt-2 text-xs text-noir-500">Requires Font Awesome's CSS: the stars stay invisible until the stylesheet is loaded.</p>
                                 </div>
                             </div>
                         </div>
@@ -1287,16 +1293,19 @@ const scrollToSection = (href: string) => {
         <!-- Divider -->
         <div class="divider mx-4 md:mx-6"></div>
 
-        <!-- Bundle Size & Optional Peers -->
+        <!-- Bundle Size & Icon Providers -->
         <section id="bundle" class="py-16 md:py-24 px-4 md:px-6">
             <div class="mx-auto max-w-5xl">
                 <div class="mb-10 md:mb-14 text-center">
                     <Badge variant="secondary" class="mb-3 md:mb-4">Bundle</Badge>
-                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Pay only for what you render</h2>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Pay only for what you import</h2>
                     <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">
-                        Icon providers are lazy-loaded via <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">defineAsyncComponent</code> since
-                        <strong class="text-white">v3.1.0</strong>. The optional peer libraries are only required when their provider is actually rendered —
-                        resolving <a href="https://github.com/pooyagolchian/vue-star-rate/issues/7" target="_blank" class="text-white underline">issue #7</a>.
+                        All three icon providers are inside the one entry file: nothing is lazy-loaded, and the only peer dependency is
+                        <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">vue</code>. Sizes are minified and gzipped, measured with Vite 6 and esbuild, vue external.
+                        <strong class="text-white">Version 3.1.0</strong> claimed lazy icon chunks and an optional
+                        <code class="px-1 py-0.5 bg-noir-800 rounded text-xs">lucide-vue-next</code>; that was wrong
+                        (<a href="https://github.com/pooyagolchian/vue-star-rate/issues/13" target="_blank" class="text-white underline">issue #13</a>)
+                        and is fixed in 3.1.1.
                     </p>
                 </div>
 
@@ -1311,20 +1320,24 @@ const scrollToSection = (href: string) => {
                             </thead>
                             <tbody class="divide-y divide-noir-800/50">
                                 <tr class="transition-colors hover:bg-noir-900/30">
-                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">{{ '{ VueStarRate }' }} + default icon</td>
-                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">Component + SVG star (~3 KB gz)</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">{{ '{ VueStarRate }' }}</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">About 4.6 KB gz JS (12.4 KB raw) + 0.75 KB gz CSS (2.9 KB raw), all three icon providers included</td>
                                 </tr>
                                 <tr class="transition-colors hover:bg-noir-900/30">
                                     <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">icon-provider=&quot;lucide&quot;</td>
-                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">+ lazy chunk + <code class="text-noir-200">lucide-vue-next</code></td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">Nothing extra: Lucide's star is drawn inline, nothing to install</td>
                                 </tr>
                                 <tr class="transition-colors hover:bg-noir-900/30">
                                     <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">icon-provider=&quot;fontawesome&quot;</td>
-                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">+ lazy chunk; FA CSS supplied by you</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">Nothing extra in JS; you load Font Awesome's CSS (the stars are invisible without it)</td>
                                 </tr>
                                 <tr class="transition-colors hover:bg-noir-900/30">
                                     <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">icon-provider=&quot;custom&quot;</td>
-                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">Component only — your slot markup</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">Nothing extra: the built-in SVG star, or your <code class="text-noir-200">#icon</code> slot markup</td>
+                                </tr>
+                                <tr class="transition-colors hover:bg-noir-900/30">
+                                    <td class="px-3 md:px-6 py-3 md:py-4 font-mono text-white text-xs">{{ '{ useStarRating }' }} only</td>
+                                    <td class="px-3 md:px-6 py-3 md:py-4 text-noir-300">About 1 KB gz JS: export-level tree-shaking works, but there is no component-level code splitting</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1335,17 +1348,18 @@ const scrollToSection = (href: string) => {
                     <Card class="flex items-start gap-3">
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-noir-800 text-white"><Sparkles class="h-4 w-4" /></div>
                         <div>
-                            <h4 class="text-sm font-semibold mb-1">Optional: Lucide</h4>
-                            <code class="block bg-black/40 rounded p-2 text-xs text-noir-200">pnpm add lucide-vue-next</code>
-                            <p class="mt-2 text-xs text-noir-400">Only needed when <code>icon-provider=&quot;lucide&quot;</code> is rendered.</p>
+                            <h4 class="text-sm font-semibold mb-1">Lucide</h4>
+                            <code class="block bg-black/40 rounded p-2 text-xs text-noir-200">icon-provider=&quot;lucide&quot;</code>
+                            <p class="mt-2 text-xs text-noir-400">Nothing to install: Lucide's star is drawn inline, so <code>lucide-vue-next</code> is not needed.</p>
                         </div>
                     </Card>
                     <Card class="flex items-start gap-3">
                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-noir-800 text-white"><Sparkles class="h-4 w-4" /></div>
                         <div>
-                            <h4 class="text-sm font-semibold mb-1">Optional: FontAwesome</h4>
+                            <h4 class="text-sm font-semibold mb-1">FontAwesome: load its CSS</h4>
                             <code class="block bg-black/40 rounded p-2 text-xs text-noir-200">pnpm add @fortawesome/fontawesome-free</code>
-                            <p class="mt-2 text-xs text-noir-400">Only needed when <code>icon-provider=&quot;fontawesome&quot;</code> is rendered.</p>
+                            <code class="mt-1 block bg-black/40 rounded p-2 text-xs text-noir-200 break-all">import '@fortawesome/fontawesome-free/css/all.min.css'</code>
+                            <p class="mt-2 text-xs text-noir-400">Only for <code>icon-provider=&quot;fontawesome&quot;</code>, and you must load the stylesheet yourself: the stars are <code>&lt;i&gt;</code> elements and are invisible without it.</p>
                         </div>
                     </Card>
                 </div>
@@ -1361,7 +1375,7 @@ const scrollToSection = (href: string) => {
                 <div class="mb-10 md:mb-14 text-center">
                     <Badge variant="secondary" class="mb-3 md:mb-4">FAQ</Badge>
                     <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">Frequently asked</h2>
-                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Short answers to the questions we hear most. Indexed by Google AI Overviews + AEO crawlers.</p>
+                    <p class="mt-3 md:mt-4 text-sm md:text-base text-noir-400">Short answers to the questions we hear most.</p>
                 </div>
 
                 <div class="space-y-3 md:space-y-4">
@@ -1412,6 +1426,7 @@ const scrollToSection = (href: string) => {
                         </table>
                     </div>
                 </Card>
+                <p class="mt-4 text-center text-xs md:text-sm text-noir-500">As of October 2026, checked against vue-star-rating 1.7.0 and 2.1.0 (the next tag, built for Vue 3) and vue3-star-ratings 3.0.5 by reading their published files; a dash means the feature was not found there. Only features checked this way are listed, so this is not a full comparison.</p>
             </div>
         </section>
 
@@ -1432,6 +1447,14 @@ const scrollToSection = (href: string) => {
                         <a href="https://www.npmjs.com/package/vue-js-star-rating" target="_blank"
                             class="transition-colors hover:text-white">
                             npm
+                        </a>
+                        <a href="https://pooyagolchian.github.io/vue-star-rate/llms.txt" target="_blank"
+                            class="transition-colors hover:text-white">
+                            llms.txt
+                        </a>
+                        <a href="https://pooyagolchian.github.io/vue-star-rate/llms-full.txt" target="_blank"
+                            class="transition-colors hover:text-white">
+                            llms-full.txt
                         </a>
                         <a href="https://pooya.blog" target="_blank" class="transition-colors hover:text-white">
                             Author

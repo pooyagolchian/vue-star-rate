@@ -9,7 +9,7 @@
     <!-- SEO Meta Tags -->
     <meta
       name="description"
-      content="Vue Star Rate - A highly customizable, accessible star rating component for Vue 3 with TypeScript support. Features half-star ratings, keyboard navigation, and beautiful animations."
+      content="Vue Star Rate - A highly customizable, keyboard-accessible star rating component for Vue 3 with TypeScript support. Features half-star ratings, keyboard navigation, and hover animations."
     />
     <meta
       name="keywords"
@@ -21,6 +21,20 @@
     <link
       rel="canonical"
       href="https://pooyagolchian.github.io/vue-star-rate/"
+    />
+
+    <!-- llms.txt: machine-readable summary and full reference for AI assistants -->
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="https://pooyagolchian.github.io/vue-star-rate/llms.txt"
+      title="llms.txt: summary for AI assistants"
+    />
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="https://pooyagolchian.github.io/vue-star-rate/llms-full.txt"
+      title="llms-full.txt: full reference for AI assistants"
     />
 
     <!-- Open Graph / Facebook -->
@@ -35,7 +49,7 @@
     />
     <meta
       property="og:description"
-      content="A highly customizable, accessible, and feature-rich star rating component for Vue 3 with full TypeScript support."
+      content="A highly customizable, keyboard-accessible star rating component for Vue 3 with TypeScript types."
     />
     <meta
       property="og:image"
@@ -57,7 +71,7 @@
     />
     <meta
       name="twitter:description"
-      content="A highly customizable, accessible, and feature-rich star rating component for Vue 3 with full TypeScript support."
+      content="A highly customizable, keyboard-accessible star rating component for Vue 3 with TypeScript types."
     />
     <meta
       property="twitter:image"
@@ -70,7 +84,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareSourceCode",
         "name": "Vue Star Rate",
-        "description": "A highly customizable, accessible star rating component for Vue 3",
+        "description": "A highly customizable, keyboard-accessible star rating component for Vue 3",
         "programmingLanguage": ["TypeScript", "Vue"],
         "codeRepository": "https://github.com/pooyagolchian/vue-star-rate",
         "license": "https://opensource.org/licenses/MIT",
@@ -90,8 +104,8 @@
         "applicationCategory": "DeveloperApplication",
         "applicationSubCategory": "Vue Component",
         "operatingSystem": "Cross-platform",
-        "description": "Zero-dependency Vue 3.5+ star rating component with half-star precision, full keyboard navigation, WCAG 2.2 compliance, and tree-shakeable lazy-loaded icon providers.",
-        "softwareVersion": "3.1.0",
+        "description": "Zero-dependency Vue 3.5+ star rating component with half-star precision, full keyboard navigation, and Lucide, Font Awesome or custom icons.",
+        "softwareVersion": "3.1.1",
         "url": "https://www.npmjs.com/package/vue-js-star-rating",
         "downloadUrl": "https://www.npmjs.com/package/vue-js-star-rating",
         "license": "https://opensource.org/licenses/MIT",
@@ -113,7 +127,7 @@
             "name": "Do I need lucide-vue-next if I use FontAwesome or a custom icon?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Since v3.1.0, vue-js-star-rating loads icon providers with defineAsyncComponent, so the lucide-vue-next package is only required when iconProvider=\"lucide\" is rendered. Consumer bundlers (Vite, Webpack, Rollup, esbuild) will not attempt to resolve it at build time when you use the default SVG, FontAwesome, or custom slot icon."
+              "text": "No. vue-js-star-rating has no runtime dependencies and its only peer dependency is vue (^3.5.0); there are no optional peers. iconProvider=\"lucide\" draws Lucide's own star geometry inline as an SVG, so there is nothing to install for it. iconProvider=\"fontawesome\" renders i elements with Font Awesome class names, so your app must load Font Awesome's stylesheet itself, for example import '@fortawesome/fontawesome-free/css/all.min.css'; without it the stars are invisible. The exception is releases 2.0.0 to 3.1.0, which imported lucide-vue-next at build time (3.1.0 also wrongly documented it as an optional peer), so Vite, webpack, esbuild, Nuxt and Storybook builds fail unless it is installed (GitHub issue #13). This is fixed in 3.1.1; see CHANGELOG.md."
             }
           },
           {
@@ -121,7 +135,7 @@
             "name": "Is vue-js-star-rating SSR-safe and Nuxt 3 compatible?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. The component renders deterministically on the server. Async icon providers resolve on the client after hydration. Wrap in <ClientOnly> for Nuxt or <Suspense> to control loading state. The default SVG provider works fully server-side."
+              "text": "Yes. The component renders deterministically on the server, and the markup of all three icon providers (default SVG, Lucide, Font Awesome) is part of the server-rendered HTML. Nothing is loaded asynchronously, so no ClientOnly or Suspense wrapper is needed."
             }
           },
           {
@@ -129,7 +143,7 @@
             "name": "What is the bundle size of vue-js-star-rating?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "About 3 KB gzipped for the default SVG path (component + composable + types stripped). Lucide and FontAwesome chunks are emitted as separate files and only fetched when the matching provider is rendered."
+              "text": "Measured with Vite 6 and esbuild minification, vue external, gzip -9: import { VueStarRate } costs about 12.4 KB raw / 4.6 KB gzipped of JavaScript plus 2.9 KB raw / 0.75 KB gzipped of CSS (vue-js-star-rating/dist/style.css). All three icon providers are inside that one entry file; nothing is lazy-loaded or split into chunks. useStarRating alone costs about 1 KB gzipped because export-level tree-shaking works; there is no component-level code splitting."
             }
           },
           {
@@ -137,7 +151,7 @@
             "name": "Is it accessible?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The root carries role=\"group\" and an aria-label. Each star button exposes aria-pressed. The counter uses aria-live=\"polite\" for live announcements. Full keyboard navigation: arrow keys, Home, End, 0-9. Animations are gated on prefers-reduced-motion. Compliant with WCAG 2.2 Level AA."
+              "text": "The root is role=\"group\" with an aria-label, and each star is a native button (type=button) with aria-pressed and an aria-label such as \"3 stars\". Keyboard: arrow keys (by the step, or 0.5 with allowHalf), Home, End and the digits 0-9 set the rating; Ctrl, Alt and Meta combinations are left to the browser, and Tab never changes the value. The root and the star buttons show a focus ring on keyboard focus, the counter uses aria-live=\"polite\", the star hover animations respect prefers-reduced-motion, and read-only is conveyed by disabled star buttons. The package has not been audited against WCAG, so it makes no conformance claim. Known gaps: the default star colors have low contrast on white (empty #d1d5db is 1.47:1, filled #fbbf24 is 1.67:1), so pass your own colors; size=\"xs\" targets are 16px, below the 24px WCAG 2.2 target-size minimum; a half value such as 2.5 is announced to a screen reader like the next whole number; and the numeric value is only available as text when showCounter is on."
             }
           },
           {
@@ -181,13 +195,13 @@
             "@type": "HowToStep",
             "name": "Import the component and styles",
             "text": "In your Vue component: import { VueStarRate } from 'vue-js-star-rating' and import 'vue-js-star-rating/dist/style.css'.",
-            "url": "https://pooyagolchian.github.io/vue-star-rate/#quick-start"
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#installation"
           },
           {
             "@type": "HowToStep",
             "name": "Bind a v-model to the rating value",
             "text": "Declare const rating = ref(0) in script setup, then write <VueStarRate v-model=\"rating\" /> in the template.",
-            "url": "https://pooyagolchian.github.io/vue-star-rate/#quick-start"
+            "url": "https://pooyagolchian.github.io/vue-star-rate/#installation"
           },
           {
             "@type": "HowToStep",
@@ -211,6 +225,35 @@
   </head>
   <body class="bg-black text-white antialiased">
     <div id="app"></div>
+    <noscript>
+      <main style="max-width: 48rem; margin: 0 auto; padding: 2rem 1rem">
+        <h1>Vue Star Rate (vue-js-star-rating)</h1>
+        <p>
+          Zero-dependency Vue 3.5+ star rating component with half-star
+          precision, keyboard navigation, TypeScript types, Lucide, Font Awesome
+          or custom icons, and SSR / Nuxt support. This page needs JavaScript
+          for the live demos; the same information is available as plain text.
+        </p>
+        <ul>
+          <li>
+            <a href="https://pooyagolchian.github.io/vue-star-rate/llms.txt"
+              >llms.txt</a
+            >: short summary for AI assistants
+          </li>
+          <li>
+            <a href="https://pooyagolchian.github.io/vue-star-rate/llms-full.txt"
+              >llms-full.txt</a
+            >: full reference (props, events, slots, keyboard, FAQ)
+          </li>
+          <li>
+            <a href="https://www.npmjs.com/package/vue-js-star-rating">npm</a>
+          </li>
+          <li>
+            <a href="https://github.com/pooyagolchian/vue-star-rate">GitHub</a>
+          </li>
+        </ul>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -170,14 +170,16 @@ describe('VueStarRate', () => {
   });
 
   describe('Half-star support', () => {
-    it('allows half-star ratings when allowHalf is true', async () => {
+    it('renders a half-filled star for a x.5 modelValue when allowHalf is true', () => {
       const wrapper = mount(VueStarRate, {
-        props: { allowHalf: true, modelValue: 0 },
+        props: { allowHalf: true, modelValue: 2.5 },
       });
 
-      // The half-star logic depends on click position
-      // Testing the rendered state instead
-      expect(wrapper.props('allowHalf')).toBe(true);
+      const stars = wrapper.findAll('.vue-star-rate__star');
+      expect(stars[1].classes()).toContain('vue-star-rate__star--filled');
+      expect(stars[2].classes()).toContain('vue-star-rate__star--half');
+      expect(stars[2].find('linearGradient').exists()).toBe(true);
+      expect(stars[3].classes()).not.toContain('vue-star-rate__star--half');
     });
 
     it('increases by 0.5 with allowHalf on ArrowRight', async () => {
@@ -208,17 +210,44 @@ describe('VueStarRate', () => {
       });
       
       const container = wrapper.find('.vue-star-rate');
-      // role="group" + individual aria-pressed buttons follows WCAG 2.2 for star ratings
+      // The root is a role="group" with an aria-label; each star is a button with aria-pressed
+      // (asserted under "ARIA pressed state" below).
       expect(container.attributes('role')).toBe('group');
       expect(container.attributes('aria-label')).toBe('Rate this item');
     });
 
-    it('has aria-readonly when readonly', () => {
+    // aria-readonly is not allowed on role="group" (axe: aria-allowed-attr, critical), so the read-only
+    // state is carried by what assistive technology does perceive: disabled star buttons.
+    it('marks readonly through disabled stars, not through aria-readonly', () => {
       const wrapper = mount(VueStarRate, {
         props: { readonly: true },
       });
       
-      expect(wrapper.find('.vue-star-rate').attributes('aria-readonly')).toBe('true');
+      expect(wrapper.find('.vue-star-rate').attributes('aria-readonly')).toBeUndefined();
+      expect(wrapper.find('.vue-star-rate').classes()).toContain('vue-star-rate--readonly');
+      const stars = wrapper.findAll('.vue-star-rate__star');
+      expect(stars).toHaveLength(5);
+      for (const star of stars) expect(star.attributes('disabled')).toBeDefined();
+    });
+
+    it('does not swallow browser shortcuts typed while the widget has focus', () => {
+      const wrapper = mount(VueStarRate, { props: { modelValue: 3 } });
+      const root = wrapper.find('.vue-star-rate').element;
+      const dispatch = (init: KeyboardEventInit) => {
+        const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
+        root.dispatchEvent(event);
+        return event;
+      };
+
+      // Alt+ArrowLeft is "Back", Ctrl/Cmd+digit switches tabs: neither is a rating key
+      expect(dispatch({ key: 'ArrowLeft', altKey: true }).defaultPrevented).toBe(false);
+      expect(dispatch({ key: '4', ctrlKey: true }).defaultPrevented).toBe(false);
+      expect(dispatch({ key: 'Tab' }).defaultPrevented).toBe(false);
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined();
+
+      // while plain rating keys are still handled
+      expect(dispatch({ key: 'ArrowLeft' }).defaultPrevented).toBe(true);
+      expect(wrapper.emitted('update:modelValue')![0]).toEqual([2]);
     });
 
     it('has aria-disabled when disabled', () => {
@@ -321,7 +350,7 @@ describe('VueStarRate', () => {
       // Reset should restore to initial value
       (wrapper.vm as any).reset();
       
-      expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+      expect(wrapper.emitted('update:modelValue')!.at(-1)).toEqual([3]);
     });
 
     it('exposes setRating method', () => {

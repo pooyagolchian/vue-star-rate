@@ -2,8 +2,11 @@
 /**
  * SVG Icon Provider Component
  * Renders star icons using custom SVG (default fallback)
+ *
+ * The star outline below is the `star` icon of Feather (https://github.com/feathericons/feather),
+ * MIT License, Copyright (c) 2013-2023 Cole Bemis. The license text is in THIRD-PARTY-NOTICES.md.
  */
-import { computed } from 'vue';
+import { computed, useId } from 'vue';
 import type { IconSize } from '../../types';
 
 interface Props {
@@ -12,6 +15,7 @@ interface Props {
     size?: number | IconSize;
     color?: string;
     emptyColor?: string;
+    /** Position of the star. Unused; accepted so existing bindings keep type-checking. */
     index?: number;
 }
 
@@ -35,13 +39,20 @@ const strokeColor = computed(() => {
     return props.filled || props.half ? props.color : props.emptyColor;
 });
 
+// `url(#id)` resolves against the whole document, so the gradient id must be unique on the page.
+// useId() is unique within one Vue app and identical on the server and the client, which keeps
+// hydration quiet; an index-based id collides as soon as two ratings show a half star at the same
+// position, and `url(#id)` then picks the first gradient in the document (the second rating borrows
+// its colour, or paints nothing). The prefix keeps it clear of the ids other components derive from
+// useId() (for example `<label for>` targets), which all share the `v-N` namespace. Every
+// createApp() root restarts that counter, so several Vue apps on one page need distinct
+// `app.config.idPrefix` values.
+const gradientId = `vsr-half-${useId()}`;
+
 const fillColor = computed(() => {
-    if (props.half) return `url(#half-gradient-${props.index})`;
+    if (props.half) return `url(#${gradientId})`;
     return props.filled ? props.color : 'none';
 });
-
-// Stable gradient ID based on index
-const gradientId = computed(() => `half-gradient-${props.index}`);
 </script>
 
 <template>

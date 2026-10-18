@@ -1,0 +1,65 @@
+name: CI
+
+# Runs on every pull request and on main. The publish workflow only fires on a version tag (or a
+# manual dispatch), so without this a broken change is found after the release is cut.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A newer push supersedes the older run of a pull request; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: typecheck, test, build (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9 # same major as publish.yml: PRs install the lockfile exactly as the release job will
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test:run
+      - run: pnpm build
+
+  # Installs the packed tarball into clean apps that have `vue` and nothing else (no lucide-vue-next,
+  # no Font Awesome package) and builds them with Vite, webpack, esbuild and Rollup. This is the check
+  # that would have caught issues #7 and #13: bundlers resolve import('x') while building the module
+  # graph, which no unit test or mock can see.
+  consumers:
+    name: consumer smoke test (clean apps without lucide-vue-next)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9 # same major as publish.yml: PRs install the lockfile exactly as the release job will
+      # No `cache: pnpm` here: this job runs freshly resolved third-party bundlers, and whatever it
+      # writes to a shared cache must not be restored by any other job.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm smoke:consumers

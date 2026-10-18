@@ -1,7 +1,7 @@
 import { Ref, ComputedRef } from 'vue';
 import { StarItem, RatingValue, UseStarRatingOptions } from '../types';
 export type { UseStarRatingOptions } from '../types';
-/** Narrow emit type — no more `event: string` + `any[]` */
+/** Narrow emit type: only the events the composable can emit. */
 type EmitFn = (event: "update:modelValue" | "change" | "hover" | "focus" | "blur", ...args: unknown[]) => void;
 export interface UseStarRatingReturn {
     internalRating: Ref<RatingValue>;

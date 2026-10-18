@@ -1,7 +1,7 @@
 {
   "name": "vue-js-star-rating",
-  "version": "3.1.0",
-  "description": "Zero-dependency Vue 3.5+ star rating component — WCAG 2.2 accessible, TypeScript-first, half-star precision, tree-shakeable lazy-loaded Lucide/FontAwesome/custom icons, SSR & Nuxt ready",
+  "version": "3.1.1",
+  "description": "Zero-dependency Vue 3.5+ star rating component — keyboard accessible, TypeScript-first, half-star precision, Lucide/FontAwesome/custom icons, SSR & Nuxt ready",
   "author": "Pooya Golchian <pooya.golchian@gmail.com>",
   "license": "MIT",
   "type": "module",
@@ -18,7 +18,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "THIRD-PARTY-NOTICES.md"
   ],
   "sideEffects": [
     "**/*.css"
@@ -30,6 +31,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "smoke:consumers": "node scripts/smoke-consumers.mjs",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx --fix",
     "typecheck": "vue-tsc --noEmit",
     "prepublishOnly": "npm run build",
@@ -41,24 +43,16 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "peerDependenciesMeta": {
-    "@fortawesome/fontawesome-free": {
-      "optional": true
-    },
-    "lucide-vue-next": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.7.0",
     "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "@vitest/coverage-v8": "^2.1.0",
     "@vue/test-utils": "^2.4.6",
+    "axe-core": "^4.14.0",
     "eslint": "^9.0.0",
     "eslint-plugin-vue": "^9.32.0",
     "happy-dom": "^14.0.0",
-    "lucide-vue-next": "^0.469.0",
     "typescript": "~5.7.0",
     "vite": "^6.0.0",
     "vite-plugin-dts": "^4.0.0",
@@ -97,9 +91,6 @@
     "accessible",
     "accessible-rating",
     "a11y",
-    "wcag",
-    "wcag2",
-    "wcag2.2",
     "aria",
     "keyboard-navigation",
     "customizable",
