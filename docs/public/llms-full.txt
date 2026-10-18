@@ -11,7 +11,7 @@ This document is the long-form, LLM-optimized reference: install steps, every pr
 | Field | Value |
 | --- | --- |
 | npm package | `vue-js-star-rating` |
-| Current version | 3.1.1 (2026-10-18) |
+| Current version | 3.1.1 (2026-10-19) |
 | License | MIT |
 | Author | Pooya Golchian — https://pooya.blog |
 | Repo | https://github.com/pooyagolchian/vue-star-rate |

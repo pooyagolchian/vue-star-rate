@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [3.1.1] — 2026-10-18
+## [3.1.1] — 2026-10-19
 
 ### Fixes
 - **Issue [#13](https://github.com/pooyagolchian/vue-star-rate/issues/13) (and the earlier, unfixed [#7](https://github.com/pooyagolchian/vue-star-rate/issues/7)) — builds no longer need `lucide-vue-next`.** The Lucide provider now draws Lucide's own `star` geometry inline, so the published entry files import nothing but `vue`. The path data is identical to `lucide-vue-next`'s, and the `<svg>` carries the class list and `aria-hidden="true"` that `lucide-vue-next` 0.563 and later render; compared with 0.469, the version this package used to be built against, it gains the `lucide-star` class and `aria-hidden`. `lucide-vue-next` is gone from `rollupOptions.external`, `globals`, `peerDependenciesMeta` and `devDependencies`. Clean apps now build with Vite 6 and 8, webpack 5, esbuild and Rollup (checked on every pull request by `pnpm smoke:consumers`) and with Nuxt and Storybook (checked by hand). Lucide is ISC-licensed, so its copyright and permission notice now ships with the path data, in `dist/` and in the new `THIRD-PARTY-NOTICES.md`, which also covers the Feather star used by the default icon.
