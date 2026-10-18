@@ -8,3 +8,11 @@ yarn-error.log
 .DS_Store
 .DS_Store?
 src/.DS_Store
+
+# Claude Code: local-only config, plans and specs (kept on disk, never committed)
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.superpowers/
+.playwright-mcp/
+docs/superpowers/

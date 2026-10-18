@@ -3,7 +3,7 @@ import type { StarItem, RatingValue, UseStarRatingOptions } from "../types";
 
 export type { UseStarRatingOptions } from "../types";
 
-/** Narrow emit type — no more `event: string` + `any[]` */
+/** Narrow emit type: only the events the composable can emit. */
 type EmitFn = (
 	event: "update:modelValue" | "change" | "hover" | "focus" | "blur",
 	...args: unknown[]
@@ -66,27 +66,33 @@ export function useStarRating(
 		return items;
 	});
 
-	// Validate and clamp rating value — reads options reactively via toValue()
+	// Smallest selectable increment. Half stars win over `step`; a step that is not a positive
+	// finite number (0, negative, NaN, Infinity) falls back to 1 instead of producing NaN.
+	const getUnit = (): number => {
+		if (toValue(options.allowHalf)) return 0.5;
+		const step = toValue(options.step);
+		return Number.isFinite(step) && step > 0 ? step : 1;
+	};
+
+	// Validate a rating value — reads options reactively via toValue()
 	const validateRating = (value: number): RatingValue => {
 		const minRating = toValue(options.minRating);
 		const maxStars = toValue(options.maxStars);
-		const allowHalf = toValue(options.allowHalf);
-		const step = toValue(options.step);
+		const unit = getUnit();
 
-		let newValue = Math.max(minRating, Math.min(maxStars, value));
+		// NaN fails every comparison below and would be emitted as it is; treat it as "no rating".
+		if (Number.isNaN(value)) return minRating;
+		// The bounds are always selectable, whatever the step grid is (5 / 0.75 would snap to 5.25).
+		if (value >= maxStars) return maxStars;
+		if (value <= minRating) return minRating;
 
-		if (!allowHalf && step === 1) {
-			newValue = Math.round(newValue);
-		} else if (allowHalf) {
-			newValue = Math.round(newValue * 2) / 2;
-		} else {
-			newValue = Math.round(newValue / step) * step;
-		}
-
-		return newValue;
+		// Snap to the grid, strip binary float noise (3 * 0.1 === 0.30000000000000004), then clamp
+		// last so snapping can never leave [minRating, maxStars].
+		const snapped = Number((Math.round(value / unit) * unit).toPrecision(12));
+		return Math.min(maxStars, Math.max(minRating, snapped));
 	};
 
-	// Handle star click — guards are now reactive via toValue()
+	// Handle star click. The readonly/disabled guards read the options reactively via toValue().
 	const handleClick = (value: number): void => {
 		if (toValue(options.readonly) || toValue(options.disabled)) return;
 
@@ -127,20 +133,17 @@ export function useStarRating(
 		emit("hover", null);
 	};
 
-	const getStepIncrement = (): number => {
-		if (toValue(options.allowHalf)) return 0.5;
-		return toValue(options.step);
-	};
-
 	// Handle keyboard navigation
 	const handleKeyDown = (event: KeyboardEvent): void => {
 		if (toValue(options.readonly) || toValue(options.disabled)) return;
+		// Browser and OS shortcuts (Alt+ArrowLeft = Back, Ctrl/Cmd+digit = switch tab) are not rating keys.
+		if (event.ctrlKey || event.altKey || event.metaKey) return;
 
 		const { key } = event;
-		const stepIncrement = getStepIncrement();
+		const stepIncrement = getUnit();
 		const maxStars = toValue(options.maxStars);
 		const minRating = toValue(options.minRating);
-		let newValue = internalRating.value;
+		let newValue: RatingValue;
 
 		switch (key) {
 			case "ArrowRight":
@@ -154,6 +157,7 @@ export function useStarRating(
 				newValue = Math.max(minRating, internalRating.value - stepIncrement);
 				break;
 			case "Home":
+			case "0":
 				event.preventDefault();
 				newValue = minRating;
 				break;
@@ -171,25 +175,18 @@ export function useStarRating(
 			case "8":
 			case "9": {
 				const numValue = Number.parseInt(key, 10);
-				if (numValue <= maxStars) {
-					event.preventDefault();
-					newValue = numValue;
-				}
+				if (numValue > maxStars) return;
+				event.preventDefault();
+				newValue = numValue;
 				break;
 			}
-			case "0":
-				event.preventDefault();
-				newValue = minRating;
-				break;
+			default:
+				// Tab, Shift, Escape, letters, ... must never validate or emit: with an unnormalised
+				// value that would write a rating the user did not choose into the parent.
+				return;
 		}
 
-		const validatedValue = validateRating(newValue);
-		if (validatedValue !== internalRating.value) {
-			const previousValue = internalRating.value;
-			internalRating.value = validatedValue;
-			emit("update:modelValue", validatedValue);
-			emit("change", validatedValue, previousValue);
-		}
+		setRating(newValue);
 	};
 
 	// Reset to initial value

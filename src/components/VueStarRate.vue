@@ -4,7 +4,7 @@
  * A highly customizable star rating component for Vue 3
  * Supports Lucide, FontAwesome, and custom icons
  */
-import { computed, defineAsyncComponent, useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 import { useStarRating } from '../composables/useStarRating';
 import type {
     AnimationConfig,
@@ -14,18 +14,17 @@ import type {
     StarRateEmits,
     StarRateProps,
 } from '../types';
+import FontAwesomeIcon from './icons/FontAwesomeIcon.vue';
+import LucideIcon from './icons/LucideIcon.vue';
 import SvgIcon from './icons/SvgIcon.vue';
 
-// Lazy-loaded icon providers — only fetched (and only require their optional peer
-// `lucide-vue-next` / `@fortawesome/fontawesome-free`) when actually rendered.
-const LucideIcon = defineAsyncComponent(() => import('./icons/LucideIcon.vue'));
-const FontAwesomeIcon = defineAsyncComponent(() => import('./icons/FontAwesomeIcon.vue'));
-
-// Hoisted defaults — never change, allocate once per module instead of per component.
+// Built-in defaults. They are never mutated, but they are not hoisted to module scope: script setup
+// compiles these consts into setup(), so each component instance allocates its own copy.
 const defaultColors: StarColors = {
     empty: '#d1d5db',
     filled: '#fbbf24',
     hover: '#f59e0b',
+    // Has its own default and does not follow `filled`.
     half: '#fbbf24',
 };
 
@@ -71,7 +70,7 @@ const props = withDefaults(defineProps<StarRateProps>(), {
 // Emits — update:modelValue is emitted automatically by defineModel
 const emit = defineEmits<StarRateEmits>();
 
-// Merged colors / animation pull from module-scope defaults declared above
+// Merged colors / animation: the props are spread over the defaults declared above
 const mergedColors = computed<StarColors>(() => ({
     ...defaultColors,
     ...props.colors,
@@ -158,7 +157,10 @@ const getTooltipLabel = (index: number): string => {
     return `${index + 1} star${index === 0 ? '' : 's'}`;
 };
 
-// Get current icon color
+// Color for one star. While hovering, the hover color wins (the icon components apply it only to
+// stars drawn as filled or half). Otherwise: filled, then half, then empty. `half` falls back to
+// `filled` only when colors.half is explicitly undefined or empty: the built-in default is
+// '#fbbf24', so it does not follow a custom colors.filled.
 const getIconColor = (filled: boolean, half: boolean): string => {
     if (isHovering.value) {
         return mergedColors.value.hover;
@@ -190,7 +192,10 @@ const computeHalfValue = (starValue: number, event: MouseEvent): number => {
 
 const onStarClick = (starValue: number, event: MouseEvent): void => {
     if (props.readonly || props.disabled) return;
-    handleClick(computeHalfValue(starValue, event));
+    // detail === 0 means a click without a pointer (keyboard Enter/Space, el.click()). Such clicks have
+    // no usable x coordinate (Chromium/Gecko: 0; WebKit keyboard clicks: a truncated element centre),
+    // so activate the whole star. Mouse and touch clicks have detail >= 1.
+    handleClick(event.detail === 0 ? starValue : computeHalfValue(starValue, event));
 };
 
 const onStarEnter = (event: MouseEvent): void => {
@@ -211,11 +216,9 @@ const onStarMouseMove = (starValue: number, event: MouseEvent): void => {
     handleMouseEnter(value);
 };
 
-// Clear rating - respects allowReset prop
+// Clear rating. Only the clear button calls this; `allowReset` does not apply to it.
 const clearRating = (): void => {
-    if (props.allowReset || props.clearable) {
-        setRating(props.minRating);
-    }
+    setRating(props.minRating);
 };
 
 // Focus management
@@ -264,7 +267,7 @@ const cssVars = computed(() => ({
 
 <template>
     <div ref="container" :class="containerClasses" :style="cssVars" role="group" :aria-label="ariaLabel"
-        :aria-readonly="readonly" :aria-disabled="disabled" :tabindex="disabled ? -1 : 0" @keydown="handleKeyDown"
+        :aria-disabled="disabled" :tabindex="disabled ? -1 : 0" @keydown="handleKeyDown"
         @focus="setFocused(true)" @blur="setFocused(false)">
         <div class="vue-star-rate__stars" @mouseleave="onStarLeave(); handleMouseLeave();">
             <button v-for="star in stars" :key="star.index" type="button" class="vue-star-rate__star" :class="{
@@ -280,7 +283,7 @@ const cssVars = computed(() => ({
                 <LucideIcon v-if="iconProvider === 'lucide'"
                     :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
                     :size="computedIconSize" :color="getIconColor(star.filled, star.half)"
-                    :empty-color="mergedColors.empty" :index="star.index" />
+                    :empty-color="mergedColors.empty" />
 
                 <!-- FontAwesome Icons -->
                 <FontAwesomeIcon v-else-if="iconProvider === 'fontawesome'"
@@ -297,7 +300,7 @@ const cssVars = computed(() => ({
                 <!-- Default SVG Icon -->
                 <SvgIcon v-else :filled="star.filled || (isHovering && star.value <= displayRating)" :half="star.half"
                     :size="computedIconSize" :color="getIconColor(star.filled, star.half)"
-                    :empty-color="mergedColors.empty" :index="star.index" />
+                    :empty-color="mergedColors.empty" />
 
             </button>
         </div>
@@ -377,10 +380,6 @@ const cssVars = computed(() => ({
 
 .vue-star-rate__star:disabled {
     cursor: inherit;
-}
-
-.vue-star-rate__star:focus {
-    outline: none;
 }
 
 /* Motion — only when the user hasn't requested reduced motion. */

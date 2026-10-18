@@ -25,11 +25,10 @@ export default defineConfig({
       fileName: (format) => `vue-star-rate.${format === 'es' ? 'js' : 'umd.cjs'}`,
     },
     rollupOptions: {
-      external: ['vue', 'lucide-vue-next'],
+      external: ['vue'],
       output: {
         globals: {
           vue: 'Vue',
-          'lucide-vue-next': 'LucideVue',
         },
         exports: 'named',
         assetFileNames: (assetInfo) => {
