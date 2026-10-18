@@ -1,33 +1,42 @@
 name: Publish to npm
 
+# Publishes with npm trusted publishing (OIDC): no NPM_TOKEN. npm checks that this run comes from
+# this repository and this workflow file, so the trusted publisher on npmjs.com must name
+# pooyagolchian/vue-star-rate and publish.yml exactly. It needs npm >= 11.5.1 (Node >= 22.14).
 on:
   push:
     tags: ['v*']
-  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # lets npm verify this run via OIDC and attach a provenance statement
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v4
         with:
           version: 9
+      # No `cache: pnpm`: the smoke test below runs freshly resolved third-party bundlers, and a
+      # release job must not write to (or restore from) a shared cache.
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          # No `cache: pnpm`: the smoke test below runs freshly resolved third-party bundlers, and a
-          # release job must not write to (or restore from) a shared cache.
+          node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: Tag must match the package.json version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          test "v${version}" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} does not match package.json version ${version}"; exit 1; }
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
       - run: pnpm run test:run
       - run: pnpm run build
       # Installs the packed tarball into clean apps without lucide-vue-next (issues #7 and #13).
       - run: pnpm run smoke:consumers
-      - run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # npm, not pnpm, for the last step: the OIDC exchange is done by the npm CLI.
+      - run: npm publish --provenance --access public
