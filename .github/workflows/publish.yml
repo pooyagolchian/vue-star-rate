@@ -1,42 +1,94 @@
 name: Publish to npm
 
-# Publishes with npm trusted publishing (OIDC): no NPM_TOKEN. npm checks that this run comes from
-# this repository and this workflow file, so the trusted publisher on npmjs.com must name
+# Publishes with npm trusted publishing (OIDC): there is no NPM_TOKEN. npm checks that the run comes
+# from this repository and this workflow file, so the trusted publisher on npmjs.com must name
 # pooyagolchian/vue-star-rate and publish.yml exactly. It needs npm >= 11.5.1 (Node >= 22.14).
+#
+# Two jobs on purpose. `verify` runs the tests and the consumer smoke test (freshly resolved
+# third-party bundlers) with read-only permissions. Only `publish`, which runs none of that code, may
+# ask GitHub for an OIDC token, and it publishes the exact tarball that `verify` tested.
 on:
   push:
     tags: ['v*']
 
-permissions:
-  contents: read
-  id-token: write # lets npm verify this run via OIDC and attach a provenance statement
+concurrency:
+  group: publish
+  cancel-in-progress: false # never interrupt a release that is already publishing
+
+permissions: {} # each job asks for what it needs
 
 jobs:
-  publish:
+  verify:
+    name: verify and pack
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      dist-tag: ${{ steps.release.outputs.dist-tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: pnpm/action-setup@v4
+          fetch-depth: 0 # the "tag is on main" check needs the history of main
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 9
-      # No `cache: pnpm`: the smoke test below runs freshly resolved third-party bundlers, and a
-      # release job must not write to (or restore from) a shared cache.
-      - uses: actions/setup-node@v4
+      # No `cache: pnpm`: a release job must not write to (or restore from) a shared cache.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
-          registry-url: https://registry.npmjs.org
-      - name: Tag must match the package.json version
+      - name: Check the tag
+        id: release
         run: |
           version="$(node -p "require('./package.json').version")"
-          test "v${version}" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} does not match package.json version ${version}"; exit 1; }
+          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME} does not match the package.json version ${version}"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" origin/main; then
+            echo "::error::${GITHUB_REF_NAME} is not on main; releases are cut from main only"
+            exit 1
+          fi
+          case "${version}" in
+            *-*) echo "dist-tag=next" >> "${GITHUB_OUTPUT}" ;; # a prerelease must not become `latest`
+            *) echo "dist-tag=latest" >> "${GITHUB_OUTPUT}" ;;
+          esac
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
       - run: pnpm run test:run
       - run: pnpm run build
-      # Installs the packed tarball into clean apps without lucide-vue-next (issues #7 and #13).
-      - run: pnpm run smoke:consumers
-      # npm, not pnpm, for the last step: the OIDC exchange is done by the npm CLI.
-      - run: npm publish --provenance --access public
+      - name: Pack the tarball that will be published
+        run: mkdir release && npm pack --pack-destination release
+      # Installs that tarball into clean apps without lucide-vue-next (issues #7 and #13).
+      - name: Consumer smoke test
+        run: pnpm run smoke:consumers --tarball "$(ls "$PWD"/release/*.tgz)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-tarball
+          path: release/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: publish to npm
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write # lets npm verify this run via OIDC and attach a provenance statement
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-tarball
+          path: release
+      # npm, not pnpm: the OIDC exchange is done by the npm CLI.
+      - name: Publish
+        run: npm publish ./release/*.tgz --provenance --access public --tag "${DIST_TAG}"
+        env:
+          DIST_TAG: ${{ needs.verify.outputs.dist-tag }}
